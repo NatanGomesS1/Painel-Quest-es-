@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Simulado — Técnico Segurança do Trabalho</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0A0E14;
+    --panel:#121821;
+    --panel-2:#171f2b;
+    --wire:#2A3441;
+    --amber:#F5A623;
+    --amber-dim:#8a5f18;
+    --teal:#00D9B5;
+    --red:#FF4757;
+    --text:#EDEDE5;
+    --muted:#8B93A1;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 0%, #101722 0%, transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:20px;
+    min-height:100vh;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+
+  /* Header readout */
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:1px solid var(--wire);
+    padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap;gap:12px;
+  }
+  .brand-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.18em;color:var(--amber);
+    text-transform:uppercase;margin-bottom:4px;
+  }
+  h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px;font-weight:800;margin:0;letter-spacing:-0.01em;
+  }
+  .digital-readout{
+    font-family:'JetBrains Mono',monospace;
+    background:#05070a;
+    border:1px solid var(--wire);
+    border-radius:6px;
+    padding:8px 14px;
+    text-align:right;
+    min-width:170px;
+  }
+  .digital-readout .label{font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
+  .digital-readout .value{font-size:24px;font-weight:700;color:var(--teal);text-shadow:0 0 12px rgba(0,217,181,.4);}
+
+  /* Breaker panel */
+  .breaker-panel{
+    background:var(--panel);
+    border:1px solid var(--wire);
+    border-radius:10px;
+    padding:18px;
+    margin-bottom:18px;
+  }
+  .breaker-panel .title{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;
+  }
+  .breakers{display:flex;flex-wrap:wrap;gap:10px;}
+  .breaker{
+    display:flex;align-items:center;gap:8px;
+    background:var(--panel-2);
+    border:1px solid var(--wire);
+    border-radius:8px;
+    padding:9px 12px;
+    cursor:pointer;
+    user-select:none;
+    transition:border-color .15s, background .15s;
+    font-size:13px;
+  }
+  .breaker:hover{border-color:var(--amber-dim);}
+  .breaker.on{border-color:var(--teal);background:#0d2420;}
+  .switch{
+    width:26px;height:14px;border-radius:3px;background:#3a4553;position:relative;flex-shrink:0;
+    transition:background .15s;
+  }
+  .switch::after{
+    content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:2px;
+    background:#0A0E14;transition:transform .15s, background .15s;
+  }
+  .breaker.on .switch{background:var(--teal);}
+  .breaker.on .switch::after{transform:translateX(12px);background:#05070a;}
+  .breaker .name{font-weight:600;}
+  .breaker .stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
+
+  .banca-row{display:flex;gap:8px;margin-top:12px;}
+  .banca-pill{
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:20px;
+    border:1px solid var(--wire);cursor:pointer;color:var(--muted);
+  }
+  .banca-pill.on{border-color:var(--amber);color:var(--amber);background:rgba(245,166,35,.08);}
+
+  .mode-row{display:flex;gap:8px;margin-top:16px;}
+  .mode-pill{
+    flex:1;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px;border-radius:8px;
+    border:1px solid var(--wire);cursor:pointer;color:var(--muted);
+  }
+  .mode-pill.on{border-color:var(--teal);color:var(--teal);background:rgba(0,217,181,.08);}
+
+  .exam-config{
+    display:none;margin-top:14px;background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;padding:14px;
+    gap:14px;flex-wrap:wrap;
+  }
+  .exam-config.show{display:flex;}
+  .exam-config .field{display:flex;flex-direction:column;gap:6px;}
+  .exam-config label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .exam-config select{
+    background:var(--panel);border:1px solid var(--wire);border-radius:6px;color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:13px;padding:7px 10px;
+  }
+
+  .timer-box{
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;
+    padding:4px 10px;border-radius:6px;border:1px solid var(--wire);color:var(--teal);
+  }
+  .timer-box.warn{color:var(--amber);border-color:var(--amber);}
+  .timer-box.crit{color:var(--red);border-color:var(--red);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+  .end-exam-btn{
+    background:var(--panel-2);border:1px solid var(--red);color:var(--red);
+    font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+    padding:6px 12px;border-radius:6px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;
+  }
+
+  .resume-banner{
+    display:none;background:#0d2420;border:1px solid var(--teal);border-radius:8px;
+    padding:14px 16px;margin-bottom:18px;
+  }
+  .resume-banner.show{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .resume-banner .info{font-size:13px;color:var(--text);}
+  .resume-banner .info b{color:var(--teal);}
+  .resume-banner .actions{display:flex;gap:8px;}
+  .resume-btn{
+    background:var(--teal);border:none;color:#04211c;font-weight:700;
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 14px;border-radius:6px;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.04em;
+  }
+  .discard-btn{
+    background:transparent;border:1px solid var(--wire);color:var(--muted);
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 14px;border-radius:6px;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.04em;
+  }
+
+  .back-btn{
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--teal);
+    cursor:pointer;background:var(--panel-2);border:1px solid var(--teal);border-radius:6px;
+    padding:7px 14px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.03em;
+  }
+  .back-btn:active{background:rgba(0,217,181,.15);}
+  .back-btn:hover{background:rgba(0,217,181,.1);}
+
+  .dash-toggle-btn{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--wire);border-radius:6px;padding:8px 12px;cursor:pointer;
+    white-space:nowrap;
+  }
+  .dash-toggle-btn:hover{border-color:var(--teal);color:var(--teal);}
+
+  .dashboard{display:none;}
+  .dashboard.active{display:block;}
+  .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+  .dash-stat{background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;padding:14px;}
+  .dash-stat .label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .dash-stat .value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:var(--teal);margin-top:4px;}
+
+  .bar-row{margin-bottom:10px;}
+  .bar-row .bar-label{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;}
+  .bar-row .bar-label .cat-n{color:var(--text);}
+  .bar-row .bar-label .cat-p{font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .bar-track{height:8px;background:var(--wire);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:4px;transition:width .4s;}
+  .bar-fill.good{background:var(--teal);}
+  .bar-fill.mid{background:var(--amber);}
+  .bar-fill.low{background:var(--red);}
+
+  .session-log-row{
+    display:flex;justify-content:space-between;align-items:center;font-size:12.5px;
+    padding:9px 0;border-bottom:1px solid var(--wire);
+  }
+  .session-log-row:last-child{border-bottom:none;}
+  .session-log-row .sdate{color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;}
+  .session-log-row .sscore{font-family:'JetBrains Mono',monospace;font-weight:700;}
+
+  .backup-row{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;}
+  .backup-btn{
+    background:var(--panel-2);border:1px solid var(--wire);color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:9px 14px;border-radius:6px;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.04em;
+  }
+  .backup-btn:hover{border-color:var(--teal);color:var(--teal);}
+  .storage-note{
+    font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;
+    border-left:2px solid var(--wire);padding-left:10px;
+  }
+
+  .start-btn{
+    margin-top:16px;width:100%;
+    background:linear-gradient(180deg,#F5A623,#d68b0f);
+    border:none;border-radius:8px;
+    color:#1a1200;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:14px;letter-spacing:.04em;text-transform:uppercase;
+    padding:13px;cursor:pointer;
+  }
+  .start-btn:active{transform:translateY(1px);}
+  .start-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* Question card */
+  .card{
+    background:var(--panel);border:1px solid var(--wire);border-radius:10px;
+    padding:22px;display:none;
+  }
+  .card.active{display:block;}
+  .q-meta{
+    margin-bottom:14px;
+  }
+  .q-meta-top{
+    margin-bottom:8px;
+  }
+  .q-meta-bottom{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.06em;
+  }
+  .q-meta-bottom .left-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
+  .q-meta-bottom .right-group{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .q-meta .tag{
+    background:var(--panel-2);border:1px solid var(--wire);border-radius:4px;padding:3px 8px;color:var(--amber);white-space:nowrap;
+  }
+  .progress-bar{height:4px;background:var(--wire);border-radius:2px;overflow:hidden;margin-bottom:18px;}
+  .progress-fill{height:100%;background:var(--teal);transition:width .3s;}
+  .text-passage{
+    background:var(--panel-2);border:1px solid var(--wire);border-left:3px solid var(--amber);
+    border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:13.5px;line-height:1.6;color:var(--muted);
+  }
+  .text-passage .tp-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .q-text{font-size:16px;line-height:1.55;margin-bottom:18px;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .opt{
+    text-align:left;background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;
+    padding:12px 14px;cursor:pointer;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .opt:hover:not(.locked){border-color:var(--amber-dim);}
+  .opt .letter{
+    font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--muted);flex-shrink:0;
+  }
+  .opt.correct{border-color:var(--teal);background:#0d2420;}
+  .opt.correct .letter{color:var(--teal);}
+  .opt.wrong{border-color:var(--red);background:#2a1216;}
+  .opt.wrong .letter{color:var(--red);}
+  .opt.locked{cursor:default;}
+
+  .feedback{margin-top:16px;padding:14px;border-radius:8px;border:1px solid var(--wire);background:var(--panel-2);display:none;}
+  .feedback.show{display:block;}
+  .feedback .verdict{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;letter-spacing:.05em;margin-bottom:6px;}
+  .feedback.ok .verdict{color:var(--teal);}
+  .feedback.bad .verdict{color:var(--red);}
+  .feedback .exp{font-size:13.5px;color:var(--muted);line-height:1.5;}
+
+  .next-btn{
+    margin-top:16px;background:var(--panel-2);border:1px solid var(--teal);color:var(--teal);
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;
+    padding:11px 18px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;
+    display:none;
+  }
+  .next-btn.show{display:inline-block;}
+
+  /* Summary */
+  .summary{display:none;text-align:center;padding:30px 10px;}
+  .summary.active{display:block;}
+  .summary .big-score{font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:800;color:var(--teal);text-shadow:0 0 20px rgba(0,217,181,.35);}
+  .summary .sub{color:var(--muted);font-size:14px;margin-top:6px;}
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:22px;text-align:left;}
+  .summary-item{background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;padding:12px;}
+  .summary-item .cat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .summary-item .val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-top:4px;}
+  .summary-item .val.good{color:var(--teal);}
+  .summary-item .val.mid{color:var(--amber);}
+  .summary-item .val.low{color:var(--red);}
+
+  .history-panel{margin-top:18px;background:var(--panel);border:1px solid var(--wire);border-radius:10px;padding:18px;}
+  .history-panel .title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
+  .hist-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--wire);}
+  .hist-row:last-child{border-bottom:none;}
+  .hist-row .cat-name{color:var(--text);}
+  .hist-row .cat-score{font-family:'JetBrains Mono',monospace;color:var(--muted);}
+
+  .reset-link{
+    display:inline-block;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--muted);cursor:pointer;text-decoration:underline;
+  }
+
+  footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand-eyebrow">Simulado &middot; Nível médio &middot; Segurança do Trabalho</div>
+      <h1>Painel de Bancada — Simulado Segurança do Trabalho</h1>
+    </div>
+    <div class="digital-readout">
+      <div class="label">Aproveitamento geral</div>
+      <div class="value" id="overallStat">--%</div>
+    </div>
+  </header>
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+    <button class="dash-toggle-btn" id="dashToggleBtn">📊 Ver dashboard completo</button>
+  </div>
+
+  <div class="dashboard" id="dashboardPanel">
+    <div class="dash-grid" id="dashStatsGrid"></div>
+    <div class="breaker-panel">
+      <div class="title">Desempenho por categoria</div>
+      <div id="dashCatBars"></div>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Desempenho por banca</div>
+      <div id="dashBancaBars"></div>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Últimas sessões</div>
+      <div id="dashSessionLog"></div>
+      <span class="reset-link" id="resetHistory">Zerar todo o histórico</span>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Backup do progresso</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5;">
+        Sempre que você baixar uma versão atualizada deste simulado (com mais questões), o navegador pode salvá-la como um arquivo novo — e um arquivo novo começa com o progresso zerado. Exporte um backup aqui antes de trocar de arquivo, e importe do outro lado pra continuar de onde parou.
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="resume-btn" id="exportBtn">⬇ Exportar backup</button>
+        <button class="discard-btn" id="importBtn">⬆ Importar backup</button>
+        <input type="file" id="importFile" accept=".json" style="display:none;">
+      </div>
+    </div>
+    <button class="start-btn" id="closeDashBtn" style="margin-top:4px;">Fechar dashboard ▸</button>
+  </div>
+
+  <div class="breaker-panel" id="setupPanel">
+    <div class="resume-banner" id="resumeBanner">
+      <div class="info">Você tem um simulado em andamento — parou na questão <b id="resumeProgress">--</b>.</div>
+      <div class="actions">
+        <button class="resume-btn" id="resumeBtn">Continuar de onde parei ▸</button>
+        <button class="discard-btn" id="discardBtn">Começar novo</button>
+      </div>
+    </div>
+    <div class="title">Selecione os disjuntores (categorias)</div>
+    <div class="breakers" id="breakerList"></div>
+
+    <div class="title" style="margin-top:16px;">Banca</div>
+    <div class="banca-row" id="bancaRow">
+      <div class="banca-pill on" data-banca="Transpetro">TRANSPETRO / CESGRANRIO (múltipla escolha)</div>
+    </div>
+
+    <div class="title" style="margin-top:16px;">Modo de estudo</div>
+    <div class="mode-row" id="modeRow">
+      <div class="mode-pill on" data-mode="livre">Treino livre<br><span style="font-size:9px;opacity:.7;">sem tempo, revisa no seu ritmo</span></div>
+      <div class="mode-pill" data-mode="prova">Prova completa<br><span style="font-size:9px;opacity:.7;">cronometrada, simula o dia real</span></div>
+    </div>
+
+    <div class="exam-config" id="examConfig">
+      <div class="field">
+        <label>Nº de questões</label>
+        <select id="examQty">
+          <option value="20">20 questões</option>
+          <option value="40">40 questões</option>
+          <option value="60" selected>60 questões</option>
+          <option value="0">Todas as disponíveis</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tempo disponível</label>
+        <select id="examTime">
+          <option value="60">1 hora</option>
+          <option value="120">2 horas</option>
+          <option value="180">3 horas</option>
+          <option value="240" selected>4 horas</option>
+          <option value="0">Sem limite (só cronometra)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn">Energizar simulado ▸</button>
+  </div>
+
+  <div class="card" id="quizCard">
+    <div class="q-meta">
+      <div class="q-meta-top"><button class="back-btn" id="backToMenuBtn">← Voltar ao menu</button></div>
+      <div class="q-meta-bottom">
+        <span class="left-group"><span class="tag" id="qBanca"></span> <span id="qCategory"></span></span>
+        <span class="right-group">
+          <span class="timer-box" id="timerBox" style="display:none;">--:--</span>
+          <span id="qCounter"></span>
+        </span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="text-passage" id="textPassage" style="display:none;">
+      <div class="tp-label">Texto de referência</div>
+      <div id="textPassageBody"></div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="options" id="qOptions"></div>
+    <div class="feedback" id="feedback">
+      <div class="verdict" id="verdict"></div>
+      <div class="exp" id="exp"></div>
+    </div>
+    <button class="next-btn" id="nextBtn">Próxima questão ▸</button>
+    <button class="end-exam-btn" id="endExamBtn" style="display:none;margin-top:12px;margin-left:10px;">Encerrar prova agora</button>
+  </div>
+
+  <div class="summary" id="summaryCard">
+    <div class="brand-eyebrow">Simulado encerrado</div>
+    <div class="big-score" id="finalScore">0/0</div>
+    <div class="sub" id="finalPct">0% de aproveitamento</div>
+    <div class="summary-grid" id="summaryGrid"></div>
+    <button class="start-btn" id="restartBtn" style="max-width:280px;margin:24px auto 0;">Novo simulado ▸</button>
+  </div>
+
+  <footer>Questões originais, elaboradas no estilo e nível das bancas Cesgranrio e Cespe/Cebraspe para treino de concurso — não reproduzem provas oficiais.<br><span id="storageModeNote"></span></footer>
+</div>
+
+<script>
+// ---------- Question bank ----------
+const BANK = [
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"Segundo o texto, a segurança do trabalho em plataformas e terminais de óleo e gás:",
+   opts:["resume-se ao uso de equipamentos de proteção individual","envolve um conjunto de práticas de gestão de risco, além do uso de EPI","é responsabilidade exclusiva dos próprios trabalhadores","dispensa qualquer planejamento prévio de tarefas","aplica-se apenas a atividades em espaços confinados"],
+   correct:1, exp:"O texto afirma explicitamente que a segurança do trabalho 'não se resume ao uso de equipamentos de proteção individual', envolvendo um conjunto mais amplo de práticas de gestão de risco."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"No trecho 'um planejamento inadequado pode transformar uma tarefa rotineira em um acidente grave', a relação de sentido estabelecida é de:",
+   opts:["oposição","causa e consequência","finalidade","concessão","alternância"],
+   correct:1, exp:"O planejamento inadequado é apresentado como a causa que pode levar à consequência (transformar a tarefa em acidente)."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"Assinale a alternativa em que a concordância verbal está de acordo com a norma-padrão:",
+   opts:["Existem diversos riscos associados a atividades em espaços confinados.","Fazem anos que a NR-01 foi atualizada.","Deve haver, na equipe, técnicos qualificados, mas faltam eles serem convocados.","Aluga-se equipamentos de proteção para eventos temporários.","Houveram falhas registradas no último trimestre."],
+   correct:0, exp:"'Existir' é verbo pessoal e concorda normalmente com o sujeito ('existem riscos'). 'Fazer' e 'haver' indicando tempo/existência são impessoais e ficam no singular."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"Assinale a alternativa em que o acento indicativo de crase está de acordo com a norma-padrão:",
+   opts:["Os técnicos foram à campo verificar o problema.","A equipe está atenta à exposição dos trabalhadores a riscos.","Isso equivale à qualquer situação de risco.","Voltarei à trabalhar amanhã.","Chegou-se à conclusões precipitadas."],
+   correct:1, exp:"'Atenta à exposição' está correto (a + a, artigo feminino). As demais estão erradas: não há crase antes de palavra masculina, pronome indefinido, verbo no infinitivo, ou substantivo plural indeterminado."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"No trecho 'técnicos de segurança do trabalho atuam não apenas fiscalizando o cumprimento das normas, mas também orientando equipes', a estrutura 'não apenas... mas também' estabelece uma relação de:",
+   opts:["oposição excludente","adição, somando duas atribuições do técnico","condição","finalidade","causa"],
+   correct:1, exp:"A estrutura 'não apenas... mas também' soma duas atribuições (fiscalizar e orientar), sem excluir uma em favor da outra — é uma relação aditiva."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"Assinale a alternativa em que todas as palavras estão grafadas corretamente:",
+   opts:["O técnico ficou responsável pela exceção prevista no procedimento.","Foi preciso paralizar a atividade por risco iminente.","A equipe recebeu um previlégio especial na escala.","A empresa é benefiscente com os funcionários mais antigos.","Houve uma excessão na regra de segurança."],
+   correct:0, exp:"'Exceção' está correta. As demais têm erro: o correto é 'paralisar', 'privilégio', 'beneficente' e 'exceção'."},
+  {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T1",
+   q:"Quanto à tipologia textual, o texto classifica-se predominantemente como:",
+   opts:["narrativo, relatando uma sequência cronológica de fatos vividos por um narrador","dissertativo-expositivo, apresentando e explicando um conjunto de práticas e conceitos","descritivo, focado em características físicas de um ambiente","injuntivo, dando instruções passo a passo","poético, com finalidade estética"],
+   correct:1, exp:"O texto apresenta e explica conceitos (gestão de risco, APR, atuação do técnico) de forma organizada, sem narrar uma sequência de fatos vividos — é predominantemente dissertativo-expositivo."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Uma equipe de segurança precisa inspecionar 45 extintores em um terminal. Trabalhando em dupla, cada dupla inspeciona 5 extintores por hora. Quantas horas são necessárias para 3 duplas inspecionarem todos os extintores?",
+   opts:["2 horas","3 horas","4 horas","5 horas","6 horas"],
+   correct:1, exp:"3 duplas inspecionam 3×5=15 extintores/hora. Tempo = 45/15 = 3 horas."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Um treinamento de segurança tinha originalmente 40 participantes. Após 25% de desistências, quantos participantes restaram?",
+   opts:["10","25","28","30","35"],
+   correct:3, exp:"25% de 40 = 10 desistências. Restaram 40−10 = 30 participantes."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Em uma auditoria, 60% das não conformidades encontradas foram corrigidas em uma semana. Se ainda restam 20 não conformidades em aberto, o total de não conformidades encontradas inicialmente foi de:",
+   opts:["30","40","50","60","80"],
+   correct:2, exp:"Se 60% foram corrigidas, 40% (equivalente às 20 restantes) estão em aberto. 40% = 20 → total = 20/0,4 = 50."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Três equipes de segurança, com desempenho semelhante, registraram os seguintes números de inspeções concluídas em um mês: Equipe 1: 20 inspeções; Equipe 2: 20 inspeções; Equipe 3: 20 inspeções. Nessa distribuição, o desvio-padrão do número de inspeções entre as equipes é:",
+   opts:["0","5","10","15","20"],
+   correct:0, exp:"Como todos os valores são idênticos (20, 20 e 20), não há variação em torno da média, logo o desvio-padrão é igual a zero."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Considere as proposições P: 'O trabalhador está sem EPI' e Q: 'A atividade foi interrompida'. Se a proposição composta 'se P então Q' é verdadeira, e sabe-se que Q é falsa, pode-se concluir que:",
+   opts:["P é necessariamente verdadeira","P é necessariamente falsa","P pode ser verdadeira ou falsa, sem determinação","a atividade nunca foi interrompida","não é possível concluir nada sobre P sem mais informações"],
+   correct:1, exp:"Pela regra lógica do modus tollens: se 'P→Q' é verdadeira e Q é falsa, então P deve ser necessariamente falsa (senão a implicação seria violada)."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Uma empresa reduziu o número de acidentes de trabalho de 25 para 15 em um ano. A redução percentual, em relação ao valor inicial, foi de:",
+   opts:["25%","30%","40%","50%","60%"],
+   correct:2, exp:"Redução = 25−15=10. Percentual = 10/25 = 0,40 = 40%."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Um treinamento de NR-20 tem carga horária de 8 horas, distribuídas em 3 dias. Se o primeiro dia teve 3 horas e o segundo teve 2,5 horas, quantas horas teve o terceiro dia?",
+   opts:["1,5","2,0","2,5","3,0","3,5"],
+   correct:2, exp:"8 − 3 − 2,5 = 2,5 horas."},
+  {cat:"NR-01 — Gerenciamento de Riscos", banca:"Transpetro", type:"mc",
+   q:"Considerando-se a NR-1, o Microempreendedor Individual (MEI), a Microempresa (ME) e a Empresa de Pequeno Porte (EPP), de graus de risco 1 e 2, que declararem as informações digitais de acordo com essa norma e não identificarem exposições ocupacionais a agentes físicos, químicos, biológicos ou a fatores de risco ergonômicos, ficam dispensados da:",
+   opts:["elaboração do Programa de Controle Médico de Saúde Ocupacional (PCMSO)","elaboração do Programa de Gerenciamento de Riscos (PGR)","constituição da CIPA","realização de exames admissionais","comunicação de acidentes de trabalho, quando ocorrerem"],
+   correct:1, exp:"A NR-1 prevê essa dispensa da elaboração do PGR para MEI/ME/EPP de graus de risco 1 e 2 que declarem as informações digitais e não identifiquem exposição a esses agentes/fatores — as demais obrigações (como o PCMSO, quando aplicável) permanecem."},
+  {cat:"NR-01 — Gerenciamento de Riscos", banca:"Transpetro", type:"mc",
+   q:"Na hierarquia de medidas de controle de riscos prevista na NR-1, a ordem de prioridade, da mais para a menos eficaz, é:",
+   opts:["EPI, medidas administrativas, eliminação do risco, medidas de engenharia","eliminação do risco, medidas de engenharia (proteção coletiva), medidas administrativas, EPI","EPI, eliminação do risco, medidas administrativas, medidas de engenharia","medidas administrativas, EPI, eliminação do risco, medidas de engenharia","não há hierarquia definida, cabendo à empresa escolher livremente"],
+   correct:1, exp:"A hierarquia clássica de controle de riscos prioriza: eliminar o risco na origem, aplicar medidas de proteção coletiva/engenharia, depois medidas administrativas, e por último o EPI."},
+  {cat:"NR-01 — Gerenciamento de Riscos", banca:"Transpetro", type:"mc",
+   q:"O Programa de Gerenciamento de Riscos (PGR), previsto na NR-1, deve conter, no mínimo, os seguintes documentos:",
+   opts:["ficha de controle de EPI e atestado médico de saúde ocupacional","permissão de trabalho e ordem de serviço","avaliação ergonômica preliminar e programação de treinamentos","inventário de riscos e plano de ação","plano de resposta a emergências e análise de acidentes do trabalho"],
+   correct:3, exp:"A NR-1 estabelece que o PGR deve conter, no mínimo, o inventário de riscos (levantamento e classificação dos perigos) e o plano de ação (medidas de prevenção, prazos e responsáveis)."},
+  {cat:"NR-01 — Gerenciamento de Riscos", banca:"Transpetro", type:"mc",
+   q:"É competência do empregador, segundo a NR-1, entre outras obrigações:",
+   opts:["elaborar o PGR apenas para empresas com mais de 500 empregados","garantir a elaboração e a implementação do PGR, adotando as medidas de prevenção necessárias","dispensar a análise de riscos para atividades de curta duração","transferir integralmente a responsabilidade pela segurança aos próprios trabalhadores","aplicar o PGR apenas mediante solicitação da CIPA"],
+   correct:1, exp:"O empregador é responsável por garantir a elaboração e implementação do PGR e por adotar as medidas de prevenção necessárias, independentemente do porte da empresa."},
+  {cat:"NR-03 — Embargo e Interdição", banca:"Transpetro", type:"mc",
+   q:"Ao constatar a existência de risco grave e iminente à vida ou à saúde dos trabalhadores, o Auditor Fiscal do Trabalho, com base na NR-3, deve, para estabelecer o excesso de risco, seguir um processo composto por:",
+   opts:["uma única etapa, de constatação imediata","duas etapas, de identificação e comunicação","três etapas, envolvendo identificação, avaliação e comparação do risco com os limites de tolerância ou critérios técnicos aplicáveis","quatro etapas, incluindo consulta prévia ao empregador","cinco etapas, com aprovação de órgão colegiado"],
+   correct:2, exp:"A NR-3 prevê um processo estruturado em etapas (identificação do perigo, avaliação do risco e comparação com os parâmetros/limites aplicáveis) para que o Auditor Fiscal estabeleça tecnicamente o excesso de risco antes de embargar ou interditar."},
+  {cat:"NR-04 — SESMT", banca:"Transpetro", type:"mc",
+   q:"De acordo com a NR-4, o dimensionamento do Serviço Especializado em Segurança e Medicina do Trabalho (SESMT), incluindo o número de profissionais e a carga horária mínima de cada um (técnico de segurança, engenheiro de segurança, médico do trabalho etc.), é definido principalmente em função:",
+   opts:["exclusivamente do faturamento anual da empresa","do grau de risco da atividade econômica principal e do número total de empregados do estabelecimento","da idade média dos trabalhadores da empresa","apenas da localização geográfica do estabelecimento","do tempo de existência da empresa no mercado"],
+   correct:1, exp:"O dimensionamento do SESMT (quantidade e carga horária dos profissionais) segue quadro definido pela NR-4, baseado no grau de risco da atividade econômica principal do estabelecimento e no número de empregados."},
+  {cat:"NR-06 — Equipamento de Proteção Individual", banca:"Transpetro", type:"mc",
+   q:"Segundo a NR-6, em atmosferas com concentração de oxigênio inferior a 12,5% ao nível do mar, um dos tipos de respirador de adução de ar recomendado é o de:",
+   opts:["filtro mecânico simples, sem qualquer suprimento de ar externo","demanda com pressão positiva, com peça facial inteira, combinado com cilindro auxiliar para fuga","filtro químico descartável","peça semifacial sem qualquer cilindro auxiliar","máscara cirúrgica comum"],
+   correct:1, exp:"Em atmosferas com deficiência severa de oxigênio, a NR-6 recomenda respiradores de adução de ar (linha de ar comprimido) de demanda com pressão positiva, com peça facial inteira e cilindro auxiliar para fuga, garantindo suprimento de ar respirável e rota de escape segura."},
+  {cat:"NR-06 — Equipamento de Proteção Individual", banca:"Transpetro", type:"mc",
+   q:"Um técnico de segurança do trabalho, ao analisar um inventário de riscos, identifica a necessidade de um EPI para proteção contra impactos de quedas de objetos sobre os artelhos (dedos dos pés) dos trabalhadores. Segundo a NR-6, esse EPI destina-se à proteção:",
+   opts:["da face","da cabeça","do tronco","dos membros inferiores","dos membros superiores"],
+   correct:3, exp:"Os artelhos (dedos dos pés) fazem parte dos membros inferiores; nesse caso, o EPI indicado seria um calçado de segurança com biqueira de proteção, classificado na categoria de proteção dos membros inferiores."},
+  {cat:"NR-06 — Equipamento de Proteção Individual", banca:"Transpetro", type:"mc",
+   q:"Segundo a NR-6, é uma das competências dos fabricantes e/ou importadores de EPI:",
+   opts:["fiscalizar diretamente o uso do EPI no ambiente de trabalho do cliente","orientar e treinar o empregado no uso do EPI","comunicar ao órgão nacional competente em matéria de segurança e saúde no trabalho qualquer irregularidade observada no EPI que fabricam ou importam","substituir a responsabilidade do empregador pelo fornecimento do EPI","determinar unilateralmente quais EPIs cada empresa deve utilizar"],
+   correct:2, exp:"Entre as competências dos fabricantes/importadores de EPI está a de comunicar ao órgão nacional competente em segurança e saúde no trabalho qualquer irregularidade constatada no equipamento que produzem ou importam."},
+  {cat:"NR-07 — PCMSO", banca:"Transpetro", type:"mc",
+   q:"A NR-7 exige que determinadas empresas incluam um relatório analítico no Programa de Controle Médico de Saúde Ocupacional (PCMSO). Esse relatório analítico deve ser elaborado com periodicidade:",
+   opts:["mensal","trimestral","semestral","anual","bienal"],
+   correct:3, exp:"O relatório analítico do PCMSO, quando exigido, deve ser elaborado anualmente, compilando as informações coletadas ao longo do período para orientar ações de prevenção."},
+  {cat:"NR-07 — PCMSO", banca:"Transpetro", type:"mc",
+   q:"Uma das diretrizes do PCMSO, conforme a NR-7, é que esse programa deve:",
+   opts:["afastar automaticamente qualquer empregado com agravo à saúde, independentemente da avaliação médica","exigir exames médicos anuais para todos os funcionários, sem exceção","subsidiar a implantação e o monitoramento da eficácia das medidas de prevenção adotadas na organização, a partir dos exames e resultados obtidos","substituir integralmente o Programa de Gerenciamento de Riscos (PGR)","aplicar-se apenas a empresas com mais de 100 empregados"],
+   correct:2, exp:"Uma diretriz central do PCMSO é subsidiar (fornecer subsídios para) a implantação e o acompanhamento da eficácia das medidas de prevenção da organização, a partir do monitoramento da saúde dos trabalhadores."},
+  {cat:"NR-07 — PCMSO", banca:"Transpetro", type:"mc",
+   q:"Segundo a NR-7, quando um empregado retorna ao trabalho após afastamento por período igual ou superior a 15 dias por motivo de doença ou acidente, mesmo que não relacionado ao trabalho, deve ser realizado:",
+   opts:["apenas um questionário de autoavaliação, sem exame clínico","o exame clínico, antes que o empregado reassuma suas funções","exame exclusivamente laboratorial, dispensando avaliação clínica","nenhum procedimento adicional, bastando a liberação do médico assistente externo","apenas a atualização cadastral no RH, sem envolvimento do PCMSO"],
+   correct:1, exp:"A NR-7 prevê a realização do exame clínico de retorno ao trabalho antes que o empregado reassuma suas funções, quando o afastamento (por qualquer motivo de doença ou acidente) for igual ou superior a 15 dias."},
+  {cat:"NR-10 — Segurança em Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Considere a seguinte definição prevista na NR-10: 'trabalho durante o qual o trabalhador pode entrar na zona controlada, ainda que seja com uma parte do seu corpo ou com extensões condutoras, representadas por materiais, ferramentas ou equipamentos que manipule.' Essa definição corresponde ao trabalho:",
+   opts:["perigoso","em proximidade","em linha viva","de risco","não classificado"],
+   correct:1, exp:"Essa é a definição de 'trabalho em proximidade' prevista na NR-10: aquele em que o trabalhador (ou algo que ele manipule) pode adentrar a zona controlada ao redor de uma parte energizada."},
+  {cat:"NR-11 — Transporte, Movimentação e Armazenagem de Materiais", banca:"Transpetro", type:"mc",
+   q:"A NR-11 estabelece requisitos de segurança para o transporte, a movimentação, a armazenagem e o manuseio de materiais. Em relação ao transporte manual individual de cargas, essa norma estabelece limitações relacionadas, entre outros fatores, a:",
+   opts:["exclusivamente à cor da embalagem do material transportado","ao peso da carga, à distância percorrida e às condições do trajeto (como vãos estreitos ou desníveis)","apenas ao horário do dia em que a atividade é realizada","exclusivamente à nacionalidade do trabalhador","apenas ao tipo de calçado utilizado, independentemente do peso"],
+   correct:1, exp:"A NR-11 considera fatores como o peso da carga, a distância a ser percorrida e as condições do trajeto (obstáculos, vãos estreitos, desníveis) para avaliar a conformidade do transporte manual de materiais."},
+  {cat:"NR-13 — Caldeiras, Vasos de Pressão e Tubulações", banca:"Transpetro", type:"mc",
+   q:"Para os propósitos da NR-13, as caldeiras da categoria A são aquelas cuja pressão de operação (PMTA), em kPa, é igual ou superior a:",
+   opts:["60","196","610","1.960","2.060"],
+   correct:3, exp:"A NR-13 classifica como categoria A as caldeiras com pressão de operação igual ou superior a 1.960 kPa (aproximadamente 19,98 kgf/cm²), exigindo os requisitos mais rigorosos de inspeção entre as categorias."},
+  {cat:"NR-13 — Caldeiras, Vasos de Pressão e Tubulações", banca:"Transpetro", type:"mc",
+   q:"Um dos dispositivos de segurança obrigatórios em caldeiras, segundo a NR-13, é a válvula de segurança, cuja função é:",
+   opts:["aumentar a pressão interna da caldeira quando necessário","aliviar automaticamente o excesso de pressão, evitando que ultrapasse os limites seguros de operação","medir apenas a temperatura da água de alimentação","substituir o indicador de nível de água","funcionar exclusivamente durante a partida da caldeira"],
+   correct:1, exp:"A válvula de segurança abre automaticamente quando a pressão interna ultrapassa um valor predeterminado, aliviando o excesso e prevenindo uma ruptura ou explosão."},
+  {cat:"NR-15 — Atividades e Operações Insalubres", banca:"Transpetro", type:"mc",
+   q:"Segundo o Anexo 1 da NR-15, os níveis de ruído contínuo ou intermitente devem ser medidos em decibéis (dB), com instrumento de nível de pressão sonora operando no:",
+   opts:["circuito de compensação A e no circuito de resposta lenta (SLOW)","circuito de compensação B e no circuito de resposta lenta (SLOW)","circuito de compensação C e no circuito de resposta rápida (FAST)","circuito de compensação C e no circuito de resposta lenta (SLOW)","circuito de compensação A e no circuito de resposta rápida (FAST)"],
+   correct:0, exp:"A NR-15 (Anexo 1) estabelece que a medição de ruído contínuo ou intermitente deve ser feita com o instrumento operando no circuito de compensação A (dB(A)) e na resposta lenta (SLOW), padrão utilizado para avaliar a exposição ocupacional ao ruído."},
+  {cat:"NR-17 — Ergonomia", banca:"Transpetro", type:"mc",
+   q:"A NR-17 estabelece requisitos para os assentos utilizados nos postos de trabalho. Um desses requisitos, para as empresas em que os trabalhadores exercem suas atividades em pé, é que devem ser obrigatoriamente disponibilizados assentos com:",
+   opts:["borda frontal arredondada, exclusivamente","sistemas de ajustes e manuseio acessíveis, exclusivamente","encosto com forma adaptada à região lombar, exclusivamente","altura ajustável à estatura do trabalhador e à natureza da função exercida","encosto apenas para uso durante as pausas, sem outros requisitos"],
+   correct:3, exp:"Entre os requisitos da NR-17 para assentos em postos de trabalho onde a atividade é predominantemente em pé, está a disponibilização de assentos com altura ajustável à estatura do trabalhador e à natureza da função."},
+  {cat:"NR-17 — Ergonomia", banca:"Transpetro", type:"mc",
+   q:"De acordo com a NR-17, as organizações devem realizar a Análise Ergonômica do Trabalho (AET) quando:",
+   opts:["ocorrer qualquer mudança na gestão de riscos da empresa, independentemente do tipo","um novo funcionário for contratado, independentemente do cargo","forem identificadas inadequações ou insuficiência das ações de prevenção adotadas","houver qualquer acidente de trabalho, independentemente das causas","a empresa não se enquadrar como microempreendedor individual, independentemente do grau de risco"],
+   correct:2, exp:"A NR-17 prevê a realização da AET, entre outras situações, quando forem identificadas inadequações ou insuficiência das medidas de prevenção já adotadas, indicando a necessidade de uma análise mais aprofundada."},
+  {cat:"NR-17 — Ergonomia", banca:"Transpetro", type:"mc",
+   q:"Em relação ao levantamento, manuseio e transporte manual de cargas, a NR-17 estabelece medidas de prevenção como meios técnicos facilitadores e limitação da duração/frequência de movimentos. Em relação a pausas durante essa atividade, a norma estabelece que:",
+   opts:["não há qualquer exigência de pausas, cabendo à empresa decidir livremente","a alternância com outras atividades ou pausas deve ocorrer em intervalos que não ultrapassem um limite máximo definido pela norma entre períodos de exposição contínua","pausas são proibidas, pois reduzem a produtividade","apenas trabalhadoras gestantes têm direito a pausas nessa atividade","pausas só são exigidas em temperaturas acima de 30°C"],
+   correct:1, exp:"A NR-17 prevê que sejam adotadas medidas como alternância de atividades ou pausas, de modo que o período de exposição contínua ao levantamento/transporte manual de cargas não ultrapasse um limite de tempo definido pela norma."},
+  {cat:"NR-17 — Ergonomia", banca:"Transpetro", type:"mc",
+   q:"A NR-17 estabelece que as organizações devem adotar medidas para proporcionar condições de conforto em atividades que exijam manutenção da solicitação intelectual e atenção constantes. Entre essas medidas está:",
+   opts:["a disponibilização obrigatória de restaurante climatizado no próprio local de trabalho","promover o conforto acústico e térmico nos ambientes de trabalho, além de iluminação adequada","a instalação de elevadores de passageiros em qualquer prédio com mais de um pavimento","o fornecimento obrigatório de transporte para todos os trabalhadores, em qualquer situação","a disponibilização de bebidas e lanches gratuitos, exclusivamente"],
+   correct:1, exp:"Entre as medidas de conforto previstas pela NR-17 para atividades que exigem atenção e solicitação intelectual constantes está a promoção do conforto acústico, térmico e da iluminação adequada no ambiente de trabalho."},
+  {cat:"NR-20 — Inflamáveis e Combustíveis", banca:"Transpetro", type:"mc",
+   q:"Segundo a NR-20, os líquidos que se equiparam a líquidos inflamáveis são aqueles que possuem ponto de fulgor:",
+   opts:["inferior a 30°C, quando armazenados e transferidos aquecidos a temperaturas iguais ou superiores ao seu ponto de fulgor","entre 30°C e 60°C, em qualquer condição de armazenamento","superior a 60°C, quando armazenados e transferidos aquecidos a temperaturas iguais ou superiores ao seu ponto de fulgor","superior a 60°C e inferior a 93°C, em qualquer condição","superior a 93°C, em qualquer condição"],
+   correct:2, exp:"Segundo a NR-20, líquidos combustíveis com ponto de fulgor superior a 60°C, quando armazenados ou transferidos aquecidos a temperaturas iguais ou superiores a esse ponto de fulgor, equiparam-se a líquidos inflamáveis quanto ao risco."},
+  {cat:"NR-20 — Inflamáveis e Combustíveis", banca:"Transpetro", type:"mc",
+   q:"Um estabelecimento armazena, em temperatura ambiente, grande quantidade de um produto petroquímico cujo ponto de fulgor é inferior a -18°C (vaso fechado). Considerando as definições da NR-20, esse produto pode ser classificado como:",
+   opts:["gás inflamável","líquido inflamável","sólido inflamável","material radioativo","líquido combustível"],
+   correct:1, exp:"Um líquido com ponto de fulgor muito baixo (inferior a -18°C, neste caso) libera vapores inflamáveis já em temperatura ambiente, sendo classificado pela NR-20 como líquido inflamável."},
+  {cat:"NR-20 — Inflamáveis e Combustíveis", banca:"Transpetro", type:"mc",
+   q:"Em caso de vazamento, incêndio ou explosão envolvendo inflamáveis e líquidos combustíveis, a NR-20 estabelece que o empregador deve comunicar à unidade descentralizada do Sistema Federal de Inspeção do Trabalho e ao sindicato da categoria profissional predominante no estabelecimento:",
+   opts:["apenas se houver morte de um trabalhador","apenas quando houver ferimentos graves em decorrência de explosão","sempre que ocorrer qualquer vazamento, por menor que seja, nas instalações","quando o acionamento do plano de resposta a emergências tiver requerido medidas de intervenção e controle de grande magnitude","apenas mediante solicitação expressa do Ministério Público do Trabalho"],
+   correct:3, exp:"A NR-20 prevê essa comunicação obrigatória especificamente quando o acionamento do plano de resposta a emergências tiver requerido medidas de intervenção e controle de grande magnitude, e não para qualquer ocorrência menor."},
+  {cat:"NR-23 — Proteção Contra Incêndios", banca:"Transpetro", type:"mc",
+   q:"A NR-23 estabelece que a organização deve providenciar, para todos os trabalhadores, informações sobre:",
+   opts:["primeiros socorros, apenas","primeiros socorros e dispositivos de alarme existentes, apenas","primeiros socorros, procedimentos de resposta aos cenários de emergência, evacuação dos locais de trabalho com segurança e dispositivos de alarme existentes","apenas a localização dos extintores no prédio","apenas o número de telefone do corpo de bombeiros local"],
+   correct:2, exp:"A NR-23 exige que a organização informe os trabalhadores sobre um conjunto mais amplo de aspectos: primeiros socorros, procedimentos de resposta às emergências, evacuação segura dos locais de trabalho e os dispositivos de alarme existentes."},
+  {cat:"NR-33 — Espaços Confinados", banca:"Transpetro", type:"mc",
+   q:"De acordo com a NR-33, é considerada atmosfera perigosa, em um espaço confinado, aquela que apresenta a seguinte condição:",
+   opts:["pressão atmosférica normal, ao nível do mar","temperatura amena, entre 20°C e 25°C","deficiência ou enriquecimento da concentração de oxigênio, fora dos limites considerados seguros","iluminação artificial exclusivamente","presença de qualquer trabalhador treinado em seu interior"],
+   correct:2, exp:"A NR-33 caracteriza como atmosfera perigosa, entre outras condições, a deficiência ou o enriquecimento da concentração de oxigênio (fora da faixa segura), além da presença de inflamáveis, explosivos ou substâncias tóxicas acima dos limites de tolerância."},
+  {cat:"Segurança no Trânsito (CTB)", banca:"Transpetro", type:"mc",
+   q:"O Código de Trânsito Brasileiro estabelece regras específicas para motoristas profissionais. O tempo máximo que um motorista profissional pode dirigir de maneira ininterrupta veículos de transporte rodoviário coletivo de passageiros ou de cargas é de:",
+   opts:["quatro horas e meia","cinco horas","cinco horas e meia","seis horas","seis horas e meia"],
+   correct:2, exp:"Segundo as regras aplicáveis a motoristas profissionais no CTB, o tempo máximo de direção ininterrupta é de cinco horas e meia, após o qual é obrigatório um intervalo de descanso."},
+  {cat:"Estatísticas de Acidentes do Trabalho", banca:"Transpetro", type:"mc",
+   q:"Em uma unidade industrial, ocorreram, em um determinado mês, 4 acidentes de trabalho com afastamento, totalizando 250.000 horas-homem de exposição ao risco no período. Sabendo-se que a taxa de frequência de acidentes é calculada por (número de acidentes × 1.000.000) / horas-homem de exposição, a taxa de frequência dessa unidade nesse mês foi de:",
+   opts:["8","12","16","20","24"],
+   correct:2, exp:"Taxa de frequência = (4 × 1.000.000) / 250.000 = 4.000.000/250.000 = 16."},
+  {cat:"Primeiros Socorros", banca:"Transpetro", type:"mc",
+   q:"Um grupo de pessoas encontra-se em torno de um indivíduo caído no chão, consciente, mas sem que seja possível identificar de imediato a extensão de seus ferimentos. Considerando os princípios básicos dos primeiros socorros, a primeira conduta adequada de quem for prestar socorro deve ser:",
+   opts:["aplicar curativos imediatamente nos ferimentos visíveis, antes de qualquer outra ação","afastar curiosos, avaliar a cena e a responsividade da vítima com cuidado, sem movê-la desnecessariamente, e acionar o socorro especializado","iniciar imediatamente manobras de reanimação cardiopulmonar (RCP), independentemente do estado de consciência da vítima","mover a vítima rapidamente para um local mais confortável","obter o máximo de informações possível sobre o ocorrido antes de qualquer avaliação da vítima"],
+   correct:1, exp:"A conduta inicial recomendada é avaliar a cena com segurança, checar a responsividade da vítima sem movê-la desnecessariamente (risco de agravar lesões, especialmente na coluna) e acionar o socorro especializado."},
+  {cat:"Primeiros Socorros", banca:"Transpetro", type:"mc",
+   q:"A sigla OVACE, comumente utilizada em primeiros socorros, refere-se a:",
+   opts:["obstrução das vias aéreas por colapso esofágico","obstrução das vias aéreas por corpo estranho, geralmente localizado na laringe ou traqueia","oclusão das vias aéreas por contração espasmódica muscular","oxigenação das vias aéreas por compressão externa","overdose de vias aéreas por ingestão de substâncias"],
+   correct:1, exp:"OVACE significa Obstrução das Vias Aéreas por Corpo Estranho, situação em que um objeto ou alimento bloqueia parcial ou totalmente a passagem de ar, geralmente na laringe ou traqueia."},
+  {cat:"Comunicação de Acidente de Trabalho (CAT)", banca:"Transpetro", type:"mc",
+   q:"A legislação previdenciária estabelece que a Comunicação de Acidente de Trabalho (CAT) deve ser registrada e encaminhada:",
+   opts:["até o primeiro dia útil do mês seguinte ao término da investigação do acidente","até o primeiro dia útil seguinte ao da ocorrência, exceto em caso de morte do acidentado, quando deve ser registrada e encaminhada imediatamente","até o 15º dia útil após o retorno do acidentado ao trabalho","ao final do dia em que ocorreu o acidente, em qualquer circunstância","no primeiro dia útil do mês subsequente ao do acidente"],
+   correct:1, exp:"A CAT deve ser registrada e encaminhada até o primeiro dia útil seguinte ao da ocorrência do acidente; em caso de morte do trabalhador, a comunicação deve ser feita de imediato à autoridade competente."},
+  {cat:"Agentes de Risco e Doenças Ocupacionais", banca:"Transpetro", type:"mc",
+   q:"A síndrome de Raynaud, distúrbio que acomete os vasos sanguíneos das porções distais do corpo (dedos, orelhas, nariz), pode ser ocasionada, entre outros, por exposição ocupacional a:",
+   opts:["vibração localizada","radiação ionizante","radiação não ionizante","pressão anormal","ruído ocupacional"],
+   correct:0, exp:"A exposição ocupacional à vibração localizada (por exemplo, no uso prolongado de ferramentas manuais vibratórias) é um dos fatores de risco associados ao desenvolvimento da síndrome de Raynaud (também chamada de 'dedo branco induzido por vibração')."},
+  {cat:"Combate a Incêndios", banca:"Transpetro", type:"mc",
+   q:"Em relação à origem, à propagação e à extinção de incêndios, assinale a afirmativa que NÃO está correta:",
+   opts:["a propagação de incêndios pode ocorrer por condução, por convecção ou por irradiação","a propagação de um incêndio ocorre pela transmissão de calor para outra parte do combustível ainda não incendiado, ou para outro combustível próximo","improvisações em instalações elétricas são responsáveis por uma parcela significativa dos incêndios","o isolamento (retirada do combustível do ambiente) é um dos métodos de extinção de incêndio","o nitrogênio, elemento abundante na atmosfera, reage quimicamente com o combustível durante a queima, participando ativamente da combustão"],
+   correct:4, exp:"A afirmativa (E) está incorreta: o nitrogênio é um gás inerte, que NÃO participa quimicamente da reação de combustão — pelo contrário, é frequentemente utilizado como agente de abafamento/extinção justamente por não alimentar o fogo."},
+  {cat:"Controle de Riscos Ocupacionais", banca:"Transpetro", type:"mc",
+   q:"É obrigação das organizações implementar ações de controle de riscos preferencialmente na própria fonte onde esses riscos se originam. Uma das opções de controle de risco na fonte é:",
+   opts:["a alternância e a rotatividade dos trabalhadores, limitando o tempo de exposição individual","a adequação de equipamentos e processos, tornando-os mais seguros ou automatizados, reduzindo a geração do risco na origem","a disponibilização de sistemas de alarme para emergências","a implementação do PCMSO","a utilização de EPI pelos trabalhadores expostos"],
+   correct:1, exp:"Controlar o risco 'na fonte' significa atuar na origem do problema — por exemplo, adequando equipamentos e processos para que gerem menos risco. As demais opções listadas atuam em etapas posteriores (organização do trabalho, monitoramento de saúde ou proteção individual), não na fonte."},
+];
+
+const TEXTS = {
+  T1: "Em plataformas e terminais de óleo e gás, a segurança do trabalho não se resume ao uso de equipamentos de proteção individual. Ela envolve um conjunto de práticas de gestão de risco, como a identificação prévia de perigos antes do início de uma tarefa, a análise preliminar de risco (APR) e o acompanhamento constante das condições do ambiente de trabalho. Em atividades como entrada em espaços confinados, trabalho em altura ou operações com produtos inflamáveis, um planejamento inadequado pode transformar uma tarefa rotineira em um acidente grave. Por isso, técnicos de segurança do trabalho atuam não apenas fiscalizando o cumprimento das normas, mas também orientando equipes e participando da elaboração de procedimentos que reduzam a exposição dos trabalhadores a riscos evitáveis."
+};
+
+// ---------- State ----------
+const CATEGORIES = [...new Set(BANK.map(q=>q.cat))];
+let activeCats = new Set(CATEGORIES);
+let activeBancas = new Set(["Transpetro"]);
+let studyMode = "livre"; // "livre" | "prova"
+let session = null; // {questions, idx, correct, results:{cat:{c,t}}}
+let history = null;
+let timerInterval = null;
+let timeRemainingSec = 0;
+
+const HKEY = "seguranca-quiz-history";
+const SKEY = "seguranca-quiz-inprogress";
+
+// window.storage only exists inside Claude's artifact viewer. When this file is
+// downloaded and opened directly in a browser, we fall back to localStorage so
+// progress still persists between visits on the same device/browser.
+const hasClaudeStorage = (typeof window.storage !== 'undefined' && window.storage !== null);
+
+async function storageGet(key){
+  if(hasClaudeStorage){
+    try{ const r = await window.storage.get(key, false); return r ? r.value : null; }
+    catch(e){ return null; }
+  }
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+async function storageSet(key, value){
+  if(hasClaudeStorage){
+    try{ await window.storage.set(key, value, false); return true; }catch(e){ return false; }
+  }
+  try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
+}
+async function storageDelete(key){
+  if(hasClaudeStorage){
+    try{ await window.storage.delete(key, false); }catch(e){}
+    return;
+  }
+  try{ localStorage.removeItem(key); }catch(e){}
+}
+
+async function loadHistory(){
+  try{
+    const raw = await storageGet(HKEY);
+    history = raw ? JSON.parse(raw) : {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
+    if(!history.byBanca) history.byBanca = {};
+    if(!history.sessions) history.sessions = [];
+  }catch(e){
+    history = {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
+  }
+  renderHistory();
+}
+async function saveHistory(){
+  await storageSet(HKEY, JSON.stringify(history));
+}
+
+async function saveSessionState(){
+  if(!session) return;
+  await storageSet(SKEY, JSON.stringify({
+    session, studyMode, timeRemainingSec,
+    timerVisible: document.getElementById('timerBox').style.display !== 'none'
+  }));
+}
+async function clearSessionState(){
+  await storageDelete(SKEY);
+}
+async function checkForSavedSession(){
+  try{
+    const raw = await storageGet(SKEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(!saved.session || saved.session.idx >= saved.session.questions.length) return;
+    pendingResume = saved;
+    document.getElementById('resumeProgress').textContent =
+      `${saved.session.idx+1} de ${saved.session.questions.length}`;
+    document.getElementById('resumeBanner').classList.add('show');
+  }catch(e){
+    // no saved session, nothing to do
+  }
+}
+let pendingResume = null;
+
+function renderBreakers(){
+  const list = document.getElementById('breakerList');
+  list.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const div = document.createElement('div');
+    div.className = 'breaker on';
+    div.dataset.cat = cat;
+    const h = (history && history.byCat[cat]) || {c:0,t:0};
+    const pct = h.t ? Math.round(100*h.c/h.t) : null;
+    div.innerHTML = `<div class="switch"></div><div><div class="name">${cat}</div><div class="stat">${pct===null?'sem histórico':pct+'% acerto ('+h.t+' resp.)'}</div></div>`;
+    div.onclick = ()=>{
+      div.classList.toggle('on');
+      if(div.classList.contains('on')) activeCats.add(cat); else activeCats.delete(cat);
+    };
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('bancaRow').addEventListener('click', (e)=>{
+  const pill = e.target.closest('.banca-pill');
+  if(!pill) return;
+  pill.classList.toggle('on');
+  const b = pill.dataset.banca;
+  if(pill.classList.contains('on')) activeBancas.add(b); else activeBancas.delete(b);
+});
+
+document.getElementById('modeRow').addEventListener('click', (e)=>{
+  const pill = e.target.closest('.mode-pill');
+  if(!pill) return;
+  document.querySelectorAll('.mode-pill').forEach(p=>p.classList.remove('on'));
+  pill.classList.add('on');
+  studyMode = pill.dataset.mode;
+  document.getElementById('examConfig').classList.toggle('show', studyMode === 'prova');
+  document.getElementById('startBtn').textContent = studyMode === 'prova'
+    ? 'Iniciar prova cronometrada ▸'
+    : 'Energizar simulado ▸';
+});
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+document.getElementById('startBtn').onclick = ()=>{
+  const pool = BANK.filter(q=>activeCats.has(q.cat) && activeBancas.has(q.banca));
+  if(pool.length === 0){ alert('Selecione ao menos uma categoria e uma banca.'); return; }
+
+  let questions = shuffle(pool);
+  if(studyMode === 'prova'){
+    const qty = parseInt(document.getElementById('examQty').value, 10);
+    if(qty > 0) questions = questions.slice(0, Math.min(qty, questions.length));
+  }
+
+  session = {
+    questions,
+    idx: 0,
+    correct: 0,
+    results: {}
+  };
+  document.getElementById('setupPanel').style.display = 'none';
+  document.getElementById('summaryCard').classList.remove('active');
+  document.getElementById('quizCard').classList.add('active');
+
+  const timerBox = document.getElementById('timerBox');
+  const endBtn = document.getElementById('endExamBtn');
+  clearInterval(timerInterval);
+  if(studyMode === 'prova'){
+    const timeMin = parseInt(document.getElementById('examTime').value, 10);
+    endBtn.style.display = 'inline-block';
+    if(timeMin > 0){
+      timeRemainingSec = timeMin * 60;
+      timerBox.style.display = 'inline-block';
+      updateTimerDisplay();
+      timerInterval = setInterval(()=>{
+        timeRemainingSec--;
+        updateTimerDisplay();
+        if(timeRemainingSec <= 0){
+          clearInterval(timerInterval);
+          finishSession();
+        }
+      }, 1000);
+    } else {
+      timerBox.style.display = 'none';
+    }
+  } else {
+    endBtn.style.display = 'none';
+    timerBox.style.display = 'none';
+  }
+
+  renderQuestion();
+  saveSessionState();
+};
+
+function updateTimerDisplay(){
+  const timerBox = document.getElementById('timerBox');
+  const m = Math.floor(timeRemainingSec/60);
+  const s = timeRemainingSec%60;
+  timerBox.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  timerBox.classList.remove('warn','crit');
+  if(timeRemainingSec <= 60) timerBox.classList.add('crit');
+  else if(timeRemainingSec <= 300) timerBox.classList.add('warn');
+}
+
+document.getElementById('endExamBtn').onclick = ()=>{
+  if(!confirm('Encerrar a prova agora? As questões não respondidas ficarão de fora da pontuação.')) return;
+  clearInterval(timerInterval);
+  finishSession();
+};
+
+function renderQuestion(){
+  const q = session.questions[session.idx];
+  document.getElementById('qBanca').textContent = q.banca;
+  document.getElementById('qCategory').textContent = q.cat;
+  document.getElementById('qCounter').textContent = `${session.idx+1} / ${session.questions.length}`;
+  document.getElementById('progressFill').style.width = `${100*session.idx/session.questions.length}%`;
+  document.getElementById('qText').textContent = q.q;
+
+  const tp = document.getElementById('textPassage');
+  if(q.textRef && TEXTS[q.textRef]){
+    tp.style.display = 'block';
+    document.getElementById('textPassageBody').textContent = TEXTS[q.textRef];
+  } else {
+    tp.style.display = 'none';
+  }
+
+  document.getElementById('feedback').classList.remove('show','ok','bad');
+  document.getElementById('nextBtn').classList.remove('show');
+
+  const optsDiv = document.getElementById('qOptions');
+  optsDiv.innerHTML = '';
+
+  const correctIdx = (typeof q.correctFix === 'number') ? q.correctFix : q.correct;
+
+  if(q.type === 'mc'){
+    q.opts.forEach((opt,i)=>{
+      const letter = String.fromCharCode(65+i);
+      const div = document.createElement('div');
+      div.className = 'opt';
+      div.innerHTML = `<span class="letter">${letter}</span><span>${opt}</span>`;
+      div.onclick = ()=>answer(i, correctIdx, q);
+      optsDiv.appendChild(div);
+    });
+  } else {
+    ['Certo','Errado'].forEach((label,i)=>{
+      const val = (i===0);
+      const div = document.createElement('div');
+      div.className = 'opt';
+      div.innerHTML = `<span class="letter">${label==='Certo'?'C':'E'}</span><span>${label}</span>`;
+      div.onclick = ()=>answer(val, q.correct, q);
+      optsDiv.appendChild(div);
+    });
+  }
+}
+
+function answer(given, correct, q){
+  const opts = document.querySelectorAll('#qOptions .opt');
+  opts.forEach(o=>o.classList.add('locked'));
+
+  let isRight;
+  if(q.type === 'mc'){
+    isRight = given === correct;
+    opts[correct].classList.add('correct');
+    if(!isRight) opts[given].classList.add('wrong');
+  } else {
+    isRight = given === correct;
+    const idx = correct ? 0 : 1;
+    opts[idx].classList.add('correct');
+    if(!isRight) opts[given?0:1].classList.add('wrong');
+  }
+
+  if(!session.results[q.cat]) session.results[q.cat] = {c:0,t:0};
+  session.results[q.cat].t++;
+  if(isRight){ session.correct++; session.results[q.cat].c++; }
+
+  if(!history.byCat[q.cat]) history.byCat[q.cat] = {c:0,t:0};
+  history.byCat[q.cat].t++;
+  if(!history.byBanca[q.banca]) history.byBanca[q.banca] = {c:0,t:0};
+  history.byBanca[q.banca].t++;
+  history.totalAnswered++;
+  if(isRight){ history.byCat[q.cat].c++; history.byBanca[q.banca].c++; history.totalCorrect++; }
+  saveHistory();
+  updateOverallStat();
+  saveSessionState();
+
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show', isRight ? 'ok':'bad');
+  document.getElementById('verdict').textContent = isRight ? '✓ CORRETO' : '✗ INCORRETO';
+  document.getElementById('exp').textContent = q.exp;
+
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+document.getElementById('nextBtn').onclick = ()=>{
+  session.idx++;
+  if(session.idx >= session.questions.length){
+    finishSession();
+  } else {
+    renderQuestion();
+    saveSessionState();
+  }
+};
+
+function finishSession(){
+  clearInterval(timerInterval);
+  clearSessionState();
+
+  const answeredCount = Object.values(session.results).reduce((s,r)=>s+r.t,0);
+  history.sessions.unshift({
+    date: new Date().toISOString(),
+    correct: session.correct,
+    total: answeredCount,
+    mode: studyMode
+  });
+  history.sessions = history.sessions.slice(0, 15);
+  saveHistory();
+
+  document.getElementById('quizCard').classList.remove('active');
+  document.getElementById('summaryCard').classList.add('active');
+  document.getElementById('finalScore').textContent = `${session.correct}/${session.questions.length}`;
+  const pct = Math.round(100*session.correct/session.questions.length);
+  document.getElementById('finalPct').textContent = `${pct}% de aproveitamento nesta sessão`;
+
+  const grid = document.getElementById('summaryGrid');
+  grid.innerHTML = '';
+  Object.entries(session.results).forEach(([cat,r])=>{
+    const p = Math.round(100*r.c/r.t);
+    const cls = p>=70?'good':(p>=50?'mid':'low');
+    const div = document.createElement('div');
+    div.className = 'summary-item';
+    div.innerHTML = `<div class="cat">${cat}</div><div class="val ${cls}">${r.c}/${r.t} · ${p}%</div>`;
+    grid.appendChild(div);
+  });
+  renderHistory();
+  renderBreakers();
+}
+
+document.getElementById('restartBtn').onclick = ()=>{
+  document.getElementById('summaryCard').classList.remove('active');
+  document.getElementById('setupPanel').style.display = 'block';
+};
+
+function renderHistory(){
+  updateOverallStat();
+}
+
+function updateOverallStat(){
+  const el = document.getElementById('overallStat');
+  if(!history || history.totalAnswered===0){ el.textContent = '--%'; return; }
+  const p = Math.round(100*history.totalCorrect/history.totalAnswered);
+  el.textContent = p + '%';
+}
+
+document.getElementById('resetHistory').onclick = async ()=>{
+  if(!confirm('Zerar todo o histórico acumulado de desempenho e as últimas sessões?')) return;
+  history = {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
+  await saveHistory();
+  updateOverallStat();
+  renderBreakers();
+  renderDashboard();
+};
+
+document.getElementById('resumeBtn').onclick = ()=>{
+  if(!pendingResume) return;
+  session = pendingResume.session;
+  studyMode = pendingResume.studyMode;
+  timeRemainingSec = pendingResume.timeRemainingSec || 0;
+
+  document.getElementById('setupPanel').style.display = 'none';
+  document.getElementById('summaryCard').classList.remove('active');
+  document.getElementById('quizCard').classList.add('active');
+
+  const timerBox = document.getElementById('timerBox');
+  const endBtn = document.getElementById('endExamBtn');
+  clearInterval(timerInterval);
+  if(pendingResume.timerVisible && timeRemainingSec > 0){
+    endBtn.style.display = 'inline-block';
+    timerBox.style.display = 'inline-block';
+    updateTimerDisplay();
+    timerInterval = setInterval(()=>{
+      timeRemainingSec--;
+      updateTimerDisplay();
+      if(timeRemainingSec <= 0){
+        clearInterval(timerInterval);
+        finishSession();
+      }
+    }, 1000);
+  } else if(studyMode === 'prova'){
+    endBtn.style.display = 'inline-block';
+    timerBox.style.display = 'none';
+  } else {
+    endBtn.style.display = 'none';
+    timerBox.style.display = 'none';
+  }
+
+  renderQuestion();
+  pendingResume = null;
+};
+
+document.getElementById('discardBtn').onclick = async ()=>{
+  await clearSessionState();
+  pendingResume = null;
+  document.getElementById('resumeBanner').classList.remove('show');
+};
+
+function renderDashboard(){
+  // top stats
+  const grid = document.getElementById('dashStatsGrid');
+  const overallPct = history.totalAnswered ? Math.round(100*history.totalCorrect/history.totalAnswered) : 0;
+  grid.innerHTML = `
+    <div class="dash-stat"><div class="label">Questões respondidas</div><div class="value">${history.totalAnswered}</div></div>
+    <div class="dash-stat"><div class="label">Acertos totais</div><div class="value">${history.totalCorrect}</div></div>
+    <div class="dash-stat"><div class="label">Aproveitamento geral</div><div class="value">${history.totalAnswered ? overallPct+'%' : '--'}</div></div>
+    <div class="dash-stat"><div class="label">Sessões concluídas</div><div class="value">${history.sessions.length}</div></div>
+  `;
+
+  // category bars
+  const catDiv = document.getElementById('dashCatBars');
+  const catEntries = Object.entries(history.byCat).sort((a,b)=>b[1].t-a[1].t);
+  catDiv.innerHTML = catEntries.length ? '' : '<div style="color:var(--muted);font-size:13px;">Ainda sem dados — responda algumas questões primeiro.</div>';
+  catEntries.forEach(([cat,r])=>{
+    const p = Math.round(100*r.c/r.t);
+    const cls = p>=70?'good':(p>=50?'mid':'low');
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label"><span class="cat-n">${cat}</span><span class="cat-p">${r.c}/${r.t} · ${p}%</span></div>
+      <div class="bar-track"><div class="bar-fill ${cls}" style="width:${p}%;"></div></div>
+    `;
+    catDiv.appendChild(row);
+  });
+
+  // banca bars
+  const bancaDiv = document.getElementById('dashBancaBars');
+  const bancaEntries = Object.entries(history.byBanca).sort((a,b)=>b[1].t-a[1].t);
+  bancaDiv.innerHTML = bancaEntries.length ? '' : '<div style="color:var(--muted);font-size:13px;">Ainda sem dados por banca.</div>';
+  bancaEntries.forEach(([banca,r])=>{
+    const p = Math.round(100*r.c/r.t);
+    const cls = p>=70?'good':(p>=50?'mid':'low');
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label"><span class="cat-n">${banca}</span><span class="cat-p">${r.c}/${r.t} · ${p}%</span></div>
+      <div class="bar-track"><div class="bar-fill ${cls}" style="width:${p}%;"></div></div>
+    `;
+    bancaDiv.appendChild(row);
+  });
+
+  // session log
+  const logDiv = document.getElementById('dashSessionLog');
+  logDiv.innerHTML = history.sessions.length ? '' : '<div style="color:var(--muted);font-size:13px;">Nenhuma sessão concluída ainda.</div>';
+  history.sessions.forEach(s=>{
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const p = s.total ? Math.round(100*s.correct/s.total) : 0;
+    const color = p>=70 ? 'var(--teal)' : (p>=50 ? 'var(--amber)' : 'var(--red)');
+    const row = document.createElement('div');
+    row.className = 'session-log-row';
+    row.innerHTML = `
+      <span class="sdate">${dateStr} · ${s.mode==='prova'?'prova cronometrada':'treino livre'}</span>
+      <span class="sscore" style="color:${color};">${s.correct}/${s.total} (${p}%)</span>
+    `;
+    logDiv.appendChild(row);
+  });
+}
+
+document.getElementById('dashToggleBtn').onclick = ()=>{
+  renderDashboard();
+  document.getElementById('setupPanel').style.display = 'none';
+  document.getElementById('quizCard').classList.remove('active');
+  document.getElementById('summaryCard').classList.remove('active');
+  document.getElementById('dashboardPanel').classList.add('active');
+};
+document.getElementById('closeDashBtn').onclick = ()=>{
+  document.getElementById('dashboardPanel').classList.remove('active');
+  document.getElementById('setupPanel').style.display = 'block';
+};
+
+document.getElementById('exportBtn').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(history, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `backup-simulado-eletrica-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('importBtn').onclick = ()=>{
+  document.getElementById('importFile').click();
+};
+
+document.getElementById('importFile').onchange = (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev)=>{
+    try{
+      const imported = JSON.parse(ev.target.result);
+      if(!imported || typeof imported !== 'object' || !('byCat' in imported)){
+        alert('Esse arquivo não parece ser um backup válido deste simulado.');
+        return;
+      }
+      history = imported;
+      if(!history.byBanca) history.byBanca = {};
+      if(!history.sessions) history.sessions = [];
+      await saveHistory();
+      renderDashboard();
+      renderBreakers();
+      updateOverallStat();
+      alert('Backup importado com sucesso! Seu progresso foi restaurado.');
+    }catch(err){
+      alert('Não foi possível ler esse arquivo. Verifique se é um backup válido (.json) exportado deste mesmo simulado.');
+    }
+    document.getElementById('importFile').value = '';
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById('backToMenuBtn').onclick = async ()=>{
+  clearInterval(timerInterval);
+  await saveSessionState();
+  document.getElementById('quizCard').classList.remove('active');
+  document.getElementById('setupPanel').style.display = 'block';
+  await checkForSavedSession();
+};
+
+// init
+(async ()=>{
+  const note = document.getElementById('storageModeNote');
+  note.textContent = hasClaudeStorage
+    ? 'Progresso salvo na sua conta Claude.'
+    : 'Progresso salvo neste navegador/aparelho (localStorage) — não muda de app nem limpa os dados do navegador, ou perde o histórico.';
+  await loadHistory();
+  renderBreakers();
+  await checkForSavedSession();
+})();
+</script>
+</body>
+</html>
