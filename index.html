@@ -160,10 +160,12 @@
   }
 
   .back-btn{
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
-    cursor:pointer;text-decoration:underline;background:none;border:none;padding:0;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--teal);
+    cursor:pointer;background:var(--panel-2);border:1px solid var(--teal);border-radius:6px;
+    padding:7px 14px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.03em;
   }
-  .back-btn:hover{color:var(--amber);}
+  .back-btn:active{background:rgba(0,217,181,.15);}
+  .back-btn:hover{background:rgba(0,217,181,.1);}
 
   .dash-toggle-btn{
     font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
@@ -227,12 +229,19 @@
   }
   .card.active{display:block;}
   .q-meta{
-    display:flex;justify-content:space-between;align-items:center;
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
-    margin-bottom:14px;letter-spacing:.06em;
+    margin-bottom:14px;
   }
+  .q-meta-top{
+    margin-bottom:8px;
+  }
+  .q-meta-bottom{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.06em;
+  }
+  .q-meta-bottom .left-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
+  .q-meta-bottom .right-group{display:flex;align-items:center;gap:10px;flex-shrink:0;}
   .q-meta .tag{
-    background:var(--panel-2);border:1px solid var(--wire);border-radius:4px;padding:3px 8px;color:var(--amber);
+    background:var(--panel-2);border:1px solid var(--wire);border-radius:4px;padding:3px 8px;color:var(--amber);white-space:nowrap;
   }
   .progress-bar{height:4px;background:var(--wire);border-radius:2px;overflow:hidden;margin-bottom:18px;}
   .progress-fill{height:100%;background:var(--teal);transition:width .3s;}
@@ -399,11 +408,14 @@
 
   <div class="card" id="quizCard">
     <div class="q-meta">
-      <span><button class="back-btn" id="backToMenuBtn">← Menu</button> &nbsp; <span class="tag" id="qBanca"></span> <span id="qCategory"></span></span>
-      <span style="display:flex;align-items:center;gap:10px;">
-        <span class="timer-box" id="timerBox" style="display:none;">--:--</span>
-        <span id="qCounter"></span>
-      </span>
+      <div class="q-meta-top"><button class="back-btn" id="backToMenuBtn">← Voltar ao menu</button></div>
+      <div class="q-meta-bottom">
+        <span class="left-group"><span class="tag" id="qBanca"></span> <span id="qCategory"></span></span>
+        <span class="right-group">
+          <span class="timer-box" id="timerBox" style="display:none;">--:--</span>
+          <span id="qCounter"></span>
+        </span>
+      </div>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="text-passage" id="textPassage" style="display:none;">
@@ -434,7 +446,6 @@
 <script>
 // ---------- Question bank ----------
 const BANK = [
-  // CIRCUITOS ELÉTRICOS
   {cat:"Circuitos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Em um circuito puramente resistivo alimentado por tensão senoidal, a corrente elétrica em relação à tensão está:",
    opts:["Em fase","Atrasada 90°","Adiantada 90°","Atrasada 180°","Defasada 45°"],
@@ -452,10 +463,7 @@ const BANK = [
   {cat:"Circuitos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Um motor monofásico opera com fator de potência 0,8 indutivo, potência ativa de 4 kW e tensão de 220 V. A corrente aproximada consumida é:",
    opts:["18,2 A","22,7 A","14,5 A","36,4 A","9,1 A"],
-   correct:0, exp:"I = P / (V × cos φ) = 4000 / (220 × 0,8) = 4000/176 ≈ 22,7 A. (Corrigindo: 4000/176 = 22,73 A — opção correta é a de 22,7 A.)",
-   correctFix:1},
-
-  // NR-10 e SEGURANÇA
+   correct:0, exp:"I = P / (V × cos φ) = 4000 / (220 × 0,8) = 4000/176 ≈ 22,7 A. (Corrigindo: 4000/176 = 22,73 A — opção correta é a de 22,7 A.)"},
   {cat:"NR-10 / Segurança", banca:"Cespe", type:"tf",
    q:"De acordo com a NR-10, todo serviço em instalações elétricas desenergizadas deve seguir uma sequência que inclui, entre outras etapas, o seccionamento, o impedimento de reenergização, a constatação da ausência de tensão e o aterramento temporário com equipotencialização.",
    correct:true, exp:"Essa é exatamente a sequência de etapas prevista na NR-10 para desenergização segura antes de intervenção em instalações elétricas."},
@@ -470,8 +478,6 @@ const BANK = [
    q:"O Equipamento de Proteção Individual (EPI) mínimo indicado para trabalho em painel elétrico energizado de baixa tensão inclui:",
    opts:["Apenas luvas de raspa de couro","Luva isolante de borracha, óculos de segurança e vestimenta antichama","Somente capacete e botina comum","Luva de látex para procedimentos cirúrgicos","Nenhum EPI é necessário se a corrente for baixa"],
    correct:1, exp:"Para trabalho energizado em BT, a NR-10 exige luvas isolantes de borracha (com luva de proteção mecânica por cima), óculos de segurança contra arco elétrico e vestimenta antichama, entre outros conforme análise de risco."},
-
-  // MÁQUINAS ELÉTRICAS
   {cat:"Máquinas Elétricas", banca:"Cesgranrio", type:"mc",
    q:"Um motor de indução trifásico de 4 polos, alimentado em rede de 60 Hz, apresenta velocidade síncrona de:",
    opts:["3600 rpm","1800 rpm","900 rpm","1200 rpm","3000 rpm"],
@@ -486,8 +492,6 @@ const BANK = [
   {cat:"Máquinas Elétricas", banca:"Cespe", type:"tf",
    q:"A partida direta de motores de indução trifásicos de grande potência é sempre recomendada, pois garante o menor consumo de corrente de partida possível.",
    correct:false, exp:"Ao contrário: a partida direta gera a maior corrente de partida (geralmente 5 a 8 vezes a nominal), motivo pelo qual motores de maior potência costumam usar partida estrela-triângulo, soft-starter ou inversor de frequência."},
-
-  // TRANSFORMADORES
   {cat:"Transformadores", banca:"Cesgranrio", type:"mc",
    q:"Um transformador ideal tem 500 espiras no primário e 100 no secundário. Se a tensão no primário é 2200 V, a tensão no secundário será:",
    opts:["11000 V","440 V","2200 V","220 V","1100 V"],
@@ -499,8 +503,6 @@ const BANK = [
    q:"O ensaio de curto-circuito em um transformador tem como objetivo principal determinar:",
    opts:["As perdas no núcleo (ferro)","A relação de transformação nominal","As perdas no cobre e a impedância percentual","A corrente de magnetização a vazio","O tipo de ligação do enrolamento"],
    correct:2, exp:"No ensaio de curto-circuito, aplica-se tensão reduzida ao primário com o secundário curto-circuitado até circular corrente nominal; a potência medida corresponde às perdas no cobre (Joule), permitindo obter também a impedância percentual do transformador."},
-
-  // COMANDOS ELÉTRICOS / CLP
   {cat:"Comandos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Em um circuito de comando de partida direta de motor trifásico, o contato do relé de sobrecarga (49/51) é normalmente ligado:",
    opts:["Em paralelo com a bobina do contator, em contato NA","Em série com a bobina do contator, em contato NF","Diretamente no circuito de força, em série com o motor","Em paralelo com o botão de emergência","Não é utilizado em partida direta"],
@@ -515,8 +517,6 @@ const BANK = [
   {cat:"Comandos Elétricos", banca:"Cespe", type:"tf",
    q:"Contatos auxiliares NA (normalmente abertos) e NF (normalmente fechados) de um contator têm exatamente a mesma finalidade e podem ser substituídos indistintamente em qualquer ponto do circuito de comando.",
    correct:false, exp:"NA e NF têm comportamentos lógicos opostos (fecham ou abrem quando a bobina energiza) e são usados para funções distintas, como intertravamento (geralmente com NF) e selagem/memorização (geralmente com NA)."},
-
-  // INSTRUMENTAÇÃO
   {cat:"Instrumentação", banca:"Cesgranrio", type:"mc",
    q:"Um transmissor de pressão industrial com sinal de saída padrão 4-20 mA está enviando 12 mA. Considerando faixa de 0 a 100 bar, a pressão medida é aproximadamente:",
    opts:["60 bar","50 bar","40 bar","75 bar","20 bar"],
@@ -528,8 +528,6 @@ const BANK = [
    q:"Um termopar tipo K é amplamente utilizado industrialmente principalmente por sua:",
    opts:["Baixa faixa de temperatura, limitada a 100 °C","Ampla faixa de temperatura e boa relação custo-benefício","Necessidade de calibração diária obrigatória","Incapacidade de gerar sinal elétrico","Exigência de fonte de alimentação externa"],
    correct:1, exp:"O termopar tipo K (Cromel-Alumel) cobre uma ampla faixa de temperatura (aproximadamente -200 °C a 1260 °C) com boa linearidade e custo relativamente baixo, sendo um dos mais usados na indústria."},
-
-  // PROTEÇÃO ELÉTRICA
   {cat:"Proteção Elétrica", banca:"Cesgranrio", type:"mc",
    q:"O dispositivo DR (Diferencial Residual) tem como principal função proteger contra:",
    opts:["Sobrecarga de corrente no circuito","Curto-circuito entre fases","Correntes de fuga à terra, protegendo contra choques elétricos","Sobretensão transitória","Subtensão prolongada"],
@@ -541,8 +539,6 @@ const BANK = [
    q:"Em um sistema de aterramento, a principal finalidade da malha de terra em uma subestação é:",
    opts:["Aumentar a tensão disponível no barramento","Garantir baixa resistência de aterramento e equalizar potenciais, reduzindo riscos de choque","Reduzir o consumo de energia reativa","Substituir a necessidade de disjuntores","Aumentar a corrente de curto-circuito"],
    correct:1, exp:"A malha de terra proporciona um caminho de baixa impedância para correntes de falta e equaliza o potencial na área, limitando as tensões de passo e de toque a valores seguros."},
-
-  // ===== ELETRICIDADE — CONHECIMENTOS ESPECÍFICOS (nível Cebraspe/Petrobras) =====
   {cat:"Potência e Medidas", banca:"Cespe", type:"tf",
    q:"A energia reativa, apesar de não realizar trabalho útil, aumenta a corrente total circulante na instalação para uma mesma potência ativa entregue à carga, exigindo condutores de seção maior do que os necessários caso a instalação operasse com fator de potência unitário.",
    correct:true, exp:"Correto: a corrente total (aparente) é maior quanto pior o fator de potência, mesmo sem a parcela reativa produzir trabalho útil, o que exige condutores de maior seção para a mesma potência ativa."},
@@ -600,8 +596,6 @@ const BANK = [
   {cat:"NR-10 / Segurança", banca:"Cespe", type:"tf",
    q:"Conforme a NR-10, a comprovação de conclusão de curso específico por profissionais que atuam na área de eletricidade é dispensada para intervenções em instalações elétricas de tensão muito baixa, como 12 V ou 24 V, mesmo em ambientes de risco.",
    correct:false, exp:"A NR-10 não estabelece uma dispensa geral baseada apenas em um nível de tensão reduzido; a exigência de capacitação e demais medidas de segurança considera o contexto de risco da instalação como um todo, não apenas a tensão nominal isoladamente."},
-
-  // ===== PORTUGUÊS — bloco de interpretação estilo Cebraspe (reescrita/coerência) =====
   {cat:"Português", banca:"Cespe", type:"tf", textRef:"T2",
    q:"Estariam mantidas a correção gramatical e a coerência das ideias do texto caso o primeiro período fosse reescrito como: 'O investimento em tecnologias mais limpas tem sido motivado, nas empresas do setor de petróleo e gás, pela busca por fontes de energia com menor impacto ambiental'.",
    correct:true, exp:"A reescrita preserva o sentido original (empresas investem em tecnologias limpas motivadas pela busca de fontes de energia menos poluentes), com estrutura sintática igualmente correta."},
@@ -623,8 +617,6 @@ const BANK = [
   {cat:"Português", banca:"Cespe", type:"tf", textRef:"T2",
    q:"Quanto à tipologia textual, o texto classifica-se predominantemente como narrativo, tendo como objetivo principal relatar uma sucessão cronológica de fatos vividos por um narrador.",
    correct:false, exp:"O texto é predominantemente dissertativo-expositivo: apresenta e explica informações e iniciativas de forma organizada, sem narrar uma sequência de fatos vividos por um narrador."},
-
-  // FÍSICA/MATEMÁTICA BÁSICA APLICADA
   {cat:"Física Aplicada", banca:"Cespe", type:"tf",
    q:"Pela Lei de Ohm, em um resistor, se a tensão aplicada dobrar mantendo a resistência constante, a corrente também dobrará e a potência dissipada quadruplicará.",
    correct:true, exp:"I = V/R, então dobrar V dobra I. P = V²/R (ou P=VI), então dobrar V quadruplica P — ambas as afirmações estão corretas."},
@@ -632,8 +624,6 @@ const BANK = [
    q:"Um chuveiro elétrico de 5500 W ligado 220 V, usado por 30 minutos por dia, consome mensalmente (30 dias) aproximadamente:",
    opts:["82,5 kWh","16,5 kWh","165 kWh","5,5 kWh","275 kWh"],
    correct:0, exp:"Energia diária = 5,5 kW × 0,5 h = 2,75 kWh. Em 30 dias: 2,75 × 30 = 82,5 kWh."},
-
-  // ===== PORTUGUÊS =====
   {cat:"Português", banca:"Cespe", type:"tf", textRef:"T1",
    q:"Com base no texto acima, a manutenção preventiva em plataformas offshore é apresentada como menos crítica do que em instalações terrestres, já que raramente há risco à segurança da operação.",
    correct:false, exp:"O texto afirma o contrário: em plataformas offshore esse cuidado é 'ainda mais crítico', pois uma parada não programada pode comprometer a segurança da operação."},
@@ -654,23 +644,11 @@ const BANK = [
    correct:true, exp:"'À plataforma' (a + a) e 'às sete horas' (a + as) configuram crase corretamente, pois há regência exigindo a preposição 'a' antes de palavra feminina precedida de artigo."},
   {cat:"Português", banca:"Cesgranrio", type:"mc",
    q:"Assinale a alternativa em que a concordância verbal está de acordo com a norma-padrão da língua portuguesa:",
-   opts:[
-     "Fazem dois anos que o técnico foi transferido para a plataforma.",
-     "Existem diversos equipamentos de proteção disponíveis no almoxarifado.",
-     "Deve haver, na equipe, técnicos qualificados para o serviço, mas faltam eles chegarem.",
-     "Aluga-se equipamentos de medição para uso temporário.",
-     "Houveram vários problemas durante a manutenção preventiva."
-   ],
+   opts:["Fazem dois anos que o técnico foi transferido para a plataforma.","Existem diversos equipamentos de proteção disponíveis no almoxarifado.","Deve haver, na equipe, técnicos qualificados para o serviço, mas faltam eles chegarem.","Aluga-se equipamentos de medição para uso temporário.","Houveram vários problemas durante a manutenção preventiva."],
    correct:1, exp:"'Existir' é verbo pessoal e concorda normalmente com o sujeito ('existem equipamentos'). Já 'fazer' e 'haver' indicando tempo/existência são impessoais e ficam na 3ª pessoa do singular ('faz dois anos', 'houve vários problemas')."},
   {cat:"Português", banca:"Cesgranrio", type:"mc",
    q:"Assinale a alternativa em que a regência verbal está INCORRETA segundo a norma-padrão:",
-   opts:[
-     "O supervisor informou os técnicos sobre a mudança de escala.",
-     "O relatório obedece às normas técnicas estabelecidas.",
-     "Assistimos à palestra sobre segurança do trabalho.",
-     "Ele namora com a colega de trabalho desde o ano passado.",
-     "O técnico visava a uma promoção dentro da empresa."
-   ],
+   opts:["O supervisor informou os técnicos sobre a mudança de escala.","O relatório obedece às normas técnicas estabelecidas.","Assistimos à palestra sobre segurança do trabalho.","Ele namora com a colega de trabalho desde o ano passado.","O técnico visava a uma promoção dentro da empresa."],
    correct:3, exp:"Na norma-padrão, 'namorar' é verbo transitivo direto ('namora a colega', sem preposição). As demais regências (informar alguém sobre algo, obedecer a, assistir a, visar a) estão corretas."},
   {cat:"Português", banca:"Cespe", type:"tf",
    q:"Na frase 'O técnico verificou o painel; em seguida, registrou a ocorrência no relatório', o ponto e vírgula foi empregado para separar orações que possuem certa independência sintática, mas mantêm relação de sentido entre si.",
@@ -686,8 +664,6 @@ const BANK = [
    q:"No trecho 'A equipe substituiu o cabo danificado e testou o circuito novamente', a palavra 'e' estabelece entre as orações uma relação de:",
    opts:["Oposição","Adição (soma de fatos)","Causa e consequência","Condição","Finalidade"],
    correct:1, exp:"'E' é conjunção coordenativa aditiva, somando duas ações sequenciais sem indicar oposição, causa ou condição entre elas."},
-
-  // ===== MATEMÁTICA / RACIOCÍNIO LÓGICO =====
   {cat:"Matemática", banca:"Cesgranrio", type:"mc",
    q:"Se 8 técnicos realizam uma inspeção completa em 6 dias, trabalhando todos na mesma proporção, quantos dias 4 técnicos levariam para realizar a mesma inspeção?",
    opts:["3 dias","24 dias","12 dias","6 dias","8 dias"],
@@ -731,8 +707,6 @@ const BANK = [
    q:"Uma sala retangular de manutenção tem 8 m de comprimento por 5 m de largura. O perímetro dessa sala é:",
    opts:["40 m","13 m","26 m","20 m","18 m"],
    correct:2, exp:"Perímetro = 2×(comprimento+largura) = 2×(8+5) = 2×13 = 26 m."},
-
-  // ===== MATEMÁTICA — nível Cebraspe (combinatória, PA/PG, matrizes, trigonometria, geometria, financeira) =====
   {cat:"Matemática", banca:"Cespe", type:"tf",
    q:"Suponha que a produção mensal de uma linha de manutenção industrial tenha crescido em progressão aritmética de razão igual a 80 peças por mês. Se, em abril, foram registradas 1.600 peças produzidas, então, em janeiro do mesmo ano, a produção terá sido superior a 1.300 peças.",
    correct:true, exp:"De abril para janeiro são 3 meses antes: 1600 − 3×80 = 1600 − 240 = 1360 peças, valor superior a 1.300."},
@@ -763,8 +737,6 @@ const BANK = [
   {cat:"Matemática", banca:"Cespe", type:"tf",
    q:"Um investidor aplicou R$ 2.000,00 em um fundo que rende 5% ao mês, com carência de 6 meses; se o resgate ocorrer antes da carência, os juros são calculados de forma simples. Considerando o mês comercial de 30 dias, se o investidor resgatar o valor exatamente após 20 dias, ele receberá um montante superior a R$ 2.060,00.",
    correct:true, exp:"Taxa proporcional diária = 5%/30. Juros em 20 dias = 2000 × (0,05/30) × 20 ≈ R$ 66,67. Montante ≈ R$ 2.066,67, valor superior a R$ 2.060,00."},
-
-  // ===== BLOCO CESGRANRIO — nível de prova real (circuitos, máquinas, proteção, matemática avançada) =====
   {cat:"Circuitos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Um circuito RLC série é composto por um resistor R, um indutor L = 1/100 H e um capacitor C = 100 μF. A frequência de ressonância desse circuito, em rad/s, é:",
    opts:["100","500","1.000","2.000","5.000"],
@@ -805,8 +777,6 @@ const BANK = [
    q:"Para assegurar a dispersão da corrente de descarga atmosférica na terra sem causar sobretensões perigosas, recomenda-se, para eletrodos de aterramento não naturais, uma resistência máxima de aterramento, em ohms, de:",
    opts:["1","10","25","50","100"],
    correct:2, exp:"O valor de referência usualmente recomendado para eletrodos de aterramento não naturais em sistemas de proteção contra descargas atmosféricas é de até 25 Ω, buscando garantir baixa impedância de dispersão."},
-
-  // ===== MATEMÁTICA — nível Cesgranrio (combinatória, logaritmos, financeira, geometria, trigonometria, complexos) =====
   {cat:"Matemática", banca:"Cesgranrio", type:"mc",
    q:"Em um setor de manutenção, trabalham 4 técnicos e 5 engenheiros. Quantas comissões diferentes de 3 pessoas podem ser formadas com, pelo menos, 1 técnico?",
    opts:["45","56","64","70","74"],
@@ -831,8 +801,6 @@ const BANK = [
    q:"Em um treinamento, cada funcionário sorteou um número complexo e calculou corretamente o seu módulo, ganhando n balas, onde n é o menor número inteiro maior que esse módulo. Um funcionário sorteou o número complexo 6 − 8i. Quantas balas ele ganhou?",
    opts:["9","10","11","12","13"],
    correct:2, exp:"|6−8i| = √(6²+8²) = √(36+64) = √100 = 10. O menor inteiro maior que 10 é 11."},
-
-  // ===== PORTUGUÊS — bloco Cesgranrio (interpretação, regência, crase, ortografia) =====
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T3",
    q:"De acordo com o texto, a causa principal dos problemas recorrentes identificados pelo supervisor foi:",
    opts:["falta de treinamento técnico da equipe","informações repassadas de forma incompleta entre os turnos","excesso de equipamentos em manutenção simultânea","ausência de um checklist de segurança individual","alta rotatividade de funcionários no setor"],
@@ -849,8 +817,6 @@ const BANK = [
    q:"Em qual das frases abaixo a regência verbal está em DESACORDO com a norma-padrão?",
    opts:["O técnico assistiu ao treinamento de segurança.","Ele obedeceu às instruções do manual.","O supervisor avisou os técnicos do risco.","Chegamos no local do serviço antes do previsto.","O eletricista aspirava a uma promoção."],
    correct:3, exp:"Na norma-padrão, o verbo 'chegar' rege a preposição 'a' ('chegamos ao local'), e não 'em' ('chegamos no local'). As demais regências estão corretas."},
-
-  // ===== REFORÇO CESGRANRIO — mais volume, nível de prova real =====
   {cat:"Circuitos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Uma fonte de tensão contínua de 150 V alimenta um circuito com um resistor de 5 Ω em série com dois resistores de 15 Ω, ligados em paralelo entre si. O valor da corrente, em ampères, que passa por um dos resistores de 15 Ω é:",
    opts:["3","4","6","8","12"],
@@ -879,8 +845,6 @@ const BANK = [
    q:"Uma peça custa R$ 100,00 à vista. Um cliente optou por pagar em duas prestações de R$ 52,00, sendo a primeira no ato da compra e a segunda um mês depois. A taxa de juros mensal aproximada cobrada nessa operação foi de:",
    opts:["5,0%","6,5%","8,3%","10,0%","12,0%"],
    correct:2, exp:"Valor financiado após a entrada: 100 − 52 = 48. Essa quantia rende juros por um mês até ser quitada com a 2ª prestação: 48×(1+i) = 52 → i = 52/48 − 1 ≈ 0,083 = 8,3%."},
-
-  // ===== LOTE — Conhecimentos Básicos (Português + Matemática, prova Manhã) =====
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"Classifique as afirmações abaixo, referentes ao texto, como verdadeiras (V) ou falsas (F): ( ) Rodrigo já acompanhava pessoalmente as equipes de campo antes daquele dia. ( ) A experiência revelou dificuldades de comunicação por rádio devido ao calor e ao ruído. ( ) Após a experiência, Rodrigo manteve os procedimentos internos sem qualquer alteração. A sequência correta é:",
    opts:["V – V – F","V – F – V","F – V – F","F – F – V","V – F – F"],
@@ -903,73 +867,31 @@ const BANK = [
    correct:1, exp:"A revisão dos procedimentos é apresentada como consequência direta da experiência vivida em campo."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"A frase 'Certa manhã, decidiu vestir o macacão e acompanhar pessoalmente uma equipe' pode ser reescrita, mantendo o mesmo sentido, como:",
-   opts:[
-     "Se decidisse vestir o macacão, acompanharia pessoalmente uma equipe.",
-     "Numa manhã específica, ele optou por vestir o macacão e acompanhar pessoalmente uma equipe.",
-     "Embora tenha decidido vestir o macacão, não acompanhou a equipe.",
-     "Antes de vestir o macacão, ele já acompanhava a equipe.",
-     "Ele decidirá vestir o macacão para acompanhar uma equipe."
-   ],
+   opts:["Se decidisse vestir o macacão, acompanharia pessoalmente uma equipe.","Numa manhã específica, ele optou por vestir o macacão e acompanhar pessoalmente uma equipe.","Embora tenha decidido vestir o macacão, não acompanhou a equipe.","Antes de vestir o macacão, ele já acompanhava a equipe.","Ele decidirá vestir o macacão para acompanhar uma equipe."],
    correct:1, exp:"A reescrita mantém o sentido de um fato pontual e já concluído no passado, apenas trocando 'certa manhã' por 'numa manhã específica' e 'decidiu' por 'optou por'."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"Indique a alternativa em que o sinal de dois-pontos tem a mesma finalidade que em: 'Rodrigo revisou os procedimentos internos: simplificou etapas que considerava apenas formalidades.'",
-   opts:[
-     "O supervisor perguntou: \"Já terminou o relatório?\"",
-     "Ele trouxe o essencial: capacete, luvas e óculos de proteção.",
-     "Ana disse, emocionada: \"Consegui a promoção!\"",
-     "O gerente avisou: \"A reunião foi cancelada.\"",
-     "Ele gritou: \"Cuidado com o cabo energizado!\""
-   ],
+   opts:["O supervisor perguntou: \"Já terminou o relatório?\"","Ele trouxe o essencial: capacete, luvas e óculos de proteção.","Ana disse, emocionada: \"Consegui a promoção!\"","O gerente avisou: \"A reunião foi cancelada.\"","Ele gritou: \"Cuidado com o cabo energizado!\""],
    correct:1, exp:"No exemplo do texto, os dois-pontos introduzem uma explicação/detalhamento do que foi dito antes — mesma função de enumerar/explicar presente na alternativa B, e diferente da introdução de fala direta das demais."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"A expressão da direita NÃO recupera adequadamente o que está destacado em:",
-   opts:[
-     "\"revisou os procedimentos internos\" – revisou-os",
-     "\"simplificando etapas\" – simplificando-as",
-     "\"amplia a compreensão sobre o trabalho alheio\" – amplia-a",
-     "\"fortalece a confiança entre setores\" – fortalece-lhe",
-     "\"acompanhar uma equipe de eletricistas\" – acompanhá-la"
-   ],
+   opts:["\"revisou os procedimentos internos\" – revisou-os","\"simplificando etapas\" – simplificando-as","\"amplia a compreensão sobre o trabalho alheio\" – amplia-a","\"fortalece a confiança entre setores\" – fortalece-lhe","\"acompanhar uma equipe de eletricistas\" – acompanhá-la"],
    correct:3, exp:"'Confiança' é objeto direto do verbo 'fortalecer' ('fortalece a confiança'), devendo ser substituída por 'a' ('fortalece-a'), e não pelo pronome de objeto indireto 'lhe'."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"Um bom título para esse texto poderia expressar a ideia de que:",
-   opts:[
-     "mudar de posição ajuda a compreender melhor o trabalho do outro",
-     "funcionários devem ser fiscalizados de perto",
-     "a burocracia deve ser sempre respeitada sem questionamentos",
-     "a comunicação por rádio é sempre ineficiente",
-     "o calor prejudica exclusivamente a produtividade"
-   ],
+   opts:["mudar de posição ajuda a compreender melhor o trabalho do outro","funcionários devem ser fiscalizados de perto","a burocracia deve ser sempre respeitada sem questionamentos","a comunicação por rádio é sempre ineficiente","o calor prejudica exclusivamente a produtividade"],
    correct:0, exp:"O texto ilustra, através da experiência de Rodrigo, como colocar-se no lugar do outro (mudar de posição) amplia a compreensão sobre o trabalho alheio."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"Rodrigo revisou os procedimentos internos porque:",
-   opts:[
-     "recebeu uma determinação da diretoria",
-     "percebeu, na prática, que algumas exigências burocráticas atrasavam tarefas simples",
-     "queria reduzir custos operacionais imediatos",
-     "foi orientado por um consultor externo",
-     "precisava cumprir uma meta anual de produtividade"
-   ],
+   opts:["recebeu uma determinação da diretoria","percebeu, na prática, que algumas exigências burocráticas atrasavam tarefas simples","queria reduzir custos operacionais imediatos","foi orientado por um consultor externo","precisava cumprir uma meta anual de produtividade"],
    correct:1, exp:"O texto indica que, ao acompanhar a equipe, Rodrigo percebeu o quanto certas exigências burocráticas atrasavam tarefas simples, e foi isso que o levou a revisar os procedimentos."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T4",
    q:"Assinale a alternativa em que o emprego do acento indicativo de crase está de acordo com a norma-padrão:",
-   opts:[
-     "Rodrigo foi à campo acompanhar a equipe.",
-     "A experiência trouxe benefícios à toda a equipe.",
-     "Ele se dedicou à revisão dos procedimentos internos.",
-     "Voltou à trabalhar no dia seguinte.",
-     "Isso equivale à qualquer mudança de rotina."
-   ],
+   opts:["Rodrigo foi à campo acompanhar a equipe.","A experiência trouxe benefícios à toda a equipe.","Ele se dedicou à revisão dos procedimentos internos.","Voltou à trabalhar no dia seguinte.","Isso equivale à qualquer mudança de rotina."],
    correct:2, exp:"'Dedicou-se à revisão' está correto (a + a, artigo feminino). As demais estão erradas: não há crase antes de palavra masculina ('a campo'), antes de 'toda' sem artigo determinante específico, antes de verbo no infinitivo ('a trabalhar') ou antes de pronome indefinido ('a qualquer')."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T5",
    q:"A expressão 'suspendeu o uso de e-mail interno' indica que Marina:",
-   opts:[
-     "vetou definitivamente qualquer comunicação eletrônica na empresa",
-     "interrompeu temporariamente o uso do e-mail para incentivar conversas presenciais",
-     "proibiu o acesso dos funcionários aos computadores",
-     "reduziu o quadro de funcionários da empresa",
-     "criou um novo canal de comunicação digital"
-   ],
+   opts:["vetou definitivamente qualquer comunicação eletrônica na empresa","interrompeu temporariamente o uso do e-mail para incentivar conversas presenciais","proibiu o acesso dos funcionários aos computadores","reduziu o quadro de funcionários da empresa","criou um novo canal de comunicação digital"],
    correct:1, exp:"O texto especifica que a suspensão durou duas semanas, com o objetivo de incentivar conversas presenciais — uma medida temporária, não uma proibição definitiva."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T5",
    q:"A expressão 'preferiam mandar uma mensagem a caminhar dez metros' revela, da parte dos funcionários, uma atitude de:",
@@ -977,35 +899,16 @@ const BANK = [
    correct:0, exp:"Preferir enviar uma mensagem a percorrer uma curta distância revela uma atitude de comodismo/acomodação em relação ao esforço mínimo de se deslocar."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T5",
    q:"O título 'Reunião em pé' expressa, em relação ao texto, a ideia de:",
-   opts:[
-     "incentivo a uma postura mais ativa e à circulação entre os colaboradores",
-     "obrigatoriedade de reuniões sem uso de cadeiras",
-     "economia de espaço físico no escritório",
-     "redução do tempo de duração das reuniões",
-     "punição para quem falta às reuniões"
-   ],
+   opts:["incentivo a uma postura mais ativa e à circulação entre os colaboradores","obrigatoriedade de reuniões sem uso de cadeiras","economia de espaço físico no escritório","redução do tempo de duração das reuniões","punição para quem falta às reuniões"],
    correct:0, exp:"O título dialoga com a proposta final do texto: premiar equipes que adotem reuniões em pé, caminhando pelos corredores — reforçando a ideia de maior circulação e proximidade entre colaboradores."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T5",
    q:"No trecho 'ela pretende premiar as equipes que mais adotarem reuniões em pé', a oração destacada classifica-se como:",
-   opts:[
-     "subordinada substantiva objetiva direta",
-     "subordinada adjetiva restritiva",
-     "subordinada adverbial condicional",
-     "coordenada aditiva",
-     "subordinada adverbial concessiva"
-   ],
+   opts:["subordinada substantiva objetiva direta","subordinada adjetiva restritiva","subordinada adverbial condicional","coordenada aditiva","subordinada adverbial concessiva"],
    correct:1, exp:"A oração 'que mais adotarem reuniões em pé' restringe o sentido de 'equipes', funcionando como adjetivo dessa palavra — trata-se de uma subordinada adjetiva restritiva."},
   {cat:"Português", banca:"Cesgranrio", type:"mc", textRef:"T5",
    q:"De acordo com o texto, após a suspensão do e-mail interno:",
-   opts:[
-     "o fluxo de pessoas pelos corredores diminuiu",
-     "os problemas passaram a ser resolvidos mais lentamente",
-     "o fluxo de pessoas pelos corredores aumentou e os problemas passaram a ser resolvidos mais rápido",
-     "a empresa decidiu banir o e-mail definitivamente",
-     "os funcionários pediram demissão em massa"
-   ],
+   opts:["o fluxo de pessoas pelos corredores diminuiu","os problemas passaram a ser resolvidos mais lentamente","o fluxo de pessoas pelos corredores aumentou e os problemas passaram a ser resolvidos mais rápido","a empresa decidiu banir o e-mail definitivamente","os funcionários pediram demissão em massa"],
    correct:2, exp:"O texto afirma que, passado o período, o fluxo de pessoas pelos corredores aumentou visivelmente e os problemas passaram a ser resolvidos mais rápido."},
-
   {cat:"Matemática", banca:"Cesgranrio", type:"mc",
    q:"O consumo de água de uma fábrica vem crescendo 8% ao mês desde janeiro, atingindo 943,30 m³ em maio. Qual foi, em m³, o consumo dessa fábrica em fevereiro do mesmo ano?",
    opts:["700","725","750","775","800"],
@@ -1058,37 +961,17 @@ const BANK = [
    q:"Carla disse à sua filha Bia: 'Daqui a 3 anos, terei o triplo da sua idade.' Se hoje Bia tem 15 anos, qual é a idade atual de Carla?",
    opts:["45","48","51","54","57"],
    correct:2, exp:"Daqui a 3 anos, Bia terá 18 anos. Carla+3 = 3×18 = 54 → Carla = 51 anos hoje."},
-
-  // ===== BLOCO TRANSPETRO — dutos, terminais e proteção catódica =====
   {cat:"Contexto Operacional (Dutos/Terminais)", banca:"Transpetro", type:"mc",
    q:"Em dutos enterrados, a proteção catódica por corrente impressa tem como objetivo:",
-   opts:[
-     "aumentar a condutividade elétrica do solo ao redor do duto",
-     "reduzir a corrosão eletroquímica da tubulação, tornando-a catodo de uma célula eletroquímica",
-     "aumentar a pressão de bombeamento no interior do duto",
-     "isolar eletricamente a tubulação de toda a rede elétrica da planta",
-     "medir a vazão do produto transportado pelo duto"
-   ],
+   opts:["aumentar a condutividade elétrica do solo ao redor do duto","reduzir a corrosão eletroquímica da tubulação, tornando-a catodo de uma célula eletroquímica","aumentar a pressão de bombeamento no interior do duto","isolar eletricamente a tubulação de toda a rede elétrica da planta","medir a vazão do produto transportado pelo duto"],
    correct:1, exp:"A proteção catódica injeta corrente contínua na tubulação de forma a torná-la o catodo (polo negativo) de uma célula eletroquímica, o que inibe a reação de oxidação (corrosão) do metal."},
   {cat:"Contexto Operacional (Dutos/Terminais)", banca:"Transpetro", type:"mc",
    q:"Em um sistema de proteção catódica por corrente impressa, diferentemente do sistema por anodos de sacrifício (zinco, magnésio ou alumínio), utiliza-se:",
-   opts:[
-     "um anodo inerte alimentado por uma fonte retificadora de corrente contínua",
-     "um anodo de zinco de maior massa",
-     "um anodo de magnésio duplicado",
-     "nenhum anodo, apenas isolamento reforçado da tubulação",
-     "um anodo de alumínio ligado diretamente à rede CA"
-   ],
+   opts:["um anodo inerte alimentado por uma fonte retificadora de corrente contínua","um anodo de zinco de maior massa","um anodo de magnésio duplicado","nenhum anodo, apenas isolamento reforçado da tubulação","um anodo de alumínio ligado diretamente à rede CA"],
    correct:0, exp:"No sistema por corrente impressa, uma fonte retificadora (transformador-retificador) alimenta anodos inertes, ao contrário do sistema por anodos de sacrifício, que dispensa fonte externa e consome o próprio anodo ao longo do tempo."},
   {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
    q:"Uma estação de bombeio utiliza motores de indução trifásicos de grande potência para acionar bombas centrífugas de transferência de produto. Para reduzir o impacto da corrente de partida na rede de alimentação dessa estação, o método de partida mais indicado para esses motores é:",
-   opts:[
-     "partida direta, sem qualquer dispositivo adicional",
-     "partida com soft-starter ou inversor de frequência",
-     "ligação permanente em delta desde o instante inicial",
-     "partida por meio de uma simples chave faca",
-     "nenhum método especial é necessário para motores de grande potência"
-   ],
+   opts:["partida direta, sem qualquer dispositivo adicional","partida com soft-starter ou inversor de frequência","ligação permanente em delta desde o instante inicial","partida por meio de uma simples chave faca","nenhum método especial é necessário para motores de grande potência"],
    correct:1, exp:"Motores de grande potência costumam usar soft-starter ou inversor de frequência para limitar a corrente e o torque de partida, reduzindo o impacto na rede de alimentação da estação."},
   {cat:"Contexto Operacional (Dutos/Terminais)", banca:"Transpetro", type:"mc",
    q:"Em uma estação de medição de um duto de transporte de petróleo, o instrumento responsável por indicar a vazão instantânea do produto transportado é o:",
@@ -1096,13 +979,7 @@ const BANK = [
    correct:2, exp:"O medidor de vazão (flow meter) é o instrumento destinado a medir a vazão instantânea de um fluido em uma tubulação; manômetro mede pressão, termopar mede temperatura, voltímetro mede tensão e tacômetro mede rotação."},
   {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
    q:"Um painel elétrico instalado em uma área classificada (com risco de atmosfera explosiva) de um terminal de armazenamento de derivados de petróleo deve possuir, no mínimo:",
-   opts:[
-     "apenas um grau de proteção IP elevado contra poeira e água",
-     "certificação Ex, compatível com a classificação de zona de risco da área",
-     "apenas aterramento reforçado, sem exigências adicionais",
-     "nenhuma certificação especial, desde que corretamente energizado",
-     "apenas certificação de resistência ao fogo"
-   ],
+   opts:["apenas um grau de proteção IP elevado contra poeira e água","certificação Ex, compatível com a classificação de zona de risco da área","apenas aterramento reforçado, sem exigências adicionais","nenhuma certificação especial, desde que corretamente energizado","apenas certificação de resistência ao fogo"],
    correct:1, exp:"Em áreas classificadas, equipamentos elétricos precisam de certificação Ex (conforme normas como a IEC 60079), compatível com a zona de risco (0, 1, 2 para gases, ou 20, 21, 22 para poeiras) da área onde serão instalados."},
   {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
    q:"Uma subestação de um terminal de dutos recebe energia da concessionária em 13,8 kV e a rebaixa para 380/220 V para uso interno das instalações. Esse transformador é classificado, quanto à função de transformação de tensão, como:",
@@ -1110,23 +987,11 @@ const BANK = [
    correct:1, exp:"Um transformador que recebe tensão mais alta e entrega tensão mais baixa no secundário é classificado como abaixador (rebaixador)."},
   {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
    q:"Em áreas classificadas de terminais de petróleo, sujeitas a risco de atmosfera explosiva, a equalização de potencial entre estruturas metálicas próximas tem como principal objetivo:",
-   opts:[
-     "aumentar a resistência de aterramento do sistema",
-     "evitar a formação de faíscas por diferença de potencial entre partes metálicas próximas",
-     "reduzir o consumo geral de energia elétrica da instalação",
-     "aumentar a vazão de bombeamento do produto",
-     "eliminar completamente a necessidade de sistemas de para-raios"
-   ],
+   opts:["aumentar a resistência de aterramento do sistema","evitar a formação de faíscas por diferença de potencial entre partes metálicas próximas","reduzir o consumo geral de energia elétrica da instalação","aumentar a vazão de bombeamento do produto","eliminar completamente a necessidade de sistemas de para-raios"],
    correct:1, exp:"A equalização (interligação) de potencial entre estruturas metálicas evita que diferenças de potencial acumuladas gerem faíscas — um risco crítico em atmosferas potencialmente explosivas."},
   {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
    q:"Terminais e estações de bombeio costumam possuir geradores de emergência a diesel. A principal função desses geradores é:",
-   opts:[
-     "substituir permanentemente a rede elétrica da concessionária",
-     "fornecer energia a sistemas essenciais em caso de falta da rede elétrica principal",
-     "elevar a tensão nominal da rede de distribuição interna",
-     "reduzir o fator de potência da instalação",
-     "realizar a proteção catódica das tubulações"
-   ],
+   opts:["substituir permanentemente a rede elétrica da concessionária","fornecer energia a sistemas essenciais em caso de falta da rede elétrica principal","elevar a tensão nominal da rede de distribuição interna","reduzir o fator de potência da instalação","realizar a proteção catódica das tubulações"],
    correct:1, exp:"Geradores de emergência garantem a continuidade de sistemas essenciais (instrumentação, proteção, iluminação de emergência) durante uma falta da alimentação principal, e não substituem a rede em operação normal."},
   {cat:"Contexto Operacional (Dutos/Terminais)", banca:"Transpetro", type:"mc",
    q:"Um transmissor de pressão instalado na sucção de uma bomba de um oleoduto emite sinal padrão 4-20 mA proporcional a uma faixa de pressão de 0 a 50 bar. Se o sinal lido nesse instante é de 16 mA, a pressão na sucção da bomba é de:",
@@ -1134,15 +999,8 @@ const BANK = [
    correct:2, exp:"O span do sinal é 16 mA (de 4 a 20 mA). A fração do sinal é (16−4)/16 = 0,75. Pressão = 0,75 × 50 = 37,5 bar."},
   {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
    q:"Em atividades de manutenção elétrica em áreas classificadas de um terminal de dutos, além dos requisitos da NR-10, deve-se atender também aos requisitos específicos relacionados a:",
-   opts:[
-     "NR-6, exclusivamente",
-     "NR-12, exclusivamente",
-     "equipamentos e instalações elétricas destinados a atmosferas explosivas (como a IEC 60079)",
-     "NR-17, exclusivamente",
-     "NR-24, exclusivamente"
-   ],
+   opts:["NR-6, exclusivamente","NR-12, exclusivamente","equipamentos e instalações elétricas destinados a atmosferas explosivas (como a IEC 60079)","NR-17, exclusivamente","NR-24, exclusivamente"],
    correct:2, exp:"Em áreas classificadas com risco de atmosfera explosiva, além da NR-10, aplicam-se normas técnicas específicas para equipamentos Ex, como as da série IEC 60079."},
-
   {cat:"Matemática", banca:"Transpetro", type:"mc",
    q:"Um oleoduto tem 120 km de extensão e opera com vazão constante de 600 m³/h. O tempo necessário para que um volume de 3.000 m³ de petróleo percorra totalmente esse trecho é de:",
    opts:["3 horas","4 horas","5 horas","6 horas","7 horas"],
@@ -1159,26 +1017,13 @@ const BANK = [
    q:"Um tanque cilíndrico de um terminal tem 8 m de diâmetro e 12 m de altura. Considerando π ≈ 3,14, o volume total desse tanque, em m³, é de aproximadamente:",
    opts:["402","502","603","703","803"],
    correct:2, exp:"Raio = 4 m. V = π×r²×h = 3,14 × 16 × 12 ≈ 603 m³."},
-
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T6",
    q:"De acordo com o texto, um dos principais fatores de confiabilidade operacional da Transpetro, segundo seus gestores, é:",
-   opts:[
-     "a redução do número de funcionários das equipes técnicas",
-     "a integração entre diferentes especialidades técnicas",
-     "a substituição total dos sensores por sistemas manuais",
-     "a redução da malha de dutos da companhia",
-     "a eliminação das ações preventivas contra corrosão"
-   ],
+   opts:["a redução do número de funcionários das equipes técnicas","a integração entre diferentes especialidades técnicas","a substituição total dos sensores por sistemas manuais","a redução da malha de dutos da companhia","a eliminação das ações preventivas contra corrosão"],
    correct:1, exp:"O texto afirma que essa integração entre diferentes especialidades técnicas é considerada, pelos gestores, um dos principais fatores de confiabilidade operacional da companhia."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T6",
    q:"No trecho 'garantindo que sensores, painéis e sistemas de proteção funcionem corretamente', a oração destacada exerce, em relação ao verbo 'garantir', a função de:",
-   opts:[
-     "sujeito da oração principal",
-     "complemento (objeto direto oracional) do verbo 'garantir'",
-     "adjunto adverbial de causa",
-     "aposto explicativo",
-     "vocativo"
-   ],
+   opts:["sujeito da oração principal","complemento (objeto direto oracional) do verbo 'garantir'","adjunto adverbial de causa","aposto explicativo","vocativo"],
    correct:1, exp:"A oração subordinada substantiva objetiva direta completa o sentido do verbo 'garantir', respondendo 'garantindo o quê?' — funcionando como objeto direto oracional."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T6",
    q:"A expressão 'mesmo em condições adversas', no texto, indica uma ideia de:",
@@ -1186,45 +1031,19 @@ const BANK = [
    correct:1, exp:"'Mesmo em condições adversas' indica que os sistemas funcionam corretamente apesar de um obstáculo (condições adversas) — uma relação de concessão."},
   {cat:"Português", banca:"Transpetro", type:"mc",
    q:"Assinale a alternativa em que a concordância verbal está de acordo com a norma-padrão:",
-   opts:[
-     "Fazem anos que a malha de dutos foi ampliada.",
-     "Existem diversos sensores instalados ao longo da tubulação.",
-     "Deve haver, nas equipes, técnicos qualificados, mas faltam eles serem convocados.",
-     "Aluga-se equipamentos de instrumentação para as estações.",
-     "Houveram falhas registradas no último trimestre."
-   ],
+   opts:["Fazem anos que a malha de dutos foi ampliada.","Existem diversos sensores instalados ao longo da tubulação.","Deve haver, nas equipes, técnicos qualificados, mas faltam eles serem convocados.","Aluga-se equipamentos de instrumentação para as estações.","Houveram falhas registradas no último trimestre."],
    correct:1, exp:"'Existir' é verbo pessoal e concorda normalmente com o sujeito ('existem sensores'). 'Fazer' e 'haver' indicando tempo/existência são impessoais e ficam no singular ('faz anos', 'houve falhas')."},
-
-  // ===== TRANSPETRO — Ênfase 8: Manutenção Elétrica (estrutura oficial do Anexo IV) =====
   {cat:"Simbologia e Diagramas Elétricos", banca:"Transpetro", type:"mc",
    q:"Em um diagrama unifilar, os condutores de um circuito trifásico são representados por:",
-   opts:[
-     "uma única linha, independentemente do número de fases envolvidas",
-     "três linhas separadas, uma para cada fase",
-     "quatro linhas, uma para cada fase mais o neutro",
-     "nenhuma linha, apenas símbolos isolados",
-     "duas linhas, sendo uma de fase e outra de retorno"
-   ],
+   opts:["uma única linha, independentemente do número de fases envolvidas","três linhas separadas, uma para cada fase","quatro linhas, uma para cada fase mais o neutro","nenhuma linha, apenas símbolos isolados","duas linhas, sendo uma de fase e outra de retorno"],
    correct:0, exp:"O diagrama unifilar simplifica a representação usando uma única linha para todo o circuito, independentemente do número de fases — diferente do diagrama trifilar, que detalha cada condutor separadamente."},
   {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
    q:"O Teorema de Thévenin permite substituir uma rede elétrica linear complexa, vista a partir de dois terminais, por:",
-   opts:[
-     "uma fonte de corrente em paralelo com uma resistência equivalente",
-     "uma fonte de tensão em série com uma resistência equivalente",
-     "um curto-circuito puro entre os dois terminais",
-     "um circuito aberto entre os dois terminais",
-     "um capacitor equivalente à rede original"
-   ],
+   opts:["uma fonte de corrente em paralelo com uma resistência equivalente","uma fonte de tensão em série com uma resistência equivalente","um curto-circuito puro entre os dois terminais","um circuito aberto entre os dois terminais","um capacitor equivalente à rede original"],
    correct:1, exp:"O Teorema de Thévenin substitui a rede vista pelos terminais por uma fonte de tensão equivalente (Vth) em série com uma resistência equivalente (Rth)."},
   {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
    q:"O Teorema de Norton é equivalente ao de Thévenin, substituindo a rede elétrica vista pelos terminais por:",
-   opts:[
-     "uma fonte de tensão em série com uma resistência equivalente",
-     "uma fonte de corrente em paralelo com uma resistência equivalente",
-     "um transformador ideal equivalente",
-     "um indutor puro equivalente à rede original",
-     "nenhum componente, apenas um curto-circuito"
-   ],
+   opts:["uma fonte de tensão em série com uma resistência equivalente","uma fonte de corrente em paralelo com uma resistência equivalente","um transformador ideal equivalente","um indutor puro equivalente à rede original","nenhum componente, apenas um curto-circuito"],
    correct:1, exp:"O Teorema de Norton representa a rede por uma fonte de corrente equivalente (IN) em paralelo com uma resistência equivalente (RN) — conversível diretamente para o equivalente de Thévenin."},
   {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
    q:"Uma tensão senoidal tem valor de pico igual a 170 V. O valor eficaz (RMS) aproximado dessa tensão é:",
@@ -1232,75 +1051,31 @@ const BANK = [
    correct:3, exp:"Vrms = Vpico/√2 = 170/1,414 ≈ 120 V."},
   {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
    q:"Uma corrente senoidal pura, ao longo de um ciclo completo, tem valor médio igual a:",
-   opts:[
-     "igual ao valor de pico",
-     "igual ao valor eficaz",
-     "zero, pois as áreas positiva e negativa do ciclo se cancelam",
-     "igual à metade do valor de pico",
-     "igual ao dobro do valor eficaz"
-   ],
+   opts:["igual ao valor de pico","igual ao valor eficaz","zero, pois as áreas positiva e negativa do ciclo se cancelam","igual à metade do valor de pico","igual ao dobro do valor eficaz"],
    correct:2, exp:"Em um ciclo completo de uma senoide pura, a área sob a curva no semiciclo positivo é igual (e oposta) à do semiciclo negativo, resultando em valor médio nulo."},
   {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
    q:"Ao interpretar um projeto elétrico, a simbologia de uma tomada de uso específico (TUE) permite identificar diretamente:",
-   opts:[
-     "apenas a cor do condutor utilizado",
-     "a potência do circuito ao qual pertence e sua tensão nominal",
-     "exclusivamente o fabricante do equipamento",
-     "apenas a localização física da tomada, sem outra informação",
-     "nenhuma informação tecnicamente relevante"
-   ],
+   opts:["apenas a cor do condutor utilizado","a potência do circuito ao qual pertence e sua tensão nominal","exclusivamente o fabricante do equipamento","apenas a localização física da tomada, sem outra informação","nenhuma informação tecnicamente relevante"],
    correct:1, exp:"A simbologia de TUE em projetos elétricos costuma indicar a potência do circuito e a tensão nominal associada, informações essenciais para o dimensionamento e a instalação corretos."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"Em um sistema de controle em malha fechada (com realimentação), a variável medida pelo sensor é comparada com o valor de referência (setpoint) para gerar:",
-   opts:[
-     "um sinal de erro que ajusta automaticamente a variável manipulada",
-     "um sinal de saída fixo, sem qualquer ajuste posterior",
-     "um sinal aleatório, sem relação com o processo",
-     "nenhuma ação, pois a malha fechada não realimenta o processo",
-     "apenas um alarme sonoro, sem ação de controle"
-   ],
+   opts:["um sinal de erro que ajusta automaticamente a variável manipulada","um sinal de saída fixo, sem qualquer ajuste posterior","um sinal aleatório, sem relação com o processo","nenhuma ação, pois a malha fechada não realimenta o processo","apenas um alarme sonoro, sem ação de controle"],
    correct:0, exp:"O princípio da malha fechada é justamente comparar a variável medida com o setpoint, gerando um sinal de erro que ajusta a variável manipulada, corrigindo o processo continuamente."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"Diferentemente de um sistema de controle em malha aberta, um sistema em malha fechada:",
-   opts:[
-     "não utiliza sensores em nenhuma etapa do processo",
-     "utiliza a realimentação (feedback) do valor medido para corrigir o processo automaticamente",
-     "sempre opera sem qualquer atuador",
-     "é necessariamente mais simples de implementar que a malha aberta",
-     "não permite ação de controle proporcional"
-   ],
+   opts:["não utiliza sensores em nenhuma etapa do processo","utiliza a realimentação (feedback) do valor medido para corrigir o processo automaticamente","sempre opera sem qualquer atuador","é necessariamente mais simples de implementar que a malha aberta","não permite ação de controle proporcional"],
    correct:1, exp:"A característica que define a malha fechada é justamente o uso de realimentação: o valor medido do processo retorna ao controlador para corrigir a ação de controle continuamente."},
   {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
    q:"Um megômetro (megôhmetro) é uma ferramenta de medição utilizada especificamente para:",
-   opts:[
-     "medir tensão contínua de precisão em circuitos eletrônicos",
-     "medir a resistência de isolamento de cabos e enrolamentos, aplicando alta tensão de teste",
-     "medir corrente de fuga em tempo real durante a operação normal",
-     "substituir o uso do multímetro em qualquer tipo de medição",
-     "medir exclusivamente a resistência de aterramento de uma malha"
-   ],
+   opts:["medir tensão contínua de precisão em circuitos eletrônicos","medir a resistência de isolamento de cabos e enrolamentos, aplicando alta tensão de teste","medir corrente de fuga em tempo real durante a operação normal","substituir o uso do multímetro em qualquer tipo de medição","medir exclusivamente a resistência de aterramento de uma malha"],
    correct:1, exp:"O megômetro aplica uma tensão de teste elevada (tipicamente 500V, 1000V ou mais) para medir a resistência de isolamento de cabos, motores e transformadores, avaliando a integridade da isolação elétrica."},
   {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
    q:"Entre os materiais isolantes comumente utilizados em cabos de baixa tensão, o PVC (cloreto de polivinila) apresenta como principal característica, em comparação ao XLPE:",
-   opts:[
-     "resistência térmica superior, suportando temperaturas de operação mais altas que o XLPE",
-     "boa isolação elétrica e custo relativamente baixo, porém com menor resistência térmica que o XLPE",
-     "ser um material condutor, e não isolante",
-     "ausência completa de resistência à umidade",
-     "impossibilidade de uso em instalações de baixa tensão"
-   ],
+   opts:["resistência térmica superior, suportando temperaturas de operação mais altas que o XLPE","boa isolação elétrica e custo relativamente baixo, porém com menor resistência térmica que o XLPE","ser um material condutor, e não isolante","ausência completa de resistência à umidade","impossibilidade de uso em instalações de baixa tensão"],
    correct:1, exp:"O PVC oferece boa isolação e custo acessível, mas suporta temperaturas de operação contínua menores (geralmente até 70°C) do que o XLPE (até 90°C), que tem melhor desempenho térmico."},
-
-  // ===== TRANSPETRO — completando os blocos oficiais restantes =====
   {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
    q:"Uma instalação industrial consome potência ativa de 40 kW com fator de potência de 0,7 indutivo. A concessionária de energia costuma aplicar penalidades quando o fator de potência médio mensal fica abaixo de 0,92. Nessa situação, a instalação está:",
-   opts:[
-     "dentro do limite, sem qualquer risco de penalização",
-     "abaixo do limite mínimo, sujeita a penalização por baixo fator de potência",
-     "acima do limite ideal, podendo reduzir ainda mais o fator de potência sem problemas",
-     "isenta de qualquer regulamentação sobre fator de potência",
-     "sem informações suficientes para essa avaliação"
-   ],
+   opts:["dentro do limite, sem qualquer risco de penalização","abaixo do limite mínimo, sujeita a penalização por baixo fator de potência","acima do limite ideal, podendo reduzir ainda mais o fator de potência sem problemas","isenta de qualquer regulamentação sobre fator de potência","sem informações suficientes para essa avaliação"],
    correct:1, exp:"Com FP = 0,7, a instalação está claramente abaixo do limite mínimo de 0,92 estabelecido pela regulamentação, ficando sujeita a cobrança adicional por baixo fator de potência (excedente de reativos)."},
   {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
    q:"Uma carga consome potência ativa de 30 kW e tem fator de potência de 0,6 indutivo. A potência aparente dessa carga, em kVA, é de:",
@@ -1308,13 +1083,7 @@ const BANK = [
    correct:3, exp:"S = P / cos φ = 30 / 0,6 = 50 kVA."},
   {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
    q:"A principal consequência prática de uma instalação operar com fator de potência baixo é:",
-   opts:[
-     "o aumento da corrente total para a mesma potência ativa, elevando perdas e podendo gerar multas da concessionária",
-     "a redução da tensão nominal fornecida pela rede",
-     "o aumento da vida útil dos condutores da instalação",
-     "a eliminação da necessidade de aterramento da instalação",
-     "a redução automática do consumo de energia reativa a zero"
-   ],
+   opts:["o aumento da corrente total para a mesma potência ativa, elevando perdas e podendo gerar multas da concessionária","a redução da tensão nominal fornecida pela rede","o aumento da vida útil dos condutores da instalação","a eliminação da necessidade de aterramento da instalação","a redução automática do consumo de energia reativa a zero"],
    correct:0, exp:"Com fator de potência baixo, a corrente total (que inclui a parcela reativa) aumenta para entregar a mesma potência ativa, elevando as perdas por efeito Joule nos condutores e, em geral, gerando cobrança adicional da concessionária pelo excedente de reativos."},
   {cat:"Circuitos Monofásicos e Trifásicos", banca:"Transpetro", type:"mc",
    q:"Em um sistema trifásico equilibrado ligado em estrela (Y), a relação entre a tensão de linha (VL) e a tensão de fase (Vf) é dada por:",
@@ -1328,17 +1097,9 @@ const BANK = [
    q:"Em uma carga trifásica equilibrada ligada em estrela, a corrente de linha (IL), em relação à corrente de fase (If), é:",
    opts:["igual à corrente de fase (IL = If)","igual a If × √3","igual a If / √3","igual ao triplo de If","nula, independentemente de If"],
    correct:0, exp:"Na ligação estrela, cada condutor de linha conduz diretamente a corrente do respectivo enrolamento, logo IL = If (diferentemente da ligação triângulo, em que IL = If × √3)."},
-
-  // ===== TRANSPETRO — QUADRO DE MAR (Eletricista): Português, Inglês Técnico Marítimo, Conhecimentos Específicos =====
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T7",
    q:"O texto pode ser dividido em duas partes. A segunda parte, diferentemente da primeira, apresenta:",
-   opts:[
-     "apenas críticas sensacionalistas ao tema",
-     "o esforço científico de pesquisadores para compreender o problema",
-     "uma lista de leis internacionais sobre o tema",
-     "receitas de reciclagem doméstica",
-     "um resumo histórico da navegação"
-   ],
+   opts:["apenas críticas sensacionalistas ao tema","o esforço científico de pesquisadores para compreender o problema","uma lista de leis internacionais sobre o tema","receitas de reciclagem doméstica","um resumo histórico da navegação"],
    correct:1, exp:"A segunda parte do texto (a partir de 'Embora o tema desperte...') volta-se para o esforço científico de pesquisadores em produzir estudos consistentes sobre o problema."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T7",
    q:"No trecho 'Embora o tema desperte certo sensacionalismo, pesquisadores de diversos países vêm produzindo estudos consistentes', a palavra destacada veicula uma relação de:",
@@ -1346,46 +1107,20 @@ const BANK = [
    correct:1, exp:"'Embora' introduz uma ideia que poderia contrariar a conclusão apresentada (o sensacionalismo poderia sugerir falta de rigor), mas não impede a existência de estudos consistentes — uma relação de concessão."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T7",
    q:"Assinale a alternativa em que o acento indicativo de crase está empregado de acordo com a norma-padrão:",
-   opts:[
-     "Os pesquisadores estão dedicados à estudar o fenômeno.",
-     "As medidas propostas se referem à preservação dos oceanos.",
-     "Isso equivale à qualquer descarte irregular.",
-     "Os obstáculos à serem superados são grandes.",
-     "Chegou-se à conclusões precipitadas."
-   ],
+   opts:["Os pesquisadores estão dedicados à estudar o fenômeno.","As medidas propostas se referem à preservação dos oceanos.","Isso equivale à qualquer descarte irregular.","Os obstáculos à serem superados são grandes.","Chegou-se à conclusões precipitadas."],
    correct:1, exp:"'Referem-se à preservação' está correto (a + a, artigo feminino). As demais estão erradas: não há crase antes de verbo no infinitivo ('a estudar', 'a serem'), antes de pronome indefinido ('a qualquer') ou antes de substantivo plural indeterminado sem artigo ('a conclusões')."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T7",
    q:"No trecho 'boa parte desse material... resiste por muito tempo à decomposição', o termo destacado exerce, em relação ao verbo 'resistir', a função de:",
-   opts:["sujeito", "complemento (objeto indireto)", "aposto explicativo", "vocativo", "adjunto adverbial de lugar"],
+   opts:["sujeito","complemento (objeto indireto)","aposto explicativo","vocativo","adjunto adverbial de lugar"],
    correct:1, exp:"'Resistir' rege a preposição 'a' ('resistir a algo'); 'à decomposição' é o objeto indireto que completa o sentido do verbo."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T7",
    q:"Considerando as ideias do texto, é correto afirmar que o lixo marinho tem, entre suas fontes,",
-   opts:[
-     "apenas fontes marinhas",
-     "apenas fontes terrestres",
-     "tanto fontes marinhas quanto fontes terrestres",
-     "nenhuma fonte identificável até o momento",
-     "exclusivamente fontes de origem atmosférica"
-   ],
+   opts:["apenas fontes marinhas","apenas fontes terrestres","tanto fontes marinhas quanto fontes terrestres","nenhuma fonte identificável até o momento","exclusivamente fontes de origem atmosférica"],
    correct:2, exp:"O texto cita explicitamente fontes marinhas (descartes de embarcações) e fontes terrestres (lixo urbano carregado pelas chuvas até os rios e o mar)."},
   {cat:"Português", banca:"Transpetro", type:"mc",
    q:"Assinale a alternativa em que o emprego da vírgula está de acordo com a norma-padrão da língua portuguesa:",
-   opts:[
-     "Os resíduos, que chegam aos oceanos causam danos duradouros.",
-     "Os plásticos, por sua durabilidade, tornaram-se um dos principais poluentes marinhos.",
-     "Os pesquisadores, estudam o fenômeno, há décadas.",
-     "O problema atinge, todos os oceanos do planeta.",
-     "As correntes marinhas, concentram o lixo em giros."
-   ],
+   opts:["Os resíduos, que chegam aos oceanos causam danos duradouros.","Os plásticos, por sua durabilidade, tornaram-se um dos principais poluentes marinhos.","Os pesquisadores, estudam o fenômeno, há décadas.","O problema atinge, todos os oceanos do planeta.","As correntes marinhas, concentram o lixo em giros."],
    correct:1, exp:"O aposto/expressão explicativa 'por sua durabilidade' está corretamente isolado por vírgulas. As demais alternativas separam indevidamente sujeito e verbo, ou verbo e complemento, com vírgula."},
-
-  
-  
-  
-  
-  
-  
-
   {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
    q:"Segundo a NR-10, para que uma instalação elétrica seja considerada desenergizada e liberada para o trabalho, deve-se seguir a seguinte sequência de atividades: I – Aterramento temporário com equipotencialização dos condutores; II – Proteção dos elementos energizados existentes na zona controlada; III – Constatação da ausência de tensão; IV – Seccionamento; V – Sinalização de impedimento de reenergização; VI – Impedimento de reenergização. Assinale a sequência correta:",
    opts:["I – V – III – II – IV – VI","I – VI – V – IV – II – III","III – II – IV – V – VI – I","IV – III – VI – I – V – II","IV – VI – V – III – I – II"],
@@ -1404,51 +1139,24 @@ const BANK = [
    correct:0, exp:"O valor padronizado de tensão secundária para transformadores de potencial (TP) é de 115 V, permitindo que instrumentos de medição e proteção sejam projetados de forma padronizada, independentemente da tensão nominal do sistema medido."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"O controle de malha aberta, diferentemente do controle de malha fechada, é uma técnica que:",
-   opts:[
-     "pressupõe a realimentação da variável controlada para ajuste do sinal de controle",
-     "é a técnica mais utilizada, por se adaptar facilmente a perturbações externas",
-     "é de baixo custo e baixa complexidade, mas não é capaz de compensar perturbações sofridas pelo sistema",
-     "não necessita de nenhum conhecimento prévio da relação entre a variável controlada e o sinal de controle",
-     "sempre exige uma rede de dados entre os elementos do sistema"
-   ],
+   opts:["pressupõe a realimentação da variável controlada para ajuste do sinal de controle","é a técnica mais utilizada, por se adaptar facilmente a perturbações externas","é de baixo custo e baixa complexidade, mas não é capaz de compensar perturbações sofridas pelo sistema","não necessita de nenhum conhecimento prévio da relação entre a variável controlada e o sinal de controle","sempre exige uma rede de dados entre os elementos do sistema"],
    correct:2, exp:"O controle em malha aberta não utiliza realimentação; por isso, embora seja simples e barato, não é capaz de compensar automaticamente perturbações que afetem o processo."},
-
-  // ===== TRANSPETRO — Técnico de Manutenção Júnior - Elétrica (Terra, 2018) =====
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T9",
    q:"O trecho que resume o principal objetivo da disputa por controle de informação descrita no texto é:",
-   opts:[
-     "\"A explosão da conectividade digital transformou radicalmente a forma como informações circulam pelo mundo.\"",
-     "\"governos e empresas perceberam que... tornou-se essencial saber o que os outros sabem — ou podem vir a saber.\"",
-     "\"uma quantidade descomunal de dados trafega pela internet\"",
-     "\"apenas uma fração ínfima desse volume é efetivamente monitorada\"",
-     "\"esse pequeno percentual já é suficiente para revelar padrões de comportamento\""
-   ],
+   opts:["\"A explosão da conectividade digital transformou radicalmente a forma como informações circulam pelo mundo.\"","\"governos e empresas perceberam que... tornou-se essencial saber o que os outros sabem — ou podem vir a saber.\"","\"uma quantidade descomunal de dados trafega pela internet\"","\"apenas uma fração ínfima desse volume é efetivamente monitorada\"","\"esse pequeno percentual já é suficiente para revelar padrões de comportamento\""],
    correct:1, exp:"O trecho aponta diretamente o objetivo central: não mais guardar segredos, mas saber o que os outros sabem ou podem vir a saber."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T9",
    q:"De acordo com a norma-padrão, o uso do sinal indicativo de crase é obrigatório na palavra destacada em:",
-   opts:[
-     "O acesso à informação deve ser garantido a todos os cidadãos.",
-     "Isso corresponde à uma grave violação de privacidade.",
-     "Os dados estão sujeitos à análise minuciosa dos especialistas.",
-     "Referimo-nos à situações semelhantes em outros países.",
-     "Os governos precisam responder à perguntas incômodas."
-   ],
+   opts:["O acesso à informação deve ser garantido a todos os cidadãos.","Isso corresponde à uma grave violação de privacidade.","Os dados estão sujeitos à análise minuciosa dos especialistas.","Referimo-nos à situações semelhantes em outros países.","Os governos precisam responder à perguntas incômodas."],
    correct:2, exp:"'Sujeitos à análise' está correto (a + a, artigo feminino). As demais estão erradas: não há crase antes de palavra masculina, antes de numeral indefinido ('a uma') ou antes de substantivo plural indeterminado sem artigo ('a situações', 'a perguntas')."},
   {cat:"Português", banca:"Transpetro", type:"mc",
    q:"Obedecem às regras ortográficas da língua portuguesa as palavras:",
-   opts:[
-     "pesquiza, analize, orgaizar",
-     "monitoração, vertiginosa, estratégia",
-     "desorganisação, extenção, excesso",
-     "previlégio, benefiscente, ascensão",
-     "pesquisa, análize, extrategista"
-   ],
+   opts:["pesquiza, analize, orgaizar","monitoração, vertiginosa, estratégia","desorganisação, extenção, excesso","previlégio, benefiscente, ascensão","pesquisa, análize, extrategista"],
    correct:1, exp:"'Monitoração, vertiginosa, estratégia' estão todas corretas. As demais alternativas contêm erros de grafia (o correto é: pesquisa, analisar, organizar; desorganização, extensão; privilégio, beneficente; análise, estrategista)."},
   {cat:"Português", banca:"Transpetro", type:"mc", textRef:"T9",
    q:"No trecho '...tornou-se essencial saber...', a palavra 'essencial' apresenta sentido oposto ao de:",
    opts:["fundamental","indispensável","imprescindível","dispensável","crucial"],
    correct:3, exp:"'Essencial' significa algo fundamental, necessário; seu antônimo é 'dispensável', algo que pode ser deixado de lado."},
-
   {cat:"Matemática", banca:"Transpetro", type:"mc",
    q:"O terceiro, o quarto e o quinto termos de uma progressão aritmética são expressos por x, x²+1 e 2x²−1, respectivamente. A soma dos oito primeiros termos dessa progressão é igual a:",
    opts:["90","99","108","117","126"],
@@ -1465,7 +1173,6 @@ const BANK = [
    q:"Um conjunto tem 4 elementos positivos e 4 elementos negativos. Escolhem-se 4 números desse conjunto, e efetua-se a multiplicação desses 4 números escolhidos. Em quantos casos essa multiplicação terá resultado positivo?",
    opts:["32","35","38","40","70"],
    correct:2, exp:"O produto é positivo com 0, 2 ou 4 números negativos escolhidos. C(4,4)×C(4,0)=1; C(4,2)×C(4,2)=6×6=36; C(4,0)×C(4,4)=1. Total: 1+36+1=38 (de um total de C(8,4)=70 combinações possíveis)."},
-
   {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
    q:"Um instalador, ao tocar acidentalmente os terminais de um equipamento energizado, forma um circuito cujo equivalente elétrico entre suas duas mãos apresenta uma fonte de tensão de 24 V e uma resistência total (percurso mão-braço-mão) de 1.000 Ω. O valor aproximado, em miliampères, da corrente que circulará pelo corpo do instalador é:",
    opts:["12","18","24","30","48"],
@@ -1480,23 +1187,11 @@ const BANK = [
    correct:2, exp:"|Z| = √(2²+2²) = √8 ≈ 2,83 Ω. Queda de tensão = I × |Z| = 10 × 2,83 ≈ 28,3 V."},
   {cat:"Proteção Elétrica", banca:"Transpetro", type:"mc",
    q:"Um profissional deve selecionar um fusível de ação retardada para proteger um motor de indução trifásico, considerando a corrente de partida (Ip) e a corrente nominal (In) do motor. A curva característica do fusível adequado deve:",
-   opts:[
-     "atuar antes do motor atingir a corrente de partida, mesmo em condições normais de operação",
-     "permitir a passagem da corrente de partida sem atuar, mas atuar para sobrecorrentes a partir de aproximadamente 125% da corrente nominal em regime permanente",
-     "atuar instantaneamente para qualquer valor de corrente acima da nominal",
-     "nunca atuar, independentemente do valor de corrente",
-     "atuar apenas na ausência total de corrente no circuito"
-   ],
+   opts:["atuar antes do motor atingir a corrente de partida, mesmo em condições normais de operação","permitir a passagem da corrente de partida sem atuar, mas atuar para sobrecorrentes a partir de aproximadamente 125% da corrente nominal em regime permanente","atuar instantaneamente para qualquer valor de corrente acima da nominal","nunca atuar, independentemente do valor de corrente","atuar apenas na ausência total de corrente no circuito"],
    correct:1, exp:"O fusível de ação retardada deve suportar o pico transitório da corrente de partida sem atuar, mas precisa atuar caso o motor opere em regime permanente com sobrecorrente (tipicamente acima de 125% da nominal), protegendo-o contra sobrecarga sustentada."},
   {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
    q:"O esquema de aterramento TN-C combina, em um único condutor (PEN), as funções de neutro e de proteção. O principal risco associado a esse esquema, que justifica a preferência pelo TN-S (com condutores neutro e de proteção separados) em determinadas aplicações, está relacionado ao(à):",
-   opts:[
-     "contato da fase com a estrutura metálica do equipamento",
-     "rompimento do condutor PEN, que pode elevar as massas metálicas a um potencial perigoso",
-     "curto-circuito entre fases",
-     "ausência de disjuntores termomagnéticos na instalação",
-     "excesso de aterramentos independentes na instalação"
-   ],
+   opts:["contato da fase com a estrutura metálica do equipamento","rompimento do condutor PEN, que pode elevar as massas metálicas a um potencial perigoso","curto-circuito entre fases","ausência de disjuntores termomagnéticos na instalação","excesso de aterramentos independentes na instalação"],
    correct:1, exp:"Como o condutor PEN acumula as funções de neutro e proteção, seu rompimento pode elevar as massas metálicas dos equipamentos a um potencial perigoso — risco que o esquema TN-S evita, ao manter neutro e proteção em condutores separados."},
   {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
    q:"No ensaio a vazio de um transformador monofásico de 5 kVA, 500V/50V, obtiveram-se os seguintes resultados: tensão de circuito aberto Voc=50V, corrente de circuito aberto Ioc=1A e potência de circuito aberto Poc=10W. A reatância de magnetização do transformador, referida ao lado de baixa tensão, em ohms, é aproximadamente:",
@@ -1510,8 +1205,6 @@ const BANK = [
    q:"Em uma fábrica, as cargas elétricas demandam: iluminação (P=2kW, Q=1kVAr indutivo); aquecimento (P=6kW); motores (P=4kW, Q=3kVAr indutivo); banco de capacitores (Q=2kVAr capacitivo). O fator de potência total indutivo dessa fábrica é, aproximadamente,",
    opts:["0,80","0,86","0,92","0,96","0,99"],
    correct:4, exp:"P total = 2+6+4 = 12 kW. Q total (líquido, indutivo) = 1+3−2 = 2 kVAr. S = √(12²+2²) = √148 ≈ 12,17 kVA. FP = P/S = 12/12,17 ≈ 0,99."},
-
-  // ===== REFORÇO — completando categorias mais rasas (Medidas Elétricas, Proteção Elétrica) =====
   {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
    q:"Um multímetro, operando no modo de medição de tensão CA (valor eficaz/RMS), indicou 127 V entre dois pontos de um circuito. Supondo que a tensão seja puramente senoidal, o valor de pico dessa tensão, em volts, é aproximadamente:",
    opts:["90","110","127","155","180"],
@@ -1522,50 +1215,448 @@ const BANK = [
    correct:2, exp:"Erro máximo = calibre × classe de exatidão = 300 × 0,02 = 6 unidades, independentemente do valor medido em cada leitura."},
   {cat:"Proteção Elétrica", banca:"Transpetro", type:"mc",
    q:"Um motor elétrico trifásico possui corrente nominal de 100 A. Sua corrente de partida direta é 8 vezes a corrente nominal, com tempo de partida de aproximadamente 8 segundos. Para que o fusível de proteção não atue indevidamente durante a partida, mas ainda proteja o motor contra sobrecarga em regime permanente, esse fusível deve:",
-   opts:[
-     "suportar a corrente de partida sem fundir durante os 8 segundos, mas atuar para correntes pouco acima da nominal em regime permanente",
-     "fundir imediatamente ao atingir a corrente de partida, protegendo o motor de qualquer sobrecorrente",
-     "ser dimensionado apenas para a corrente nominal, ignorando a corrente de partida",
-     "nunca atuar, já que motores elétricos não precisam de proteção contra sobrecorrente",
-     "ser dimensionado exclusivamente pela tensão nominal do motor, e não pela corrente"
-   ],
+   opts:["suportar a corrente de partida sem fundir durante os 8 segundos, mas atuar para correntes pouco acima da nominal em regime permanente","fundir imediatamente ao atingir a corrente de partida, protegendo o motor de qualquer sobrecorrente","ser dimensionado apenas para a corrente nominal, ignorando a corrente de partida","nunca atuar, já que motores elétricos não precisam de proteção contra sobrecorrente","ser dimensionado exclusivamente pela tensão nominal do motor, e não pela corrente"],
    correct:0, exp:"Um fusível de ação retardada (tipo motor) deve suportar a elevada corrente de partida durante o tempo de partida sem fundir, mas ainda atuar para proteger o motor contra sobrecargas em regime permanente — por isso sua curva característica precisa ficar acima da curva de partida do motor, mas suficientemente próxima da nominal em regime contínuo."},
-
-  // ===== REFORÇO — eletrônica/instrumentação/automação (baseado em tópicos de eletricista Transpetro) =====
   {cat:"Instrumentação", banca:"Transpetro", type:"mc",
    q:"A faixa de operação de um processo industrial é definida por 100°C ≤ T ≤ 250°C. Considerando a conversão F = 1,8×C + 32, qual seria a faixa de operação correspondente em Fahrenheit?",
    opts:["212°F ≤ T ≤ 482°F","68°F ≤ T ≤ 122°F","180°F ≤ T ≤ 450°F","100°F ≤ T ≤ 250°F","32°F ≤ T ≤ 180°F"],
    correct:0, exp:"Em 100°C: F=1,8×100+32=212°F. Em 250°C: F=1,8×250+32=482°F. Faixa: 212°F ≤ T ≤ 482°F."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"Considerando-se um transistor bipolar de junção (TBJ) do tipo npn, com polarização direta na junção emissor-base e polarização reversa na junção base-coletor, a corrente de coletor apresenta magnitude próxima à da corrente de emissor devido:",
-   opts:[
-     "à alta dopagem da base, que impede a passagem de elétrons ao coletor",
-     "ao fato de a base ser uma região fina e pouco dopada, fazendo com que a maior parte dos elétrons injetados pelo emissor atravesse a base e seja coletada pelo coletor",
-     "à ausência de campo elétrico na junção base-coletor",
-     "ao fato de o coletor ser a região menos dopada, o que impede o fluxo de elétrons",
-     "à polarização reversa da junção emissor-base"
-   ],
+   opts:["à alta dopagem da base, que impede a passagem de elétrons ao coletor","ao fato de a base ser uma região fina e pouco dopada, fazendo com que a maior parte dos elétrons injetados pelo emissor atravesse a base e seja coletada pelo coletor","à ausência de campo elétrico na junção base-coletor","ao fato de o coletor ser a região menos dopada, o que impede o fluxo de elétrons","à polarização reversa da junção emissor-base"],
    correct:1, exp:"A base de um TBJ é intencionalmente fina e pouco dopada; por isso, a grande maioria dos elétrons injetados pelo emissor atravessa a base sem se recombinar e é coletada pelo coletor, fazendo Ic ≈ Ie."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"Os átomos de materiais semicondutores, ao serem excitados por energia térmica, apresentam como comportamento característico:",
-   opts:[
-     "elétrons da banda de valência deslocando-se para a banda de condução, aumentando a condutividade elétrica do material",
-     "elétrons permanecendo fixos na banda de valência, independentemente da energia térmica recebida",
-     "formação exclusiva de ligações iônicas entre os átomos vizinhos",
-     "impossibilidade total de condução elétrica em qualquer faixa de temperatura",
-     "comportamento eletricamente idêntico ao de um isolante perfeito"
-   ],
+   opts:["elétrons da banda de valência deslocando-se para a banda de condução, aumentando a condutividade elétrica do material","elétrons permanecendo fixos na banda de valência, independentemente da energia térmica recebida","formação exclusiva de ligações iônicas entre os átomos vizinhos","impossibilidade total de condução elétrica em qualquer faixa de temperatura","comportamento eletricamente idêntico ao de um isolante perfeito"],
    correct:0, exp:"Em materiais semicondutores, a energia térmica pode excitar elétrons da banda de valência para a banda de condução, aumentando a condutividade elétrica do material — o princípio por trás de diodos e transistores."},
   {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
    q:"O protocolo Foundation Fieldbus, utilizado em redes digitais industriais, tem como uma de suas características:",
-   opts:[
-     "adotar, na versão H1, uma taxa de transmissão padrão de 31,25 kbps",
-     "ser incompatível com o uso de fibra óptica como meio físico",
-     "permitir a conexão de, no máximo, 8 equipamentos por segmento",
-     "não poder ser utilizado em áreas classificadas",
-     "utilizar exclusivamente comunicação sem fio"
-   ],
+   opts:["adotar, na versão H1, uma taxa de transmissão padrão de 31,25 kbps","ser incompatível com o uso de fibra óptica como meio físico","permitir a conexão de, no máximo, 8 equipamentos por segmento","não poder ser utilizado em áreas classificadas","utilizar exclusivamente comunicação sem fio"],
    correct:0, exp:"A versão H1 do Foundation Fieldbus, voltada para instrumentação de campo, opera com taxa de transmissão padronizada de 31,25 kbps."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"Leia o texto: \"As instalações elétricas industriais modernas dependem cada vez mais de sistemas de automação para operar com segurança e eficiência. A manutenção preventiva, quando bem planejada, reduz significativamente a ocorrência de falhas inesperadas, evitando paradas não programadas que podem comprometer tanto a produção quanto a segurança dos trabalhadores envolvidos.\" Considerando o texto, é correto afirmar que a manutenção preventiva bem planejada:",
+   opts:["aumenta a ocorrência de falhas inesperadas","não tem qualquer relação com a segurança dos trabalhadores","reduz significativamente paradas não programadas, conforme afirma o texto","substitui integralmente os sistemas de automação","é incompatível com instalações industriais modernas"],
+   correct:2, exp:"O texto afirma que a manutenção preventiva bem planejada reduz significativamente paradas não programadas — informação declarada explicitamente no trecho final do texto."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"No texto acima, a palavra 'significativamente' pode ser substituída, sem alteração de sentido, por:",
+   opts:["irrelevantemente","consideravelmente","ocasionalmente","brevemente","negativamente"],
+   correct:1, exp:"'Significativamente' equivale a 'de forma considerável/expressiva' — por isso 'consideravelmente' é o sinônimo mais próximo, sem alterar o sentido original."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"No trecho 'evitando paradas não programadas que podem comprometer tanto a produção quanto a segurança', o pronome relativo 'que' retoma:",
+   opts:["manutenção preventiva","paradas não programadas","produção","segurança","trabalhadores"],
+   correct:1, exp:"O pronome relativo 'que' retoma o substantivo mais próximo com sentido compatível na oração — 'paradas não programadas', que é o sujeito capaz de 'comprometer' produção e segurança."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"Na frase 'a manutenção preventiva, quando bem planejada, reduz significativamente a ocorrência de falhas', a palavra 'significativamente' pertence à classe gramatical de:",
+   opts:["substantivo","adjetivo","advérbio","pronome","conjunção"],
+   correct:2, exp:"'Significativamente' termina em '-mente', sufixo típico de advérbios de modo, formado a partir do adjetivo 'significativa'."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"Assinale a alternativa em que o acento indicativo de crase está de acordo com a norma-padrão:",
+   opts:["Os técnicos foram à campo verificar o problema.","A equipe está atenta à ocorrência de falhas na linha.","Isso equivale à qualquer situação de risco.","Voltarei à trabalhar amanhã.","Chegou-se à conclusões precipitadas."],
+   correct:1, exp:"'Atenta à ocorrência' está correto (a+a, artigo feminino antes de substantivo feminino). As demais erram: não há crase antes de palavra masculina ('a campo'), pronome indefinido ('a qualquer'), verbo no infinitivo ('a trabalhar') ou substantivo plural indeterminado sem artigo ('a conclusões')."},
+  {cat:"Português", banca:"Transpetro", type:"mc",
+   q:"Assinale a alternativa em que o emprego da vírgula está de acordo com a norma-padrão:",
+   opts:["Os sensores, que monitoram a linha causam alertas automáticos.","A manutenção, quando bem planejada, reduz falhas inesperadas.","Os técnicos, revisam o painel, periodicamente.","O sistema apresenta, falhas ocasionais.","As paradas, não programadas prejudicam a produção."],
+   correct:1, exp:"A expressão 'quando bem planejada' é um aposto/intercalação explicativa, corretamente isolada por vírgulas em ambos os lados — único caso que segue a norma-padrão entre as opções."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Considere os conjuntos A = {x ∈ ℕ | x < 5} e B = {x ∈ ℤ | -3 ≤ x ≤ 3}. O número de elementos do conjunto A ∩ B é:",
+   opts:["2","3","4","5","6"],
+   correct:2, exp:"A = {0,1,2,3,4} (naturais menores que 5). B = {-3,-2,-1,0,1,2,3} (inteiros de -3 a 3). A∩B = {0,1,2,3} → 4 elementos."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Se 8 técnicos concluem uma inspeção em 6 dias, trabalhando na mesma proporção, quantos dias 4 técnicos levariam para concluir a mesma inspeção?",
+   opts:["3","6","9","12","15"],
+   correct:3, exp:"Grandezas inversamente proporcionais: 8×6 = 4×x → x = 48/4 = 12 dias."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Na função f(x) = 2^x, o valor de f(5) é:",
+   opts:["10","16","25","32","40"],
+   correct:3, exp:"f(5) = 2⁵ = 32."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"A soma das raízes da equação x² − 7x + 10 = 0 é:",
+   opts:["3","5","7","10","12"],
+   correct:2, exp:"Soma das raízes = -b/a (relação de Girard) = -(-7)/1 = 7."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"De quantos modos distintos 3 técnicos podem ser escolhidos, entre 7 disponíveis, para compor uma equipe (sem considerar a ordem)?",
+   opts:["21","28","35","42","49"],
+   correct:2, exp:"C(7,3) = 7!/(3!×4!) = (7×6×5)/(3×2×1) = 210/6 = 35."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Uma urna contém 4 bolas brancas e 6 bolas pretas. Retirando-se uma bola ao acaso, a probabilidade de que seja branca é:",
+   opts:["20%","30%","40%","50%","60%"],
+   correct:2, exp:"P(branca) = 4/(4+6) = 4/10 = 40%."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"As medições de um equipamento, em horas de operação, foram: 10, 12, 12, 14, 17. A moda dessa distribuição é:",
+   opts:["10","11","12","14","17"],
+   correct:2, exp:"A moda é o valor que mais se repete na distribuição. O valor 12 aparece duas vezes, mais que qualquer outro."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Um capital de R$ 4.000,00 é aplicado a juros simples de 3% ao mês, durante 5 meses. O montante final é:",
+   opts:["R$ 4.120,00","R$ 4.300,00","R$ 4.460,00","R$ 4.600,00","R$ 4.800,00"],
+   correct:3, exp:"Juros = C×i×t = 4000×0,03×5 = 600. Montante = 4000+600 = R$ 4.600,00."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Em um triângulo retângulo, os catetos medem 9 cm e 12 cm. A medida da hipotenusa, em cm, é:",
+   opts:["13","14","15","16","18"],
+   correct:2, exp:"Pitágoras: h² = 9²+12² = 81+144 = 225 → h = √225 = 15 cm."},
+  {cat:"Matemática", banca:"Transpetro", type:"mc",
+   q:"Um cilindro reto tem raio da base igual a 3 cm e altura igual a 10 cm. Considerando π≈3,14, o volume desse cilindro, em cm³, é aproximadamente:",
+   opts:["188,4","235,5","282,6","314,0","353,25"],
+   correct:2, exp:"V = π×r²×h = 3,14×3²×10 = 3,14×9×10 = 282,6 cm³."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Ensaios de vazio e curto-circuito de um transformador monofásico revelaram, respectivamente, perdas de 250 W e 400 W. Operando sob tensão nominal com sobrecarga de 15% na corrente, a perda total no transformador, em W, é de:",
+   opts:["700","740","779","820","860"],
+   correct:2, exp:"Perda no ferro (vazio) é constante = 250W. Perda no cobre varia com I²: 400×(1,15)² = 400×1,3225 = 529W. Total = 250+529 = 779W."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um motor de indução trifásico de 4 polos, alimentado em 60 Hz, opera com escorregamento de 5%. A velocidade do rotor, em rpm, é de:",
+   opts:["1650","1690","1710","1750","1800"],
+   correct:2, exp:"Ns = 120×60/4 = 1800 rpm. n = Ns×(1-s) = 1800×0,95 = 1710 rpm."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"A principal diferença entre um motor síncrono e um motor de indução, quanto à velocidade de rotação, é que o motor síncrono:",
+   opts:["opera sempre abaixo da velocidade síncrona","opera exatamente na velocidade síncrona, sem escorregamento","não possui velocidade definida","opera sempre acima da velocidade síncrona","necessita de escorregamento para produzir torque"],
+   correct:1, exp:"O motor síncrono gira exatamente na velocidade síncrona, sem escorregamento — ao contrário do motor de indução, que sempre gira um pouco mais devagar."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um motor CC tipo shunt é alimentado com tensão terminal de 220 V. A resistência de armadura é 0,4 Ω, e a corrente de armadura em certo ponto de operação é 25 A. A força contra-eletromotriz (fcem) nesse ponto, em volts, é de:",
+   opts:["200","205","210","215","220"],
+   correct:2, exp:"fcem = V - Ia×Ra = 220 - 25×0,4 = 220-10 = 210V."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Em um motor de indução trifásico acionado por soft-starter, a redução da tensão aplicada ao motor durante a partida é obtida por meio de:",
+   opts:["um autotransformador com derivações fixas","tiristores em antiparalelo, controlando o ângulo de disparo","um resistor fixo em série com cada fase","um capacitor em paralelo com o motor","um transformador de corrente"],
+   correct:1, exp:"O soft-starter controla a tensão aplicada ao motor variando o ângulo de disparo de tiristores (SCRs) em antiparalelo, suavizando a partida."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um transformador monofásico tem tensão primária de 4.160 V e tensão secundária de 220 V. Se o enrolamento primário possui 800 espiras, o número aproximado de espiras do secundário é de:",
+   opts:["32","38","42","48","55"],
+   correct:2, exp:"N2 = N1×(V2/V1) = 800×(220/4160) ≈ 42 espiras."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Considere as afirmativas sobre motores de corrente contínua: I - No motor série, o campo é ligado em série com a armadura, e o motor não deve operar em vazio, pois sua velocidade tenderia a crescer indefinidamente. II - No motor shunt, o campo é ligado em paralelo com a armadura, apresentando velocidade praticamente constante com a carga. III - No motor composto aditivo, os enrolamentos série e shunt combinam características dos dois tipos. Está correto o que se afirma em:",
+   opts:["I, apenas","II, apenas","I e II, apenas","II e III, apenas","I, II e III"],
+   correct:4, exp:"As três afirmativas descrevem corretamente as características de motor série, shunt e composto aditivo — todas corretas."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"A principal diferença entre o motor de indução com rotor bobinado e o motor com rotor em gaiola de esquilo é que o rotor bobinado:",
+   opts:["não possui enrolamentos no rotor","permite inserir resistência externa no circuito do rotor por anéis coletores, controlando corrente e torque de partida","opera apenas em corrente contínua","dispensa o uso de escovas","não pode ser usado para partida de cargas pesadas"],
+   correct:1, exp:"O rotor bobinado tem enrolamentos acessíveis por anéis coletores, permitindo inserir resistência externa para controlar corrente/torque de partida — diferente da gaiola de esquilo, que é fechada em curto."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um motor elétrico trifásico fornece potência mecânica de 15 CV com rendimento de 85%. A potência elétrica ativa consumida da rede, em kW, é aproximadamente de (considere 1 CV ≈ 736 W):",
+   opts:["9,4","11,0","13,0","15,5","18,0"],
+   correct:2, exp:"Pmec = 15×736 = 11.040W. Pelétrica = Pmec/rendimento = 11040/0,85 ≈ 12.988W ≈ 13,0 kW."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Em comparação com transformadores imersos em óleo, os transformadores a seco apresentam como principal vantagem:",
+   opts:["maior capacidade de sobrecarga em qualquer condição","ausência de risco de incêndio associado ao óleo isolante, sendo adequados a locais com restrição a inflamáveis","menor custo de fabricação","maior vida útil em qualquer condição de uso","dispensa de manutenção periódica"],
+   correct:1, exp:"A principal vantagem do transformador a seco é não usar óleo isolante inflamável, tornando-o seguro para instalação em locais com restrição a incêndio."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um motor Dahlander opera em duas velocidades pela alteração do número de polos entre 4 e 8, em rede de 60 Hz. A razão entre a velocidade síncrona em alta velocidade (4 polos) e em baixa velocidade (8 polos) é de:",
+   opts:["1:1","3:2","2:1","3:1","4:1"],
+   correct:2, exp:"Ns é inversamente proporcional ao número de polos. 4 polos: Ns=1800rpm. 8 polos: Ns=900rpm. Razão = 1800/900 = 2:1."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Em um gerador síncrono trifásico convencional, o enrolamento de campo (excitação), alimentado em corrente contínua, é tipicamente instalado:",
+   opts:["no estator, sendo fixo","no rotor, girando junto com o eixo da máquina","simultaneamente no estator e no rotor","em um transformador externo","esse tipo de máquina não possui enrolamento de campo"],
+   correct:1, exp:"No gerador síncrono convencional, o enrolamento de campo (excitação CC) fica no rotor, girando com o eixo; a tensão CA de saída é gerada no estator (armadura)."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um motor de indução trifásico desenvolve potência nominal de 15 kW a uma velocidade de 1.750 rpm. O torque nominal desenvolvido, em N·m, é aproximadamente de:",
+   opts:["65","75","82","90","100"],
+   correct:2, exp:"ω = n×2π/60 = 1750×0,1047 ≈ 183,3 rad/s. T = P/ω = 15000/183,3 ≈ 82 N·m."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Em comparação com os fusíveis do tipo diazed, os fusíveis do tipo NH são tipicamente utilizados para:",
+   opts:["proteção de circuitos de sinalização apenas","correntes nominais mais elevadas, comuns em instalações industriais de maior porte","circuitos eletrônicos de baixa potência","substituir dispositivos DR","proteção exclusiva contra sobretensão atmosférica"],
+   correct:1, exp:"Fusíveis NH são usados para correntes nominais mais elevadas, típicas de instalações industriais de maior porte, em comparação aos diazed."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"A respeito de relés utilizados na proteção de motores elétricos, considere: I - O relé térmico protege contra sobrecargas prolongadas, com atuação temporizada inversa. II - O relé de falta de fase protege contra a perda de uma das fases de alimentação. III - O relé temporizador (timer) é utilizado exclusivamente para proteção contra curto-circuito. Está correto o que se afirma em:",
+   opts:["I, apenas","I e II, apenas","II e III, apenas","III, apenas","I, II e III"],
+   correct:1, exp:"I e II descrevem corretamente o relé térmico (temporização inversa) e o relé de falta de fase. III está errada: o relé temporizador não serve exclusivamente para proteção contra curto-circuito."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Diferentemente do motor monofásico de capacitor de partida (que desconecta o capacitor após a partida por uma chave centrífuga), o motor de capacitor permanente:",
+   opts:["não possui capacitor algum","mantém o capacitor conectado permanentemente ao enrolamento auxiliar, mesmo em regime de funcionamento","não pode operar continuamente","necessita de dois capacitores em série","não é utilizado industrialmente"],
+   correct:1, exp:"No motor de capacitor permanente, o capacitor fica ligado ao enrolamento auxiliar durante toda a operação, diferente do motor de capacitor de partida, que o desconecta após a partida."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um transformador trifásico de 150 kVA tem tensão secundária de linha de 380 V. A corrente nominal de linha no secundário, em ampères, é aproximadamente de:",
+   opts:["180","200","228","250","280"],
+   correct:2, exp:"I = S/(√3×V) = 150000/(1,73×380) ≈ 228A."},
+  {cat:"Máquinas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Uma vantagem da partida de motores de indução com rotor bobinado, por inserção de resistência no circuito do rotor, em comparação com a partida direta, é que essa técnica:",
+   opts:["reduz tanto a corrente quanto o torque de partida","reduz a corrente de partida e, ao mesmo tempo, pode aumentar o torque de partida","não tem qualquer efeito sobre corrente ou torque","aumenta a corrente de partida","só pode ser usada em motores monofásicos"],
+   correct:1, exp:"A inserção de resistência externa no rotor bobinado reduz a corrente de partida e, ao mesmo tempo, pode aumentar o torque de partida — vantagem que a partida direta não oferece."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um circuito monofásico de 220 V alimenta uma carga a 40 m de distância, com corrente de 20 A, usando condutor de cobre de seção 4 mm² (resistividade 0,02 Ω·mm²/m). A queda de tensão percentual aproximada nesse circuito é de:",
+   opts:["1,8%","2,4%","3,6%","4,8%","6,0%"],
+   correct:2, exp:"R = ρ×2L/S = 0,02×80/4 = 0,4Ω. Queda = I×R = 20×0,4 = 8V. % = 8/220 ≈ 3,6%."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"No esquema de aterramento TT, diferentemente do esquema TN, as massas da instalação são aterradas:",
+   opts:["no mesmo ponto de aterramento da fonte, pelo condutor PEN","em um eletrodo de aterramento próprio, eletricamente distinto do aterramento da fonte","sem qualquer aterramento","apenas em instalações trifásicas","apenas quando há transformador de isolamento"],
+   correct:1, exp:"No esquema TT, as massas são aterradas em um eletrodo próprio, eletricamente distinto do aterramento da fonte — diferente do TN, que compartilha o mesmo ponto."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um captor tipo Franklin tem 6 m de altura em relação ao plano de referência, com ângulo de proteção de 45°. O raio de proteção na base, em metros, é de:",
+   opts:["3","4,5","6","9","12"],
+   correct:2, exp:"Raio = altura × tan(ângulo) = 6×tan(45°) = 6×1 = 6m."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"No Sistema de Proteção contra Descargas Atmosféricas (SPDA), a função do condutor de descida é:",
+   opts:["captar diretamente a descarga atmosférica","conduzir a corrente da descarga desde os captores até o subsistema de aterramento","medir a resistência de aterramento","substituir o subsistema de aterramento","equalizar potenciais entre fases"],
+   correct:1, exp:"O condutor de descida conduz a corrente captada pelos captores até o subsistema de aterramento."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Três condutores, cada um com seção externa de 5 mm² (área total = 15 mm²), serão instalados em um mesmo eletroduto. Considerando a taxa máxima de ocupação de 40% (NBR 5410, três condutores), a área útil mínima do eletroduto, em mm², deve ser de:",
+   opts:["25","30","37,5","45","60"],
+   correct:2, exp:"Área mínima = área dos condutores / taxa de ocupação = 15/0,40 = 37,5mm²."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"De acordo com a NBR 5410, a seção mínima permitida para condutores de cobre em circuitos de iluminação, em instalações residenciais, é de:",
+   opts:["0,5 mm²","0,75 mm²","1,0 mm²","1,5 mm²","2,5 mm²"],
+   correct:3, exp:"A NBR 5410 estabelece seção mínima de 1,5mm² para condutores de cobre em circuitos de iluminação residencial."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Para que a tensão de toque em uma instalação não ultrapasse o limite de segurança de 50 V, considerando uma corrente de falta de 200 A, a resistência máxima de aterramento admissível, em ohms, é de:",
+   opts:["0,1","0,25","0,5","1,0","2,0"],
+   correct:1, exp:"R = V/I = 50/200 = 0,25Ω."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Uma característica do esquema de aterramento IT é que, em caso de uma primeira falta à terra:",
+   opts:["a instalação é desligada automaticamente e imediatamente","a instalação pode continuar em operação, sendo a falta sinalizada por um dispositivo supervisor de isolamento (DSI)","ocorre curto-circuito trifásico direto","o neutro é diretamente aterrado","não há qualquer forma de sinalização da falta"],
+   correct:1, exp:"No esquema IT, a instalação pode continuar operando após a primeira falta à terra, sinalizada por um DSI, sem desligamento imediato."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um circuito tem corrente de projeto (Ib) de 25 A, e o condutor escolhido tem capacidade de condução (Iz) de 32 A. Segundo o critério Ib ≤ In ≤ Iz da NBR 5410, qual dos disjuntores comerciais abaixo pode ser utilizado?",
+   opts:["16 A","20 A","25 A","40 A","50 A"],
+   correct:2, exp:"Pelo critério Ib≤In≤Iz: 25≤In≤32. Apenas 25A satisfaz simultaneamente as duas condições entre as opções."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Em redes aéreas de distribuição em média tensão, a função da mufla terminal é:",
+   opts:["reduzir a tensão da rede","realizar a transição entre cabo isolado (subterrâneo) e condutor nu (aéreo), controlando o campo elétrico e vedando a umidade","substituir o transformador de distribuição","medir a corrente de curto-circuito","funcionar como dispositivo de seccionamento"],
+   correct:1, exp:"A mufla terminal faz a transição entre cabo isolado (subterrâneo) e condutor nu (aéreo), controlando o campo elétrico e vedando umidade."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Na designação de grau de proteção IP, o primeiro algarismo característico indica a proteção contra:",
+   opts:["penetração de líquidos","corpos sólidos estranhos e contato de partes do corpo com partes energizadas/móveis internas","sobretensão de origem atmosférica","curto-circuito","descargas atmosféricas diretas"],
+   correct:1, exp:"O primeiro algarismo do IP indica proteção contra corpos sólidos e contato com partes energizadas/móveis internas; o segundo é sobre líquidos."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"A respeito da identificação de condutores por cores (NBR 5410): I - O condutor neutro deve ser identificado pela cor azul-claro. II - O condutor de proteção (terra) deve ser identificado pela combinação verde e amarelo. III - O condutor de fase pode ser identificado, entre outras, pelas cores preta, branca ou vermelha. Está correto o que se afirma em:",
+   opts:["I, apenas","I e II, apenas","II e III, apenas","I e III, apenas","I, II e III"],
+   correct:4, exp:"As três afirmações (neutro azul-claro, proteção verde-amarelo, fase preta/branca/vermelha) estão corretas segundo a NBR 5410."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"A função do condutor de proteção (PE) em uma instalação elétrica é:",
+   opts:["conduzir a corrente de retorno em condições normais de operação","interligar as massas metálicas ao sistema de aterramento, dando caminho de baixa impedância a correntes de falta","substituir o condutor neutro em qualquer situação","aumentar a tensão da instalação","reduzir o consumo de energia reativa"],
+   correct:1, exp:"O condutor de proteção (PE) interliga as massas metálicas ao aterramento, dando caminho de baixa impedância para correntes de falta."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um edifício com perímetro de 120 m requer, para um SPDA nível de proteção III, espaçamento médio entre condutores de descida de 15 m. O número mínimo de condutores de descida necessário é de:",
+   opts:["4","6","8","10","12"],
+   correct:2, exp:"Número de descidas = perímetro/espaçamento = 120/15 = 8."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"Para proteção contra choques elétricos em circuitos que alimentam tomadas em áreas molhadas (banheiros, áreas externas), a NBR 5410 recomenda dispositivo DR de alta sensibilidade, com corrente diferencial residual nominal de:",
+   opts:["10 mA","30 mA","100 mA","300 mA","500 mA"],
+   correct:1, exp:"Para áreas molhadas, a NBR 5410 recomenda DR de alta sensibilidade, com corrente diferencial residual de 30mA."},
+  {cat:"Instalações Elétricas", banca:"Transpetro", type:"mc",
+   q:"O esquema de aterramento TN-C-S caracteriza-se por:",
+   opts:["manter as funções de neutro e proteção sempre separadas em toda a instalação","combinar neutro e proteção em um único condutor (PEN) em parte da instalação, separando-as no restante","não utilizar aterramento algum","aplicar-se exclusivamente a instalações de alta tensão","exigir obrigatoriamente um transformador de isolamento"],
+   correct:1, exp:"O esquema TN-C-S combina neutro e proteção em um único condutor (PEN) em parte da instalação, separando-os no restante."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Em um divisor de tensão formado por dois resistores em série, R1=30 Ω e R2=70 Ω, alimentados por fonte de 100 V, a tensão sobre R2, em volts, é de:",
+   opts:["30","50","70","80","90"],
+   correct:2, exp:"V(R2) = V×R2/(R1+R2) = 100×70/100 = 70V."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Considere: I - A Lei de Kirchhoff das Correntes (LKC) estabelece que a soma das correntes que entram em um nó é igual à soma das que saem. II - A Lei de Kirchhoff das Tensões (LKT) estabelece que a soma algébrica das quedas de tensão em uma malha fechada é zero. III - As Leis de Kirchhoff aplicam-se exclusivamente a circuitos de corrente contínua. Está correto o que se afirma em:",
+   opts:["I, apenas","II, apenas","I e II, apenas","I e III, apenas","I, II e III"],
+   correct:2, exp:"LKC e LKT (I e II) estão corretas e se aplicam tanto a CC quanto a CA — III está errada."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Um circuito RLC série tem R=30 Ω, XL=50 Ω e XC=10 Ω. O módulo da impedância total do circuito, em ohms, é de:",
+   opts:["30","40","50","60","70"],
+   correct:2, exp:"Z = √(R²+(XL-XC)²) = √(30²+40²) = √(900+1600) = √2500 = 50Ω."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Uma fonte de 24 V alimenta um resistor R1=4 Ω em série com a associação em paralelo de R2=12 Ω e R3=6 Ω. A potência dissipada no resistor R3, em watts, é de:",
+   opts:["12","18","24","30","36"],
+   correct:2, exp:"Rparalelo = 12×6/18 = 4Ω. Rtotal=4+4=8Ω. Itotal=24/8=3A. V(paralelo)=3×4=12V. I(R3)=12/6=2A. P(R3)=2²×6=24W."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"O Teorema da Superposição, aplicado a circuitos lineares com múltiplas fontes, estabelece que a resposta total em qualquer elemento pode ser obtida:",
+   opts:["multiplicando as respostas de cada fonte atuando isoladamente","somando as respostas de cada fonte atuando isoladamente, com as demais fontes independentes anuladas","considerando apenas a maior fonte do circuito","dividindo a resposta pela quantidade de fontes","aplicável apenas a circuitos com uma única fonte"],
+   correct:1, exp:"O Teorema da Superposição soma as respostas de cada fonte atuando isoladamente, com as demais fontes anuladas (curto nas de tensão, aberto nas de corrente)."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Dois capacitores, C1=6 µF e C2=3 µF, estão associados em série. A capacitância equivalente dessa associação, em µF, é de:",
+   opts:["1","2","3","4,5","9"],
+   correct:1, exp:"Ceq = (C1×C2)/(C1+C2) = 18/9 = 2µF."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Para uma onda quadrada simétrica de amplitude ±V, o valor eficaz (RMS) é:",
+   opts:["V/2","V/√2","V","2V","zero"],
+   correct:2, exp:"Para onda quadrada simétrica, o valor eficaz é igual à própria amplitude de pico (±V), pois o valor instantâneo nunca varia dentro de cada semiciclo."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Em um circuito CA, a tensão eficaz é 100 V, a corrente eficaz é 5 A, e o ângulo de defasagem entre elas é 60°. A potência ativa dissipada, em watts, é de:",
+   opts:["150","200","250","350","500"],
+   correct:2, exp:"P = V×I×cos(φ) = 100×5×cos(60°) = 500×0,5 = 250W."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"A associação de dois indutores em paralelo, sem acoplamento magnético entre eles, segue a mesma regra de cálculo utilizada para:",
+   opts:["capacitores em série","resistores em paralelo","capacitores em paralelo","resistores em série","nenhuma das anteriores"],
+   correct:1, exp:"Indutores em paralelo (sem acoplamento) seguem a mesma fórmula de resistores em paralelo: 1/Leq = 1/L1+1/L2."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Em uma ponte de Wheatstone equilibrada, os resistores são R1=10 Ω, R2=20 Ω e R3=15 Ω. O valor do resistor desconhecido Rx, em ohms, para o equilíbrio da ponte, é de:",
+   opts:["7,5","15","22,5","30","40"],
+   correct:3, exp:"Equilíbrio: R1×Rx = R2×R3 → Rx = (20×15)/10 = 30Ω."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Uma carga com fator de potência atrasado (corrente atrasada em relação à tensão) é caracteristicamente:",
+   opts:["puramente resistiva","indutiva","capacitiva","puramente reativa capacitiva","impossível de ocorrer na prática"],
+   correct:1, exp:"Corrente atrasada em relação à tensão é característica de carga indutiva (motores, transformadores, reatores)."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Em um circuito RC série com R=1.000 Ω e C=100 µF, a constante de tempo do circuito, em milissegundos, é de:",
+   opts:["10","50","100","200","500"],
+   correct:2, exp:"τ = R×C = 1000×100×10⁻⁶ = 0,1s = 100ms."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"À medida que a frequência de um sinal CA aumenta, a reatância capacitiva (Xc) de um capacitor:",
+   opts:["aumenta proporcionalmente","permanece constante","diminui, pois Xc é inversamente proporcional à frequência","torna-se infinita","passa a se comportar como resistência pura"],
+   correct:2, exp:"Xc = 1/(2πfC): como f está no denominador, Xc diminui quando a frequência aumenta."},
+  {cat:"Circuitos Elétricos CC e CA", banca:"Transpetro", type:"mc",
+   q:"Um capacitor de reatância 50 Ω está conectado a uma fonte de 220 V eficazes. A potência reativa absorvida pelo capacitor, em VAr, é aproximadamente de:",
+   opts:["440","680","970","1200","1500"],
+   correct:2, exp:"Q = V²/Xc = 220²/50 = 48400/50 = 968 ≈ 970 VAr."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"A função de um transformador de corrente (TC) em um sistema de medição e proteção é:",
+   opts:["elevar a tensão para instrumentos de medição","reduzir a corrente do primário a um valor padronizado e seguro, proporcional à corrente original","aumentar a corrente de curto-circuito","substituir o disjuntor","medir apenas tensão contínua"],
+   correct:1, exp:"O TC reduz a corrente do primário a um valor padronizado e proporcional no secundário, permitindo medição/proteção segura sem contato direto com a alta corrente."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um transformador de corrente (TC) tem relação 300:5. Se o amperímetro no secundário indica 4 A, a corrente no primário, em ampères, é de:",
+   opts:["60","150","180","240","300"],
+   correct:3, exp:"I1 = I2×(relação) = 4×(300/5) = 4×60 = 240A."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"A classe de exatidão de um instrumento de medição indica:",
+   opts:["a marca do fabricante","o erro máximo admissível, expresso como percentual do fundo de escala do instrumento","a temperatura de operação","a tensão máxima suportada","o tempo de vida útil do instrumento"],
+   correct:1, exp:"A classe de exatidão expressa o erro máximo admissível, como percentual do fundo de escala do instrumento."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um instrumento com fundo de escala de 500 unidades possui classe de exatidão de 1%. O erro máximo, na mesma unidade, que pode ser cometido em qualquer medição é de:",
+   opts:["1","2","5","10","25"],
+   correct:2, exp:"Erro = fundo de escala × classe = 500×0,01 = 5."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um wattímetro possui bobina de corrente e bobina de tensão. Para medir corretamente a potência ativa de uma carga, essas bobinas devem ser conectadas, respectivamente, em:",
+   opts:["paralelo e paralelo","série e série","série (com a carga) e paralelo (com a carga)","paralelo (com a carga) e série (com a carga)","ambas em série entre si"],
+   correct:2, exp:"Bobina de corrente em série com a carga, bobina de tensão em paralelo com a carga — essa combinação mede diretamente a potência ativa (P=V×I×cosφ)."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"No método dos dois wattímetros, aplicado a um sistema trifásico a três fios, as leituras foram W1=5 kW e W2=3 kW. A potência ativa total do sistema, em kW, é de:",
+   opts:["2","5","8","15","24"],
+   correct:2, exp:"Ptotal = W1+W2 = 5+3 = 8kW."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um megômetro (megôhmetro) é utilizado para medir:",
+   opts:["a corrente de curto-circuito","a resistência de isolamento de cabos, motores e transformadores, com alta tensão de teste","a frequência da rede","a resistência de aterramento apenas","a tensão de linha"],
+   correct:1, exp:"O megômetro aplica alta tensão de teste para medir a resistência de isolamento de cabos, motores e transformadores."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um retificador de onda completa tem tensão de pico na entrada de 15 V. A tensão média (DC) aproximada na saída, com componentes ideais, é de:",
+   opts:["4,8 V","6,75 V","9,55 V","10,6 V","15 V"],
+   correct:2, exp:"Vmédia = 2×Vpico/π = 2×15/3,14 ≈ 9,55V."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um osciloscópio é um instrumento utilizado principalmente para:",
+   opts:["medir exclusivamente valores de resistência","visualizar a forma de onda de um sinal elétrico ao longo do tempo","substituir o multímetro em qualquer aplicação","medir apenas corrente contínua","funcionar como fonte de alimentação"],
+   correct:1, exp:"O osciloscópio visualiza a forma de onda de um sinal elétrico ao longo do tempo — tensão em função do tempo."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Um no-break deve alimentar uma carga de 600 W por 1 hora, com banco de baterias de 24 V e rendimento do inversor de 85%. A capacidade aproximada necessária do banco, em Ah, é de:",
+   opts:["18","25","30","36","42"],
+   correct:2, exp:"Energia necessária = P×t/rendimento = 600×1/0,85 ≈ 706Wh. Capacidade = 706/24 ≈ 29,4 ≈ 30Ah."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"No SI, a diferença entre fluxo magnético e densidade de fluxo magnético (campo B) é que o fluxo magnético é medido em:",
+   opts:["tesla, e a densidade em weber","weber, e a densidade em tesla","ambos em weber","ambos em tesla","ampère, e a densidade em weber"],
+   correct:1, exp:"Fluxo magnético é medido em weber (Wb); densidade de fluxo (campo B) é medida em tesla (T) — grandezas relacionadas, mas distintas."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Uma carga trifásica equilibrada, ligada em triângulo, consome corrente de fase de 10 A. A corrente de linha medida por um amperímetro alicate, em ampères, é aproximadamente de:",
+   opts:["5,8","10","17,3","20","30"],
+   correct:2, exp:"Em ligação triângulo, IL = If×√3 = 10×1,73 ≈ 17,3A."},
+  {cat:"Medidas Elétricas", banca:"Transpetro", type:"mc",
+   q:"Assim como o TC reduz a corrente para níveis seguros de medição, o transformador de potencial (TP) tem a função de:",
+   opts:["aumentar a tensão da rede para o secundário","reduzir a tensão do primário a um valor padronizado no secundário, permitindo medição segura de tensões elevadas","medir corrente diretamente","substituir o disjuntor","funcionar como fonte auxiliar exclusivamente"],
+   correct:1, exp:"O TP reduz a tensão do primário a um valor padronizado no secundário, permitindo medição segura de tensões elevadas."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"O ciclo de varredura (scan) de um CLP consiste, tipicamente, nas seguintes etapas, em sequência:",
+   opts:["escrita das saídas, execução do programa, leitura das entradas","leitura das entradas, execução do programa (lógica), escrita das saídas","execução do programa apenas","leitura das saídas, escrita das entradas","nenhuma etapa definida"],
+   correct:1, exp:"O ciclo de varredura do CLP segue a sequência: leitura das entradas → execução do programa (lógica) → escrita das saídas."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Uma porta lógica NAND de duas entradas (A e B) tem saída S = NOT(A AND B). Das 4 combinações possíveis, quantas resultam em S=1?",
+   opts:["1","2","3","4","0"],
+   correct:2, exp:"NAND = NOT(AND). Das 4 combinações de A,B, apenas A=1,B=1 dá AND=1 (logo NAND=0); as outras 3 combinações dão NAND=1."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Quando utilizado como chave eletrônica (liga/desliga), um transistor bipolar opera alternando entre as regiões de:",
+   opts:["ativa e corte","corte e saturação","apenas região ativa","apenas região de saturação","ruptura e corte"],
+   correct:1, exp:"Como chave eletrônica, o transistor bipolar alterna entre corte (desligado) e saturação (ligado), evitando a região ativa linear."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Um amplificador operacional na configuração inversora tem Rf=20 kΩ e Rin=4 kΩ. O ganho de tensão desse amplificador é de:",
+   opts:["-2","-4","-5","-8","-10"],
+   correct:2, exp:"Ganho = -Rf/Rin = -20/4 = -5."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Um diodo semicondutor conduz corrente significativa quando está:",
+   opts:["em polarização reversa, apenas","em polarização direta, com tensão superando a barreira de potencial da junção","sem qualquer polarização","apenas em corrente alternada","nunca conduz corrente"],
+   correct:1, exp:"O diodo conduz corrente significativa em polarização direta, quando a tensão aplicada supera a barreira de potencial da junção."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"O protocolo de comunicação industrial Modbus RTU, amplamente utilizado em automação, opera tipicamente sobre a camada física:",
+   opts:["fibra óptica exclusivamente","RS-232 ou RS-485","Wi-Fi exclusivamente","Bluetooth","nenhuma camada física definida"],
+   correct:1, exp:"O Modbus RTU opera tipicamente sobre camada física serial RS-232 ou RS-485."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Diferentemente de um sensor indutivo (que detecta apenas objetos metálicos), um sensor capacitivo de proximidade é capaz de detectar:",
+   opts:["apenas metais ferrosos","tanto materiais metálicos quanto não metálicos, pela variação de capacitância","apenas líquidos condutores","apenas gases","nenhum tipo de material"],
+   correct:1, exp:"Diferente do indutivo (só metais), o sensor capacitivo detecta materiais metálicos e não metálicos pela variação de capacitância."},
+  {cat:"Automação e Eletrônica Analógica/Digital", banca:"Transpetro", type:"mc",
+   q:"Em um controlador proporcional (P) com ganho Kp=2,5, o setpoint é 100 e o valor medido é 92. O sinal de saída do controlador (saída = Kp × erro), é de:",
+   opts:["8","15","20","25","30"],
+   correct:2, exp:"Saída = Kp×erro = 2,5×(100-92) = 2,5×8 = 20."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"Segundo a NR-10, a 'zona controlada' é a área em torno de uma parte condutora energizada em que:",
+   opts:["não há risco algum de choque elétrico","a aproximação de não qualificados/não autorizados requer cuidados especiais e controle de acesso","apenas equipamentos podem circular","é obrigatório o uso de gaiola de Faraday","corresponde exclusivamente a instalações de baixa tensão"],
+   correct:1, exp:"A zona controlada é a área em torno de parte energizada onde a aproximação de não qualificados/não autorizados requer cuidados e controle de acesso."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"A manutenção detectiva é caracterizada por:",
+   opts:["substituir componentes antes da falha, em intervalos fixos","identificar falhas ocultas em sistemas de proteção que não seriam percebidas na operação normal","reparar o equipamento somente após a quebra","ser aplicável apenas a sistemas mecânicos","eliminar a necessidade de qualquer outro tipo de manutenção"],
+   correct:1, exp:"A manutenção detectiva identifica falhas ocultas em sistemas de proteção que não seriam percebidas na operação normal (ex.: testar se um alarme realmente dispara)."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"A respeito das medidas de controle da NR-10: I - O desligamento para trabalhos deve seguir a sequência estabelecida, incluindo o impedimento de reenergização. II - Trabalhos em instalações energizadas só podem ocorrer quando o desligamento não for tecnicamente viável ou trouxer maiores riscos. III - A NR-10 dispensa qualquer treinamento para trabalhadores em instalações de baixíssima tensão, independentemente do risco. Está correto o que se afirma em:",
+   opts:["I, apenas","I e II, apenas","II e III, apenas","I e III, apenas","I, II e III"],
+   correct:1, exp:"I e II estão corretas. III está errada: a NR-10 não dispensa treinamento de forma geral apenas por baixíssima tensão, considerando o risco da instalação como um todo."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"Um disjuntor termomagnético combina duas funções de proteção: a térmica, associada a sobrecargas de longa duração, e a magnética, associada a:",
+   opts:["sobretensões de origem atmosférica","correntes de curto-circuito, com atuação praticamente instantânea","correntes de fuga para terra","variações de frequência","subtensão"],
+   correct:1, exp:"O elemento térmico protege contra sobrecargas (atuação temporizada); o elemento magnético atua contra correntes de curto-circuito, quase instantaneamente."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"A principal diferença entre manutenção preventiva sistemática e preditiva é que a preventiva sistemática:",
+   opts:["só ocorre após a falha do equipamento","é realizada em intervalos fixos predefinidos, independentemente da condição real, enquanto a preditiva se baseia no monitoramento de parâmetros reais","nunca substitui componentes","é mais cara em qualquer cenário","não é aplicável a motores elétricos"],
+   correct:1, exp:"A preventiva sistemática segue intervalos fixos predefinidos, independente da condição real do equipamento; a preditiva baseia-se no monitoramento de parâmetros reais."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"A NBR 5419 recomenda, como boa prática atual, que os diferentes sistemas de aterramento de uma edificação (SPDA, elétrico, telecom) sejam:",
+   opts:["mantidos rigorosamente independentes e isolados entre si","interligados/equipotencializados em um único sistema, reduzindo diferenças de potencial perigosas","eliminados sempre que possível","substituídos por para-raios isolados","usados apenas em edificações comerciais"],
+   correct:1, exp:"A prática atual recomenda interligar/equipotencializar os diferentes sistemas de aterramento (SPDA, elétrico, telecom), reduzindo diferenças de potencial perigosas."},
+  {cat:"Normas e Regulamentações", banca:"Transpetro", type:"mc",
+   q:"São exemplos de Equipamentos de Proteção Coletiva (EPC) em trabalhos com eletricidade:",
+   opts:["luvas isolantes e capacete","cones de sinalização, mantas isolantes e barreiras de isolamento da área de trabalho","óculos de segurança apenas","vestimenta antichama individual","botas de borracha individuais"],
+   correct:1, exp:"Cones de sinalização, mantas isolantes e barreiras de isolamento são EPCs — protegem todos no ambiente, diferente do EPI, que protege individualmente."},
+  {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
+   q:"Uma carga consome potência ativa de 8 kW e potência aparente de 10 kVA. A potência reativa dessa carga, em kVAr, é de:",
+   opts:["2","4","6","8","10"],
+   correct:2, exp:"Q = √(S²-P²) = √(10²-8²) = √(100-64) = √36 = 6kVAr."},
+  {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
+   q:"A correção do fator de potência de uma instalação, por banco de capacitores, tem como efeito principal:",
+   opts:["aumentar a potência ativa consumida","reduzir a corrente total (reativa) circulante para a mesma potência ativa, sem alterar a potência útil entregue","eliminar totalmente a necessidade de condutores","aumentar a tensão da rede","reduzir a potência ativa consumida"],
+   correct:1, exp:"A correção do FP reduz a corrente total (reativa) para a mesma potência ativa, sem alterar a potência útil entregue à carga."},
+  {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
+   q:"Um equipamento de 3 kW opera 6 horas por dia, durante 30 dias. Considerando tarifa de R$ 0,75/kWh, o custo mensal, em reais, é de:",
+   opts:["270","337,50","405","450","540"],
+   correct:2, exp:"Energia = 3×6×30 = 540kWh. Custo = 540×0,75 = R$405,00."},
+  {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
+   q:"Segundo a regulamentação vigente, consumidores com fator de potência médio mensal inferior a um limite estão sujeitos à cobrança de excedente de reativos. Esse limite mínimo é de:",
+   opts:["0,80","0,85","0,90","0,92","0,95"],
+   correct:3, exp:"O limite mínimo de fator de potência estabelecido pela regulamentação é 0,92; abaixo disso há cobrança de excedente de reativos."},
+  {cat:"Energia e Potência Elétrica", banca:"Transpetro", type:"mc",
+   q:"Um motor elétrico consome 12 kW de potência elétrica e tem rendimento de 88%. As perdas totais do motor, em kW, são de:",
+   opts:["0,96","1,2","1,44","1,68","2,0"],
+   correct:2, exp:"Psaída = 12×0,88 = 10,56kW. Perdas = 12-10,56 = 1,44kW."},
+  {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
+   q:"Para trabalhos em instalações elétricas energizadas de baixa tensão, o EPI mínimo recomendado inclui:",
+   opts:["apenas capacete de segurança","luva isolante de borracha adequada à tensão, óculos contra arco elétrico e vestimenta antichama","apenas botina de segurança","luvas de látex cirúrgicas","nenhum EPI é necessário se a corrente for baixa"],
+   correct:1, exp:"Para trabalho energizado em BT, o EPI mínimo inclui luva isolante de borracha adequada à tensão, óculos contra arco elétrico e vestimenta antichama."},
+  {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
+   q:"Uma corrente de falta de 20 mA percorre o corpo de uma pessoa, cuja resistência elétrica é 1.000 Ω. A tensão de toque a que essa pessoa está submetida, em volts, é de:",
+   opts:["10","15","20","25","30"],
+   correct:2, exp:"V = I×R = 0,020×1000 = 20V."},
+  {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
+   q:"Luvas isolantes são classificadas em classes (00, 0, 1, 2, 3, 4), cada uma associada a um limite de tensão de uso. Ao selecionar a luva, o eletricista deve escolher a classe:",
+   opts:["de menor tensão suportada disponível, para maior conforto","adequada ou superior ao nível de tensão da instalação em que irá trabalhar","qualquer uma, pois todas oferecem a mesma proteção","apenas classe 00, universalmente","a mais barata disponível"],
+   correct:1, exp:"A classe da luva deve ser adequada ou superior ao nível de tensão da instalação em que o eletricista irá trabalhar."},
+  {cat:"Segurança e Higiene do Trabalho", banca:"Transpetro", type:"mc",
+   q:"A água não deve ser utilizada para combater um princípio de incêndio em equipamento elétrico energizado (classe C) principalmente porque:",
+   opts:["a água aumenta a intensidade do fogo quimicamente","a água é condutora de eletricidade, criando risco de choque elétrico para quem combate o incêndio","a água evapora rapidamente sem efeito","a água é mais cara que outros agentes extintores","não há qualquer restrição ao uso de água nesse caso"],
+   correct:1, exp:"A água é condutora de eletricidade — usá-la em equipamento energizado cria risco de choque para quem combate o incêndio."},
+  {cat:"Simbologia e Diagramas Elétricos", banca:"Transpetro", type:"mc",
+   q:"Em um diagrama multifilar (trifilar), diferentemente do unifilar, a representação do circuito mostra:",
+   opts:["apenas uma linha, independentemente do número de condutores","cada condutor individualmente, com suas conexões, permitindo visualizar detalhadamente a fiação","apenas os símbolos dos equipamentos, sem conexões","nenhuma informação sobre corrente ou tensão","apenas o sentido do fluxo de potência"],
+   correct:1, exp:"No diagrama multifilar (trifilar), cada condutor é representado individualmente, com suas conexões, permitindo visualizar detalhadamente a fiação — diferente do unifilar, que usa uma única linha."},
+  {cat:"Simbologia e Diagramas Elétricos", banca:"Transpetro", type:"mc",
+   q:"Um interruptor 'four-way' (intermediário), usado com dois interruptores 'three-way' (paralelos), permite:",
+   opts:["acionar uma lâmpada a partir de dois pontos apenas","acionar uma lâmpada a partir de três ou mais pontos distintos","desligar toda a instalação de uma vez","substituir o disjuntor","funcionar apenas em circuitos trifásicos"],
+   correct:1, exp:"O interruptor four-way, combinado com dois three-way, permite acionar uma lâmpada a partir de três ou mais pontos distintos."},
+  {cat:"Simbologia e Diagramas Elétricos", banca:"Transpetro", type:"mc",
+   q:"Na simbologia de projetos elétricos (NBR 5444), a diferença entre uma Tomada de Uso Específico (TUE) e uma de Uso Geral (TUG) é que a TUE:",
+   opts:["nunca é representada em planta","é dimensionada para um equipamento específico, com potência e tensão definidas em projeto","é sempre de uso trifásico","substitui o quadro de distribuição","não requer circuito próprio"],
+   correct:1, exp:"A TUE é dimensionada para um equipamento específico, com potência e tensão definidas em projeto (ex.: chuveiro, ar-condicionado) — diferente da TUG, de uso geral."},
+  {cat:"Circuitos Monofásicos e Trifásicos", banca:"Transpetro", type:"mc",
+   q:"Um sistema trifásico equilibrado tem tensão de linha de 380 V, corrente de linha de 50 A e fator de potência de 0,85. A potência ativa total, em kW, é aproximadamente de:",
+   opts:["18,6","22,3","25,0","28,0","32,3"],
+   correct:3, exp:"P = √3×VL×IL×cosφ = 1,73×380×50×0,85 ≈ 28.000W = 28,0kW."},
+  {cat:"Circuitos Monofásicos e Trifásicos", banca:"Transpetro", type:"mc",
+   q:"Para inverter o sentido de rotação de um motor de indução trifásico, deve-se:",
+   opts:["inverter todas as três fases simultaneamente","inverter a posição de duas quaisquer das três fases, mantendo a terceira","aumentar a tensão de alimentação","inverter apenas o neutro","não é possível inverter o sentido de rotação"],
+   correct:1, exp:"Para inverter o sentido de rotação de um motor trifásico, basta inverter a posição de duas quaisquer das três fases de alimentação, mantendo a terceira."},
 ];
 
 const TEXTS = {
