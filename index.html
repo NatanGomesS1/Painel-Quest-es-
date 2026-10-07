@@ -307,6 +307,99 @@
     color:var(--muted);cursor:pointer;text-decoration:underline;
   }
 
+
+  /* ---------- Tempo de estudo, estudo teórico e caderno de erros ---------- */
+  .top-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .dash-toggle-btn.live{border-color:var(--amber);color:var(--amber);}
+
+  .mode-row{flex-wrap:wrap;}
+  .mode-pill{min-width:84px;}
+  .mode-note{display:none;font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
+  .mode-note.show{display:block;}
+
+  .err-box{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--wire);}
+  .err-box.show{display:block;}
+  .err-box .err-status{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--amber);line-height:1.5;}
+  .err-box textarea{
+    display:block;width:100%;margin-top:8px;min-height:58px;resize:vertical;
+    background:var(--panel);border:1px solid var(--wire);border-radius:6px;color:var(--text);
+    font-family:'Inter',sans-serif;font-size:13px;line-height:1.45;padding:8px 10px;
+  }
+
+  .time-split{margin-bottom:18px;}
+  .time-split .split-track{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--wire);}
+  .time-split .split-sim{background:var(--teal);}
+  .time-split .split-teo{background:var(--amber);}
+  .time-split .split-legend{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+  .time-split .split-legend b{font-weight:700;}
+  .empty-note{color:var(--muted);font-size:13px;line-height:1.5;}
+
+  .donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+  .donut-wrap svg{width:150px;height:150px;flex-shrink:0;margin:0 auto;}
+  .donut-legend{flex:1;min-width:220px;}
+  .leg-row{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;}
+  .leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+  .leg-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .leg-val{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:11.5px;white-space:nowrap;}
+
+  .days-chart{display:flex;align-items:flex-end;gap:4px;}
+  .day-col{flex:1;min-width:0;}
+  .day-stack{height:100px;display:flex;flex-direction:column;justify-content:flex-end;}
+  .day-seg{width:100%;}
+  .day-seg.teo{background:var(--amber);border-radius:2px 2px 0 0;}
+  .day-seg.sim{background:var(--teal);}
+  .day-seg.sim:first-child{border-radius:2px 2px 0 0;}
+  .day-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-align:center;margin-top:4px;}
+  .day-col.today .day-lbl{color:var(--text);font-weight:700;}
+  .chart-key{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+  .chart-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px;}
+
+  .cross-row{display:grid;grid-template-columns:1fr 64px 56px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--wire);font-size:12.5px;}
+  .cross-row:last-child{border-bottom:none;}
+  .cross-row.head{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding-top:0;}
+  .cross-name{min-width:0;}
+  .cross-num{font-family:'JetBrains Mono',monospace;text-align:right;white-space:nowrap;}
+  .cross-tag{display:block;font-family:'JetBrains Mono',monospace;font-size:10.5px;margin-top:2px;}
+  .cross-tag.good{color:var(--teal);} .cross-tag.mid{color:var(--amber);} .cross-tag.low{color:var(--red);} .cross-tag.muted{color:var(--muted);}
+
+  .err-cat{border-bottom:1px solid var(--wire);}
+  .err-cat:last-of-type{border-bottom:none;}
+  .err-cat summary{display:flex;justify-content:space-between;gap:10px;cursor:pointer;padding:10px 0;font-size:13px;list-style:none;}
+  .err-cat summary::-webkit-details-marker{display:none;}
+  .err-cat summary .cnt{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:11.5px;white-space:nowrap;}
+  .err-item{background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+  .err-item .err-q{font-size:12.5px;line-height:1.5;}
+  .err-item .err-meta{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:6px;}
+  .err-item .err-meta.due{color:var(--amber);}
+  .err-item .err-note{font-size:12px;line-height:1.45;color:var(--text);margin-top:6px;border-left:2px solid var(--amber);padding-left:8px;white-space:pre-wrap;}
+
+  .sw-box{background:var(--panel-2);border:1px solid var(--wire);border-radius:8px;padding:14px;margin-bottom:16px;}
+  .sw-display{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:800;color:var(--teal);letter-spacing:.02em;}
+  .sw-display.live{text-shadow:0 0 14px rgba(0,217,181,.4);}
+  .sw-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .sw-actions button:disabled{opacity:.4;cursor:not-allowed;}
+  .sw-hint{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;}
+  .study-today{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+  .study-today b{color:var(--text);}
+
+  .study-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+  .study-form .field{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .study-form .field.wide{grid-column:1 / -1;}
+  .study-form label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .study-form select,.study-form input{
+    width:100%;background:var(--panel);border:1px solid var(--wire);border-radius:6px;color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:13px;padding:9px 10px;color-scheme:dark;
+  }
+  .study-form select:focus,.study-form input:focus,.err-box textarea:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+  .log-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--wire);}
+  .log-row:last-child{border-bottom:none;}
+  .log-row .log-main{min-width:0;font-size:13px;line-height:1.4;}
+  .log-row .log-sub{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .log-row .log-min{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--amber);white-space:nowrap;}
+  .log-del{background:transparent;border:1px solid var(--wire);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;}
+  .log-del:hover{border-color:var(--red);color:var(--red);}
+
   footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
@@ -324,12 +417,31 @@
     </div>
   </header>
 
-  <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
+  <div class="top-actions">
+    <button class="dash-toggle-btn" id="studyToggleBtn">⏱ Estudo teórico</button>
     <button class="dash-toggle-btn" id="dashToggleBtn">📊 Ver dashboard completo</button>
   </div>
 
   <div class="dashboard" id="dashboardPanel">
     <div class="dash-grid" id="dashStatsGrid"></div>
+    <div class="breaker-panel">
+      <div class="title">Tempo de estudo</div>
+      <div class="dash-grid" id="dashTimeGrid"></div>
+      <div id="dashSplit"></div>
+      <div class="donut-wrap" id="dashDonut"></div>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Últimos 14 dias</div>
+      <div id="dashDays"></div>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Tempo x acerto por matéria</div>
+      <div id="dashCross"></div>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Caderno de erros</div>
+      <div id="dashErrors"></div>
+    </div>
     <div class="breaker-panel">
       <div class="title">Desempenho por categoria</div>
       <div id="dashCatBars"></div>
@@ -357,6 +469,49 @@
     <button class="start-btn" id="closeDashBtn" style="margin-top:4px;">Fechar dashboard ▸</button>
   </div>
 
+  <div class="dashboard" id="studyPanel">
+    <div class="breaker-panel">
+      <div class="title">Estudo fora do simulado</div>
+      <div class="study-today" id="studyToday"></div>
+      <div class="sw-box">
+        <div class="sw-display" id="swDisplay">00:00:00</div>
+        <div class="sw-actions">
+          <button class="resume-btn" id="swToggleBtn">Iniciar cronômetro</button>
+          <button class="discard-btn" id="swStopBtn" disabled>Parar e usar o tempo</button>
+        </div>
+        <div class="sw-hint" id="swHint">O cronômetro segue contando com a tela apagada ou em outro app. Se preferir, digite os minutos direto abaixo.</div>
+      </div>
+      <div class="study-form">
+        <div class="field">
+          <label for="stCat">Matéria</label>
+          <select id="stCat"></select>
+        </div>
+        <div class="field">
+          <label for="stTipo">Tipo de estudo</label>
+          <select id="stTipo"></select>
+        </div>
+        <div class="field">
+          <label for="stMin">Minutos</label>
+          <input type="number" id="stMin" inputmode="numeric" min="1" max="720" placeholder="Ex.: 40">
+        </div>
+        <div class="field">
+          <label for="stDate">Data</label>
+          <input type="date" id="stDate">
+        </div>
+        <div class="field wide">
+          <label for="stObs">Observação (opcional)</label>
+          <input type="text" id="stObs" maxlength="120" placeholder="Ex.: videoaula 4, partida de motores">
+        </div>
+      </div>
+      <button class="start-btn" id="stAddBtn">Lançar estudo ▸</button>
+    </div>
+    <div class="breaker-panel">
+      <div class="title">Lançamentos recentes</div>
+      <div id="studyLogList"></div>
+    </div>
+    <button class="start-btn" id="closeStudyBtn" style="margin-top:4px;">Voltar ao menu ▸</button>
+  </div>
+
   <div class="breaker-panel" id="setupPanel">
     <div class="resume-banner" id="resumeBanner">
       <div class="info">Você tem um simulado em andamento — parou na questão <b id="resumeProgress">--</b>.</div>
@@ -379,7 +534,9 @@
     <div class="mode-row" id="modeRow">
       <div class="mode-pill on" data-mode="livre">Treino livre<br><span style="font-size:9px;opacity:.7;">sem tempo, revisa no seu ritmo</span></div>
       <div class="mode-pill" data-mode="prova">Prova completa<br><span style="font-size:9px;opacity:.7;">cronometrada, simula o dia real</span></div>
+      <div class="mode-pill" data-mode="erros">Caderno de erros<br><span style="font-size:9px;opacity:.7;" id="errPillCount">refaz só as que você errou</span></div>
     </div>
+    <div class="mode-note" id="errModeNote">O caderno ignora os filtros de categoria e banca: entram todas as questões erradas que estão na hora de revisar. Cada uma sai depois de 2 acertos com pelo menos 2 dias entre eles.</div>
 
     <div class="exam-config" id="examConfig">
       <div class="field">
@@ -427,6 +584,10 @@
     <div class="feedback" id="feedback">
       <div class="verdict" id="verdict"></div>
       <div class="exp" id="exp"></div>
+      <div class="err-box" id="errBox">
+        <div class="err-status" id="errStatus"></div>
+        <textarea id="errNote" maxlength="400" placeholder="Por que errei? Anote em uma linha (opcional)" aria-label="Anotação sobre o erro"></textarea>
+      </div>
     </div>
     <button class="next-btn" id="nextBtn">Próxima questão ▸</button>
     <button class="end-exam-btn" id="endExamBtn" style="display:none;margin-top:12px;margin-left:10px;">Encerrar prova agora</button>
@@ -1674,14 +1835,63 @@ const TEXTS = {
 const CATEGORIES = [...new Set(BANK.map(q=>q.cat))];
 let activeCats = new Set(CATEGORIES);
 let activeBancas = new Set(["Cesgranrio","Cespe","Transpetro"]);
-let studyMode = "livre"; // "livre" | "prova"
-let session = null; // {questions, idx, correct, results:{cat:{c,t}}}
+let studyMode = "livre"; // "livre" | "prova" | "erros"
+let session = null; // {questions, idx, correct, results:{cat:{c,t}}, answered, elapsedSec}
 let history = null;
 let timerInterval = null;
 let timeRemainingSec = 0;
+let timerEndAt = 0;
+let pendingResume = null;
 
 const HKEY = "eletrica-quiz-history";
 const SKEY = "eletrica-quiz-inprogress";
+const WKEY = "eletrica-quiz-stopwatch";
+
+const EXAM_DATE = "2026-12-06";   // data da prova (AAAA-MM-DD)
+const IDLE_CAP_SEC = 300;         // teto de tempo contado por questão / por explicação
+const AWAY_MS = 90000;            // tela fora por mais que isso não conta como estudo
+const ERR_STREAK_OUT = 2;         // acertos seguidos para sair do caderno de erros
+const ERR_GAP_DAYS = 2;           // intervalo mínimo entre o 1º e o 2º acerto
+const OTHER_CAT = "Outro / geral";
+const STUDY_TYPES = ["Teoria / PDF","Videoaula","Revisão / resumo","Questões fora do painel"];
+const PALETTE = ["#00D9B5","#F5A623","#5B8DEF","#FF4757","#B07CFF","#7ED957","#FF8A5B","#4DD0E1","#E6C229"];
+const PALETTE_OTHER = "#5c6675";
+
+// ---------- Helpers ----------
+const pad2 = n => String(n).padStart(2,'0');
+const $ = id => document.getElementById(id);
+function dayKey(d){ d = d || new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function keyToDate(k){ const p = String(k).split('-').map(Number); return new Date(p[0], p[1]-1, p[2], 12); }
+function daysBetween(a,b){ return Math.round((keyToDate(b) - keyToDate(a)) / 86400000); }
+function addDays(k, n){ const d = keyToDate(k); d.setDate(d.getDate()+n); return dayKey(d); }
+function fmtDateBR(k){ const p = String(k).split('-'); return `${p[2]}/${p[1]}`; }
+function fmtDur(sec){
+  const m = Math.round((sec||0)/60);
+  if(m === 0 && sec > 0) return '<1 min';
+  if(m < 60) return m + ' min';
+  return Math.floor(m/60) + 'h' + pad2(m%60);
+}
+function fmtPace(sec){
+  sec = Math.round(sec||0);
+  if(sec < 60) return sec + 's';
+  return Math.floor(sec/60) + 'min' + pad2(sec%60) + 's';
+}
+function esc(str){
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------- IDs estáveis das questões (usados pelo caderno de erros) ----------
+function hashStr(str){
+  let h = 5381;
+  for(let i=0;i<str.length;i++){ h = (((h << 5) + h) + str.charCodeAt(i)) >>> 0; }
+  return h.toString(36);
+}
+function qid(q){
+  if(!q.id) q.id = 'q' + hashStr([q.banca, q.cat, q.textRef || '', q.q, (q.opts || []).join('|')].join('||'));
+  return q.id;
+}
+const BANK_BY_ID = {};
+BANK.forEach(q=>{ BANK_BY_ID[qid(q)] = q; });
 
 // window.storage only exists inside Claude's artifact viewer. When this file is
 // downloaded and opened directly in a browser, we fall back to localStorage so
@@ -1709,14 +1919,29 @@ async function storageDelete(key){
   try{ localStorage.removeItem(key); }catch(e){}
 }
 
+// ---------- History ----------
+// time:     {categoria: {q: seg respondendo, rev: seg lendo a explicação}}
+// days:     {'AAAA-MM-DD': {sim: seg no simulado, n: respondidas, c: acertos}}
+// studyLog: [{id, date, cat, tipo, min, obs}]  (estudo fora do simulado)
+// errors:   {idDaQuestao: {n, streak, cat, first, lastWrong, lastRight, note}}
+function emptyHistory(){
+  return {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0,
+          time:{}, days:{}, studyLog:[], errors:{}, mastered:0};
+}
+function normalizeHistory(h){
+  if(!h || typeof h !== 'object') return emptyHistory();
+  const base = emptyHistory();
+  Object.keys(base).forEach(k=>{ if(h[k] === undefined || h[k] === null) h[k] = base[k]; });
+  if(!Array.isArray(h.sessions)) h.sessions = [];
+  if(!Array.isArray(h.studyLog)) h.studyLog = [];
+  return h;
+}
 async function loadHistory(){
   try{
     const raw = await storageGet(HKEY);
-    history = raw ? JSON.parse(raw) : {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
-    if(!history.byBanca) history.byBanca = {};
-    if(!history.sessions) history.sessions = [];
+    history = normalizeHistory(raw ? JSON.parse(raw) : null);
   }catch(e){
-    history = {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
+    history = emptyHistory();
   }
   renderHistory();
 }
@@ -1728,7 +1953,7 @@ async function saveSessionState(){
   if(!session) return;
   await storageSet(SKEY, JSON.stringify({
     session, studyMode, timeRemainingSec,
-    timerVisible: document.getElementById('timerBox').style.display !== 'none'
+    timerVisible: $('timerBox').style.display !== 'none'
   }));
 }
 async function clearSessionState(){
@@ -1741,25 +1966,171 @@ async function checkForSavedSession(){
     const saved = JSON.parse(raw);
     if(!saved.session || saved.session.idx >= saved.session.questions.length) return;
     pendingResume = saved;
-    document.getElementById('resumeProgress').textContent =
-      `${saved.session.idx+1} de ${saved.session.questions.length}`;
-    document.getElementById('resumeBanner').classList.add('show');
+    const total = saved.session.questions.length;
+    const at = Math.min(total, saved.session.idx + (saved.session.answered ? 2 : 1));
+    $('resumeProgress').textContent = `${at} de ${total}`;
+    $('resumeBanner').classList.add('show');
   }catch(e){
     // no saved session, nothing to do
   }
 }
-let pendingResume = null;
 
+// ---------- Views ----------
+function showView(v){
+  $('setupPanel').style.display = (v === 'setup') ? 'block' : 'none';
+  $('quizCard').classList.toggle('active', v === 'quiz');
+  $('summaryCard').classList.toggle('active', v === 'summary');
+  $('dashboardPanel').classList.toggle('active', v === 'dash');
+  $('studyPanel').classList.toggle('active', v === 'study');
+}
+// Sai da tela de questões guardando tempo e progresso (menu, dashboard, estudo teórico).
+async function leaveQuiz(){
+  if(!session || !$('quizCard').classList.contains('active')) return;
+  bankPhase();
+  stopTimer();
+  await saveHistory();
+  await saveSessionState();
+}
+
+// ---------- Tempo por questão ----------
+// Duas fases por questão: 'q' (até responder) e 'rev' (lendo a explicação até avançar).
+// O tempo é calculado por horário, com teto de IDLE_CAP_SEC por fase, e descontando
+// períodos longos com a tela apagada ou em outro app.
+let phaseKind = null, phaseStart = 0, phaseAway = 0, hiddenAt = null;
+function phaseBegin(kind){
+  phaseKind = kind;
+  phaseStart = Date.now();
+  phaseAway = 0;
+  hiddenAt = document.hidden ? phaseStart : null;
+}
+function phaseEnd(){
+  if(!phaseKind) return 0;
+  const now = Date.now();
+  let away = phaseAway;
+  if(hiddenAt !== null && now - hiddenAt > AWAY_MS) away += now - hiddenAt;
+  const sec = Math.max(0, Math.min(IDLE_CAP_SEC, Math.round((now - phaseStart - away) / 1000)));
+  phaseKind = null;
+  hiddenAt = null;
+  return sec;
+}
+function dayRec(){
+  const k = dayKey();
+  return history.days[k] || (history.days[k] = {sim:0, n:0, c:0});
+}
+function bankTime(cat, kind, sec){
+  if(!(sec > 0)) return;
+  const t = history.time[cat] || (history.time[cat] = {q:0, rev:0});
+  t[kind] = (t[kind] || 0) + sec;
+  dayRec().sim += sec;
+  if(session) session.elapsedSec = (session.elapsedSec || 0) + sec;
+}
+function bankPhase(){
+  if(!session || !phaseKind) return;
+  const q = session.questions[session.idx];
+  const kind = phaseKind;
+  const sec = phaseEnd();
+  if(q) bankTime(q.cat, kind, sec);
+}
+document.addEventListener('visibilitychange', ()=>{
+  const now = Date.now();
+  if(document.hidden){
+    if(phaseKind) hiddenAt = now;
+  } else {
+    if(phaseKind && hiddenAt !== null){
+      if(now - hiddenAt > AWAY_MS) phaseAway += now - hiddenAt;
+      hiddenAt = null;
+    }
+    if(timerInterval) tickTimer();
+    swRender();
+  }
+});
+
+// ---------- Caderno de erros ----------
+function isDue(e){
+  if(!e.streak || !e.lastRight) return true;
+  return daysBetween(e.lastRight, dayKey()) >= ERR_GAP_DAYS;
+}
+function errStats(){
+  const ids = Object.keys(history.errors).filter(id=>BANK_BY_ID[id]);
+  const due = ids.filter(id=>isDue(history.errors[id]));
+  return {ids, due, waiting: ids.length - due.length};
+}
+function updateErrorBook(q, isRight){
+  const id = qid(q);
+  const today = dayKey();
+  let e = history.errors[id];
+  if(!isRight){
+    if(!e) e = history.errors[id] = {n:0, streak:0, cat:q.cat, first:today, note:''};
+    e.n++;
+    e.streak = 0;
+    e.lastWrong = today;
+    e.lastRight = null;
+    return {state:'added', e};
+  }
+  if(!e) return null;
+  if(e.streak >= 1 && e.lastRight && daysBetween(e.lastRight, today) < ERR_GAP_DAYS){
+    return {state:'early', e};
+  }
+  e.streak++;
+  e.lastRight = today;
+  if(e.streak >= ERR_STREAK_OUT){
+    delete history.errors[id];
+    history.mastered = (history.mastered || 0) + 1;
+    return {state:'mastered', e};
+  }
+  return {state:'progress', e};
+}
+function updateErrPill(){
+  const el = $('errPillCount');
+  if(!el || !history) return;
+  const s = errStats();
+  el.textContent = s.ids.length
+    ? `${s.due.length} para hoje · ${s.ids.length} no total`
+    : 'vazio por enquanto';
+}
+function renderErrBox(info){
+  const box = $('errBox');
+  const note = $('errNote');
+  if(!info){ box.classList.remove('show'); return; }
+  const e = info.e;
+  let msg;
+  if(info.state === 'added'){
+    msg = e.n === 1 ? 'Entrou no caderno de erros.' : `Continua no caderno de erros (errada ${e.n}x).`;
+  } else if(info.state === 'progress'){
+    msg = `1º acerto registrado. A questão volta em ${ERR_GAP_DAYS} dias; acertando de novo, sai do caderno.`;
+  } else if(info.state === 'early'){
+    msg = `Acerto dentro do intervalo de ${ERR_GAP_DAYS} dias: ainda não conta para sair do caderno.`;
+  } else {
+    msg = 'Saiu do caderno de erros: 2 acertos com intervalo entre eles.';
+  }
+  $('errStatus').textContent = msg;
+  if(info.state === 'mastered'){
+    note.style.display = 'none';
+    note.oninput = null;
+  } else {
+    note.style.display = 'block';
+    note.value = e.note || '';
+    note.oninput = ()=>{ e.note = note.value.slice(0, 400); };
+    note.onchange = ()=>{ saveHistory(); };
+  }
+  box.classList.add('show');
+}
+
+// ---------- Setup ----------
 function renderBreakers(){
-  const list = document.getElementById('breakerList');
+  const list = $('breakerList');
   list.innerHTML = '';
   CATEGORIES.forEach(cat=>{
     const div = document.createElement('div');
-    div.className = 'breaker on';
+    div.className = 'breaker' + (activeCats.has(cat) ? ' on' : '');
     div.dataset.cat = cat;
     const h = (history && history.byCat[cat]) || {c:0,t:0};
     const pct = h.t ? Math.round(100*h.c/h.t) : null;
-    div.innerHTML = `<div class="switch"></div><div><div class="name">${cat}</div><div class="stat">${pct===null?'sem histórico':pct+'% acerto ('+h.t+' resp.)'}</div></div>`;
+    const tm = (history && history.time[cat]) || {q:0, rev:0};
+    const sec = (tm.q || 0) + (tm.rev || 0);
+    let stat = pct===null ? 'sem histórico' : pct+'% acerto ('+h.t+' resp.)';
+    if(sec >= 60) stat += ' · ' + fmtDur(sec);
+    div.innerHTML = `<div class="switch"></div><div><div class="name">${cat}</div><div class="stat">${stat}</div></div>`;
     div.onclick = ()=>{
       div.classList.toggle('on');
       if(div.classList.contains('on')) activeCats.add(cat); else activeCats.delete(cat);
@@ -1768,7 +2139,7 @@ function renderBreakers(){
   });
 }
 
-document.getElementById('bancaRow').addEventListener('click', (e)=>{
+$('bancaRow').addEventListener('click', (e)=>{
   const pill = e.target.closest('.banca-pill');
   if(!pill) return;
   pill.classList.toggle('on');
@@ -1776,16 +2147,19 @@ document.getElementById('bancaRow').addEventListener('click', (e)=>{
   if(pill.classList.contains('on')) activeBancas.add(b); else activeBancas.delete(b);
 });
 
-document.getElementById('modeRow').addEventListener('click', (e)=>{
+function setMode(mode){
+  studyMode = mode;
+  document.querySelectorAll('.mode-pill').forEach(p=>p.classList.toggle('on', p.dataset.mode === mode));
+  $('examConfig').classList.toggle('show', mode === 'prova');
+  $('errModeNote').classList.toggle('show', mode === 'erros');
+  $('startBtn').textContent = mode === 'prova'
+    ? 'Iniciar prova cronometrada ▸'
+    : (mode === 'erros' ? 'Revisar caderno de erros ▸' : 'Energizar simulado ▸');
+}
+$('modeRow').addEventListener('click', (e)=>{
   const pill = e.target.closest('.mode-pill');
   if(!pill) return;
-  document.querySelectorAll('.mode-pill').forEach(p=>p.classList.remove('on'));
-  pill.classList.add('on');
-  studyMode = pill.dataset.mode;
-  document.getElementById('examConfig').classList.toggle('show', studyMode === 'prova');
-  document.getElementById('startBtn').textContent = studyMode === 'prova'
-    ? 'Iniciar prova cronometrada ▸'
-    : 'Energizar simulado ▸';
+  setMode(pill.dataset.mode);
 });
 
 function shuffle(arr){
@@ -1797,92 +2171,122 @@ function shuffle(arr){
   return a;
 }
 
-document.getElementById('startBtn').onclick = ()=>{
-  const pool = BANK.filter(q=>activeCats.has(q.cat) && activeBancas.has(q.banca));
-  if(pool.length === 0){ alert('Selecione ao menos uma categoria e uma banca.'); return; }
+// ---------- Timer da prova (por horário, não perde tempo com a tela apagada) ----------
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+function tickTimer(){
+  timeRemainingSec = Math.max(0, Math.ceil((timerEndAt - Date.now()) / 1000));
+  updateTimerDisplay();
+  if(timeRemainingSec <= 0){
+    stopTimer();
+    finishSession();
+  }
+}
+function startTimer(){
+  stopTimer();
+  timerEndAt = Date.now() + timeRemainingSec * 1000;
+  $('timerBox').style.display = 'inline-block';
+  updateTimerDisplay();
+  timerInterval = setInterval(tickTimer, 1000);
+}
+function updateTimerDisplay(){
+  const timerBox = $('timerBox');
+  const h = Math.floor(timeRemainingSec/3600);
+  const m = Math.floor((timeRemainingSec%3600)/60);
+  const s = timeRemainingSec%60;
+  timerBox.textContent = h > 0
+    ? `${h}:${pad2(m)}:${pad2(s)}`
+    : `${pad2(m)}:${pad2(s)}`;
+  timerBox.classList.remove('warn','crit');
+  if(timeRemainingSec <= 60) timerBox.classList.add('crit');
+  else if(timeRemainingSec <= 300) timerBox.classList.add('warn');
+}
 
-  let questions = shuffle(pool);
-  if(studyMode === 'prova'){
-    const qty = parseInt(document.getElementById('examQty').value, 10);
-    if(qty > 0) questions = questions.slice(0, Math.min(qty, questions.length));
+$('startBtn').onclick = ()=>{
+  let questions;
+  if(studyMode === 'erros'){
+    const s = errStats();
+    if(s.ids.length === 0){
+      alert('Seu caderno de erros está vazio. As questões que você errar nos simulados entram nele sozinhas.');
+      return;
+    }
+    let ids = s.due;
+    if(ids.length === 0){
+      if(!confirm(`As ${s.ids.length} questões do caderno já tiveram o 1º acerto e estão no intervalo de ${ERR_GAP_DAYS} dias. Refazer mesmo assim? Esses acertos não contam para tirá-las do caderno.`)) return;
+      ids = s.ids;
+    }
+    questions = shuffle(ids.map(id=>BANK_BY_ID[id]));
+  } else {
+    const pool = BANK.filter(q=>activeCats.has(q.cat) && activeBancas.has(q.banca));
+    if(pool.length === 0){ alert('Selecione ao menos uma categoria e uma banca.'); return; }
+    questions = shuffle(pool);
+    if(studyMode === 'prova'){
+      const qty = parseInt($('examQty').value, 10);
+      if(qty > 0) questions = questions.slice(0, Math.min(qty, questions.length));
+    }
   }
 
   session = {
     questions,
     idx: 0,
     correct: 0,
-    results: {}
+    results: {},
+    answered: false,
+    elapsedSec: 0
   };
-  document.getElementById('setupPanel').style.display = 'none';
-  document.getElementById('summaryCard').classList.remove('active');
-  document.getElementById('quizCard').classList.add('active');
+  pendingResume = null;
+  $('resumeBanner').classList.remove('show');
+  showView('quiz');
 
-  const timerBox = document.getElementById('timerBox');
-  const endBtn = document.getElementById('endExamBtn');
-  clearInterval(timerInterval);
+  const timerBox = $('timerBox');
+  const endBtn = $('endExamBtn');
+  stopTimer();
+  timerBox.style.display = 'none';
   if(studyMode === 'prova'){
-    const timeMin = parseInt(document.getElementById('examTime').value, 10);
+    const timeMin = parseInt($('examTime').value, 10);
     endBtn.style.display = 'inline-block';
     if(timeMin > 0){
       timeRemainingSec = timeMin * 60;
-      timerBox.style.display = 'inline-block';
-      updateTimerDisplay();
-      timerInterval = setInterval(()=>{
-        timeRemainingSec--;
-        updateTimerDisplay();
-        if(timeRemainingSec <= 0){
-          clearInterval(timerInterval);
-          finishSession();
-        }
-      }, 1000);
-    } else {
-      timerBox.style.display = 'none';
+      startTimer();
     }
   } else {
     endBtn.style.display = 'none';
-    timerBox.style.display = 'none';
   }
 
   renderQuestion();
   saveSessionState();
 };
 
-function updateTimerDisplay(){
-  const timerBox = document.getElementById('timerBox');
-  const m = Math.floor(timeRemainingSec/60);
-  const s = timeRemainingSec%60;
-  timerBox.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  timerBox.classList.remove('warn','crit');
-  if(timeRemainingSec <= 60) timerBox.classList.add('crit');
-  else if(timeRemainingSec <= 300) timerBox.classList.add('warn');
-}
-
-document.getElementById('endExamBtn').onclick = ()=>{
+$('endExamBtn').onclick = ()=>{
   if(!confirm('Encerrar a prova agora? As questões não respondidas ficarão de fora da pontuação.')) return;
-  clearInterval(timerInterval);
   finishSession();
 };
 
 function renderQuestion(){
   const q = session.questions[session.idx];
-  document.getElementById('qBanca').textContent = q.banca;
-  document.getElementById('qCategory').textContent = q.cat;
-  document.getElementById('qCounter').textContent = `${session.idx+1} / ${session.questions.length}`;
-  document.getElementById('progressFill').style.width = `${100*session.idx/session.questions.length}%`;
-  document.getElementById('qText').textContent = q.q;
+  session.answered = false;
+  $('qBanca').textContent = q.banca;
+  const prev = history.errors[qid(q)];
+  $('qCategory').textContent = q.cat + (studyMode === 'erros' && prev ? ` · errada ${prev.n}x` : '');
+  $('qCounter').textContent = `${session.idx+1} / ${session.questions.length}`;
+  $('progressFill').style.width = `${100*session.idx/session.questions.length}%`;
+  $('qText').textContent = q.q;
 
-  const tp = document.getElementById('textPassage');
+  const tp = $('textPassage');
   if(q.textRef && TEXTS[q.textRef]){
     tp.style.display = 'block';
-    document.getElementById('textPassageBody').textContent = TEXTS[q.textRef];
+    $('textPassageBody').textContent = TEXTS[q.textRef];
   } else {
     tp.style.display = 'none';
   }
 
-  document.getElementById('feedback').classList.remove('show','ok','bad');
-  document.getElementById('nextBtn').classList.remove('show');
+  $('feedback').classList.remove('show','ok','bad');
+  $('errBox').classList.remove('show');
+  $('nextBtn').classList.remove('show');
 
-  const optsDiv = document.getElementById('qOptions');
+  const optsDiv = $('qOptions');
   optsDiv.innerHTML = '';
 
   const correctIdx = (typeof q.correctFix === 'number') ? q.correctFix : q.correct;
@@ -1906,11 +2310,16 @@ function renderQuestion(){
       optsDiv.appendChild(div);
     });
   }
+
+  phaseBegin('q');
 }
 
 function answer(given, correct, q){
+  if(session.answered) return; // a resposta já foi confirmada: cliques extras não contam de novo
+  bankPhase();                 // fecha o tempo gasto até confirmar a resposta
+  session.answered = true;
+
   const opts = document.querySelectorAll('#qOptions .opt');
-  if(opts[0] && opts[0].classList.contains('locked')) return; // já respondida — ignora clique repetido
   opts.forEach(o=>o.classList.add('locked'));
 
   let isRight;
@@ -1935,49 +2344,66 @@ function answer(given, correct, q){
   history.byBanca[q.banca].t++;
   history.totalAnswered++;
   if(isRight){ history.byCat[q.cat].c++; history.byBanca[q.banca].c++; history.totalCorrect++; }
+
+  const d = dayRec();
+  d.n++;
+  if(isRight) d.c++;
+  const errInfo = updateErrorBook(q, isRight);
+
   saveHistory();
   updateOverallStat();
+  updateErrPill();
   saveSessionState();
 
-  const fb = document.getElementById('feedback');
+  const fb = $('feedback');
   fb.classList.add('show', isRight ? 'ok':'bad');
-  document.getElementById('verdict').textContent = isRight ? '✓ CORRETO' : '✗ INCORRETO';
-  document.getElementById('exp').textContent = q.exp;
+  $('verdict').textContent = isRight ? '✓ CORRETO' : '✗ INCORRETO';
+  $('exp').textContent = q.exp;
+  renderErrBox(errInfo);
 
-  document.getElementById('nextBtn').classList.add('show');
+  $('nextBtn').classList.add('show');
+  phaseBegin('rev'); // tempo lendo a explicação também conta para a matéria
 }
 
-document.getElementById('nextBtn').onclick = ()=>{
+$('nextBtn').onclick = ()=>{
+  bankPhase();
   session.idx++;
   if(session.idx >= session.questions.length){
     finishSession();
   } else {
+    saveHistory();
     renderQuestion();
     saveSessionState();
   }
 };
 
 function finishSession(){
-  clearInterval(timerInterval);
+  stopTimer();
+  bankPhase();
   clearSessionState();
 
   const answeredCount = Object.values(session.results).reduce((s,r)=>s+r.t,0);
+  const sec = session.elapsedSec || 0;
   history.sessions.unshift({
     date: new Date().toISOString(),
     correct: session.correct,
     total: answeredCount,
-    mode: studyMode
+    mode: studyMode,
+    sec
   });
   history.sessions = history.sessions.slice(0, 15);
   saveHistory();
 
-  document.getElementById('quizCard').classList.remove('active');
-  document.getElementById('summaryCard').classList.add('active');
-  document.getElementById('finalScore').textContent = `${session.correct}/${session.questions.length}`;
+  showView('summary');
+  $('finalScore').textContent = `${session.correct}/${session.questions.length}`;
   const pct = Math.round(100*session.correct/session.questions.length);
-  document.getElementById('finalPct').textContent = `${pct}% de aproveitamento nesta sessão`;
+  let sub = `${pct}% de aproveitamento nesta sessão`;
+  if(answeredCount > 0 && sec > 0){
+    sub += ` · ${fmtDur(sec)} de estudo · ${fmtPace(sec/answeredCount)} por questão`;
+  }
+  $('finalPct').textContent = sub;
 
-  const grid = document.getElementById('summaryGrid');
+  const grid = $('summaryGrid');
   grid.innerHTML = '';
   Object.entries(session.results).forEach(([cat,r])=>{
     const p = Math.round(100*r.c/r.t);
@@ -1989,11 +2415,11 @@ function finishSession(){
   });
   renderHistory();
   renderBreakers();
+  updateErrPill();
 }
 
-document.getElementById('restartBtn').onclick = ()=>{
-  document.getElementById('summaryCard').classList.remove('active');
-  document.getElementById('setupPanel').style.display = 'block';
+$('restartBtn').onclick = ()=>{
+  showView('setup');
 };
 
 function renderHistory(){
@@ -2001,67 +2427,234 @@ function renderHistory(){
 }
 
 function updateOverallStat(){
-  const el = document.getElementById('overallStat');
+  const el = $('overallStat');
   if(!history || history.totalAnswered===0){ el.textContent = '--%'; return; }
   const p = Math.round(100*history.totalCorrect/history.totalAnswered);
   el.textContent = p + '%';
 }
 
-document.getElementById('resetHistory').onclick = async ()=>{
-  if(!confirm('Zerar todo o histórico acumulado de desempenho e as últimas sessões?')) return;
-  history = {byCat:{}, byBanca:{}, sessions:[], totalCorrect:0, totalAnswered:0};
+$('resetHistory').onclick = async ()=>{
+  if(!confirm('Zerar todo o histórico? Isso apaga desempenho, sessões, tempo de estudo, lançamentos de teoria e o caderno de erros.')) return;
+  history = emptyHistory();
   await saveHistory();
   updateOverallStat();
   renderBreakers();
+  updateErrPill();
   renderDashboard();
 };
 
-document.getElementById('resumeBtn').onclick = ()=>{
+$('resumeBtn').onclick = ()=>{
   if(!pendingResume) return;
-  session = pendingResume.session;
-  studyMode = pendingResume.studyMode;
-  timeRemainingSec = pendingResume.timeRemainingSec || 0;
+  const saved = pendingResume;
+  pendingResume = null;
+  session = saved.session;
+  timeRemainingSec = saved.timeRemainingSec || 0;
+  setMode(saved.studyMode || 'livre');
+  $('resumeBanner').classList.remove('show');
 
-  document.getElementById('setupPanel').style.display = 'none';
-  document.getElementById('summaryCard').classList.remove('active');
-  document.getElementById('quizCard').classList.add('active');
+  // Se a questão salva já tinha sido respondida, retoma na seguinte (não conta duas vezes).
+  if(session.answered){ session.idx++; session.answered = false; }
 
-  const timerBox = document.getElementById('timerBox');
-  const endBtn = document.getElementById('endExamBtn');
-  clearInterval(timerInterval);
-  if(pendingResume.timerVisible && timeRemainingSec > 0){
-    endBtn.style.display = 'inline-block';
-    timerBox.style.display = 'inline-block';
-    updateTimerDisplay();
-    timerInterval = setInterval(()=>{
-      timeRemainingSec--;
-      updateTimerDisplay();
-      if(timeRemainingSec <= 0){
-        clearInterval(timerInterval);
-        finishSession();
-      }
-    }, 1000);
-  } else if(studyMode === 'prova'){
-    endBtn.style.display = 'inline-block';
-    timerBox.style.display = 'none';
+  showView('quiz');
+  if(session.idx >= session.questions.length){ finishSession(); return; }
+
+  const timerBox = $('timerBox');
+  const endBtn = $('endExamBtn');
+  stopTimer();
+  endBtn.style.display = (studyMode === 'prova') ? 'inline-block' : 'none';
+  if(saved.timerVisible && timeRemainingSec > 0){
+    startTimer();
   } else {
-    endBtn.style.display = 'none';
     timerBox.style.display = 'none';
   }
 
   renderQuestion();
-  pendingResume = null;
+  saveSessionState();
 };
 
-document.getElementById('discardBtn').onclick = async ()=>{
+$('discardBtn').onclick = async ()=>{
   await clearSessionState();
   pendingResume = null;
-  document.getElementById('resumeBanner').classList.remove('show');
+  $('resumeBanner').classList.remove('show');
 };
+
+// ---------- Dashboard ----------
+function timeByCat(){
+  const out = {};
+  const get = c => out[c] || (out[c] = {q:0, rev:0, teo:0});
+  Object.entries(history.time).forEach(([c,t])=>{
+    const o = get(c);
+    o.q += t.q || 0;
+    o.rev += t.rev || 0;
+  });
+  history.studyLog.forEach(e=>{ get(e.cat || OTHER_CAT).teo += (e.min || 0) * 60; });
+  return out;
+}
+function teoByDay(){
+  const out = {};
+  history.studyLog.forEach(e=>{ out[e.date] = (out[e.date] || 0) + (e.min || 0) * 60; });
+  return out;
+}
+
+function renderTimeDash(){
+  const byCat = timeByCat();
+  const teoDay = teoByDay();
+  let simSec = 0, teoSec = 0;
+  Object.values(byCat).forEach(t=>{ simSec += t.q + t.rev; teoSec += t.teo; });
+  const total = simSec + teoSec;
+
+  const today = dayKey();
+  let last7 = 0;
+  for(let i=0;i<7;i++){
+    const k = addDays(today, -i);
+    last7 += ((history.days[k] || {}).sim || 0) + (teoDay[k] || 0);
+  }
+  const left = daysBetween(today, EXAM_DATE);
+  const leftTxt = left > 0 ? String(left) : (left === 0 ? 'hoje' : '--');
+
+  $('dashTimeGrid').innerHTML = `
+    <div class="dash-stat"><div class="label">Tempo total</div><div class="value">${fmtDur(total)}</div></div>
+    <div class="dash-stat"><div class="label">Em questões</div><div class="value">${fmtDur(simSec)}</div></div>
+    <div class="dash-stat"><div class="label">Em teoria</div><div class="value" style="color:var(--amber);">${fmtDur(teoSec)}</div></div>
+    <div class="dash-stat"><div class="label">Média por dia (7 dias)</div><div class="value">${fmtDur(last7/7)}</div></div>
+    <div class="dash-stat"><div class="label">Dias até a prova</div><div class="value">${leftTxt}</div></div>
+  `;
+
+  const split = $('dashSplit');
+  const donut = $('dashDonut');
+  if(total <= 0){
+    split.innerHTML = '';
+    donut.innerHTML = '<div class="empty-note">Ainda sem tempo registrado. O tempo de questões entra sozinho quando você responde; teoria e videoaula você lança em "Estudo teórico".</div>';
+  } else {
+    const pSim = Math.round(100*simSec/total);
+    split.innerHTML = `
+      <div class="time-split">
+        <div class="split-track"><div class="split-sim" style="width:${100*simSec/total}%;"></div><div class="split-teo" style="width:${100*teoSec/total}%;"></div></div>
+        <div class="split-legend"><span><b style="color:var(--teal);">Questões e revisão</b> ${pSim}%</span><span><b style="color:var(--amber);">Teoria e vídeo</b> ${100-pSim}%</span></div>
+      </div>`;
+
+    let entries = Object.entries(byCat)
+      .map(([cat,t])=>[cat, t.q + t.rev + t.teo])
+      .filter(e=>e[1] > 0)
+      .sort((a,b)=>b[1]-a[1]);
+    if(entries.length > PALETTE.length){
+      const rest = entries.slice(PALETTE.length - 1);
+      entries = entries.slice(0, PALETTE.length - 1);
+      entries.push([`Outras ${rest.length} matérias`, rest.reduce((s,e)=>s+e[1],0), true]);
+    }
+    const R = 54, C = 2 * Math.PI * R;
+    let offset = 0, segs = '', legend = '';
+    entries.forEach((e,i)=>{
+      const color = e[2] ? PALETTE_OTHER : PALETTE[i % PALETTE.length];
+      const len = C * e[1] / total;
+      segs += `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${color}" stroke-width="20" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 70 70)"/>`;
+      offset += len;
+      const pct = (100*e[1]/total).toFixed(1).replace('.', ',');
+      legend += `<div class="leg-row"><span class="leg-dot" style="background:${color};"></span><span class="leg-name">${esc(e[0])}</span><span class="leg-val">${fmtDur(e[1])} · ${pct}%</span></div>`;
+    });
+    donut.innerHTML = `
+      <svg viewBox="0 0 140 140" role="img" aria-label="Distribuição do tempo de estudo por matéria">
+        ${segs}
+        <text x="70" y="68" text-anchor="middle" fill="#EDEDE5" font-family="JetBrains Mono, monospace" font-size="17" font-weight="800">${fmtDur(total)}</text>
+        <text x="70" y="84" text-anchor="middle" fill="#8B93A1" font-family="JetBrains Mono, monospace" font-size="8">de estudo</text>
+      </svg>
+      <div class="donut-legend">${legend}</div>`;
+  }
+
+  // últimos 14 dias
+  const days = [];
+  for(let i=13;i>=0;i--){
+    const k = addDays(today, -i);
+    days.push({k, sim: (history.days[k] || {}).sim || 0, teo: teoDay[k] || 0});
+  }
+  const max = Math.max(1, ...days.map(d=>d.sim + d.teo));
+  const anyDay = days.some(d=>d.sim + d.teo > 0);
+  $('dashDays').innerHTML = !anyDay
+    ? '<div class="empty-note">Nenhum estudo registrado nos últimos 14 dias.</div>'
+    : `<div class="days-chart">${days.map(d=>{
+        const hs = 100 * d.sim / max, ht = 100 * d.teo / max;
+        const tip = `${fmtDateBR(d.k)}: ${fmtDur(d.sim)} em questões, ${fmtDur(d.teo)} em teoria`;
+        return `<div class="day-col${d.k===today?' today':''}" title="${tip}"><div class="day-stack">${ht>0?`<div class="day-seg teo" style="height:${ht}%;"></div>`:''}${hs>0?`<div class="day-seg sim" style="height:${hs}%;"></div>`:''}</div><div class="day-lbl">${d.k.slice(8)}</div></div>`;
+      }).join('')}</div>
+      <div class="chart-key"><span><i style="background:var(--teal);"></i>questões e revisão</span><span><i style="background:var(--amber);"></i>teoria e vídeo</span><span>maior dia: ${fmtDur(max)}</span></div>`;
+
+  // tempo x acerto
+  const cross = $('dashCross');
+  const cats = new Set([...Object.keys(byCat), ...Object.keys(history.byCat)]);
+  const rows = [...cats].map(cat=>{
+    const t = byCat[cat] || {q:0, rev:0, teo:0};
+    const r = history.byCat[cat] || {c:0, t:0};
+    return {cat, sec: t.q + t.rev + t.teo, n: r.t, acc: r.t ? Math.round(100*r.c/r.t) : null};
+  }).filter(r=>r.sec >= 30 || r.n > 0);
+  if(rows.length === 0){
+    cross.innerHTML = '<div class="empty-note">Ainda sem dados. Essa tabela mostra, por matéria, quanto tempo você investiu e quanto está acertando.</div>';
+  } else {
+    const withTime = rows.filter(r=>r.sec > 0);
+    const avgSec = withTime.length ? withTime.reduce((s,r)=>s+r.sec,0) / withTime.length : 0;
+    rows.sort((a,b)=>{
+      if(a.acc === null && b.acc === null) return b.sec - a.sec;
+      if(a.acc === null) return 1;
+      if(b.acc === null) return -1;
+      return a.acc - b.acc;
+    });
+    cross.innerHTML = '<div class="cross-row head"><div>Matéria</div><div class="cross-num">Tempo</div><div class="cross-num">Acerto</div></div>'
+      + rows.map(r=>{
+        let tag, cls;
+        if(r.n < 10){ tag = r.n === 0 ? 'sem questões respondidas' : `poucos dados (${r.n} resp.)`; cls = 'muted'; }
+        else if(r.acc >= 80){ tag = 'em dia'; cls = 'good'; }
+        else if(r.acc >= 60){ tag = 'quase lá'; cls = 'mid'; }
+        else if(r.sec >= avgSec){ tag = 'muito tempo e pouco acerto: mudar o método'; cls = 'low'; }
+        else { tag = 'pouco tempo e pouco acerto: precisa de mais horas'; cls = 'low'; }
+        const color = r.acc === null ? 'var(--muted)' : (r.acc>=70 ? 'var(--teal)' : (r.acc>=50 ? 'var(--amber)' : 'var(--red)'));
+        return `<div class="cross-row"><div class="cross-name">${esc(r.cat)}<span class="cross-tag ${cls}">${tag}</span></div><div class="cross-num">${fmtDur(r.sec)}</div><div class="cross-num" style="color:${color};">${r.acc === null ? '--' : r.acc + '%'}</div></div>`;
+      }).join('');
+  }
+}
+
+function renderErrorsDash(){
+  const box = $('dashErrors');
+  const s = errStats();
+  const grid = `
+    <div class="dash-grid" style="margin-bottom:14px;">
+      <div class="dash-stat"><div class="label">Para revisar hoje</div><div class="value" style="color:var(--amber);">${s.due.length}</div></div>
+      <div class="dash-stat"><div class="label">Aguardando intervalo</div><div class="value">${s.waiting}</div></div>
+      <div class="dash-stat"><div class="label">Dominadas</div><div class="value">${history.mastered || 0}</div></div>
+    </div>`;
+  if(s.ids.length === 0){
+    box.innerHTML = grid + '<div class="empty-note">Caderno vazio. Toda questão que você errar entra aqui sozinha e só sai depois de 2 acertos com pelo menos ' + ERR_GAP_DAYS + ' dias entre eles.</div>';
+    return;
+  }
+  const today = dayKey();
+  const groups = {};
+  s.ids.forEach(id=>{
+    const q = BANK_BY_ID[id];
+    (groups[q.cat] = groups[q.cat] || []).push(id);
+  });
+  const html = Object.entries(groups).sort((a,b)=>b[1].length-a[1].length).map(([cat,ids])=>{
+    const dueN = ids.filter(id=>isDue(history.errors[id])).length;
+    const items = ids.sort((a,b)=>history.errors[b].n - history.errors[a].n).map(id=>{
+      const e = history.errors[id];
+      const q = BANK_BY_ID[id];
+      const text = q.q.length > 170 ? q.q.slice(0,170) + '…' : q.q;
+      const due = isDue(e);
+      const when = due
+        ? 'para revisar agora'
+        : `1º acerto em ${fmtDateBR(e.lastRight)} · volta em ${fmtDateBR(addDays(e.lastRight, ERR_GAP_DAYS))}`;
+      return `<div class="err-item"><div class="err-q">${esc(text)}</div><div class="err-meta${due?' due':''}">errada ${e.n}x · última em ${fmtDateBR(e.lastWrong || e.first || today)} · ${when}</div>${e.note ? `<div class="err-note">${esc(e.note)}</div>` : ''}</div>`;
+    }).join('');
+    return `<details class="err-cat"><summary><span>${esc(cat)}</span><span class="cnt">${ids.length} ${ids.length===1?'questão':'questões'} · ${dueN} hoje</span></summary>${items}</details>`;
+  }).join('');
+  box.innerHTML = grid + html + '<button class="resume-btn" id="dashReviewBtn" style="margin-top:14px;">Revisar caderno agora ▸</button>';
+  $('dashReviewBtn').onclick = ()=>{
+    setMode('erros');
+    showView('setup');
+    $('startBtn').click();
+  };
+}
 
 function renderDashboard(){
   // top stats
-  const grid = document.getElementById('dashStatsGrid');
+  const grid = $('dashStatsGrid');
   const overallPct = history.totalAnswered ? Math.round(100*history.totalCorrect/history.totalAnswered) : 0;
   grid.innerHTML = `
     <div class="dash-stat"><div class="label">Questões respondidas</div><div class="value">${history.totalAnswered}</div></div>
@@ -2070,8 +2663,11 @@ function renderDashboard(){
     <div class="dash-stat"><div class="label">Sessões concluídas</div><div class="value">${history.sessions.length}</div></div>
   `;
 
+  renderTimeDash();
+  renderErrorsDash();
+
   // category bars
-  const catDiv = document.getElementById('dashCatBars');
+  const catDiv = $('dashCatBars');
   const catEntries = Object.entries(history.byCat).sort((a,b)=>b[1].t-a[1].t);
   catDiv.innerHTML = catEntries.length ? '' : '<div style="color:var(--muted);font-size:13px;">Ainda sem dados — responda algumas questões primeiro.</div>';
   catEntries.forEach(([cat,r])=>{
@@ -2087,7 +2683,7 @@ function renderDashboard(){
   });
 
   // banca bars
-  const bancaDiv = document.getElementById('dashBancaBars');
+  const bancaDiv = $('dashBancaBars');
   const bancaEntries = Object.entries(history.byBanca).sort((a,b)=>b[1].t-a[1].t);
   bancaDiv.innerHTML = bancaEntries.length ? '' : '<div style="color:var(--muted);font-size:13px;">Ainda sem dados por banca.</div>';
   bancaEntries.forEach(([banca,r])=>{
@@ -2103,7 +2699,8 @@ function renderDashboard(){
   });
 
   // session log
-  const logDiv = document.getElementById('dashSessionLog');
+  const logDiv = $('dashSessionLog');
+  const modeLabel = {prova:'prova cronometrada', erros:'caderno de erros', livre:'treino livre'};
   logDiv.innerHTML = history.sessions.length ? '' : '<div style="color:var(--muted);font-size:13px;">Nenhuma sessão concluída ainda.</div>';
   history.sessions.forEach(s=>{
     const d = new Date(s.date);
@@ -2113,26 +2710,148 @@ function renderDashboard(){
     const row = document.createElement('div');
     row.className = 'session-log-row';
     row.innerHTML = `
-      <span class="sdate">${dateStr} · ${s.mode==='prova'?'prova cronometrada':'treino livre'}</span>
+      <span class="sdate">${dateStr} · ${modeLabel[s.mode] || 'treino livre'}${s.sec ? ' · ' + fmtDur(s.sec) : ''}</span>
       <span class="sscore" style="color:${color};">${s.correct}/${s.total} (${p}%)</span>
     `;
     logDiv.appendChild(row);
   });
 }
 
-document.getElementById('dashToggleBtn').onclick = ()=>{
+$('dashToggleBtn').onclick = async ()=>{
+  await leaveQuiz();
   renderDashboard();
-  document.getElementById('setupPanel').style.display = 'none';
-  document.getElementById('quizCard').classList.remove('active');
-  document.getElementById('summaryCard').classList.remove('active');
-  document.getElementById('dashboardPanel').classList.add('active');
+  showView('dash');
 };
-document.getElementById('closeDashBtn').onclick = ()=>{
-  document.getElementById('dashboardPanel').classList.remove('active');
-  document.getElementById('setupPanel').style.display = 'block';
+$('closeDashBtn').onclick = async ()=>{
+  showView('setup');
+  renderBreakers();
+  updateErrPill();
+  await checkForSavedSession();
 };
 
-document.getElementById('exportBtn').onclick = ()=>{
+// ---------- Estudo fora do simulado (teoria, videoaula, revisão) ----------
+let sw = {running:false, startAt:0, accumMs:0};
+let swInterval = null;
+function swElapsedMs(){ return sw.accumMs + (sw.running ? Date.now() - sw.startAt : 0); }
+async function swSave(){ await storageSet(WKEY, JSON.stringify(sw)); }
+function swRender(){
+  const ms = swElapsedMs();
+  const t = Math.floor(ms / 1000);
+  const txt = `${pad2(Math.floor(t/3600))}:${pad2(Math.floor((t%3600)/60))}:${pad2(t%60)}`;
+  const disp = $('swDisplay');
+  disp.textContent = txt;
+  disp.classList.toggle('live', sw.running);
+  $('swToggleBtn').textContent = sw.running ? 'Pausar' : (ms > 0 ? 'Continuar' : 'Iniciar cronômetro');
+  $('swStopBtn').disabled = ms < 1000;
+  const top = $('studyToggleBtn');
+  top.classList.toggle('live', sw.running);
+  top.textContent = sw.running ? `⏱ Cronômetro ${txt}` : '⏱ Estudo teórico';
+}
+function swTick(){
+  clearInterval(swInterval);
+  swInterval = sw.running ? setInterval(swRender, 1000) : null;
+  swRender();
+}
+async function swLoad(){
+  try{
+    const raw = await storageGet(WKEY);
+    if(raw){
+      const o = JSON.parse(raw);
+      if(o && typeof o === 'object') sw = {running: !!o.running, startAt: o.startAt || 0, accumMs: o.accumMs || 0};
+    }
+  }catch(e){}
+  swTick();
+}
+$('swToggleBtn').onclick = async ()=>{
+  if(sw.running){
+    sw.accumMs += Date.now() - sw.startAt;
+    sw.running = false;
+  } else {
+    sw.startAt = Date.now();
+    sw.running = true;
+  }
+  swTick();
+  await swSave();
+};
+$('swStopBtn').onclick = async ()=>{
+  const ms = swElapsedMs();
+  if(ms < 1000) return;
+  const mins = Math.max(1, Math.round(ms / 60000));
+  sw = {running:false, startAt:0, accumMs:0};
+  swTick();
+  await swSave();
+  $('stMin').value = mins;
+  $('stDate').value = dayKey();
+  $('swHint').textContent = `Tempo cronometrado: ${mins} min. Confira a matéria e o tipo e toque em "Lançar estudo".`;
+};
+
+function initStudyForm(){
+  $('stCat').innerHTML = CATEGORIES.concat([OTHER_CAT]).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  $('stTipo').innerHTML = STUDY_TYPES.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  $('stDate').value = dayKey();
+  $('stDate').max = dayKey();
+}
+function renderStudyPanel(){
+  const today = dayKey();
+  const sim = (history.days[today] || {}).sim || 0;
+  const teo = teoByDay()[today] || 0;
+  $('studyToday').innerHTML = `Hoje: <b>${fmtDur(sim)}</b> em questões e <b>${fmtDur(teo)}</b> em teoria ou vídeo. O tempo de questões entra sozinho; aqui você lança o que estudou fora do simulado.`;
+
+  const list = $('studyLogList');
+  const entries = history.studyLog.slice().sort((a,b)=>{
+    if(a.date !== b.date) return a.date < b.date ? 1 : -1;
+    return String(a.id) < String(b.id) ? 1 : -1;
+  }).slice(0, 40);
+  if(entries.length === 0){
+    list.innerHTML = '<div class="empty-note">Nenhum lançamento ainda. Estudou teoria ou assistiu a uma videoaula? Lance acima para entrar na conta de horas da matéria.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(e=>`
+    <div class="log-row">
+      <div class="log-main">${esc(e.cat)}<div class="log-sub">${fmtDateBR(e.date)} · ${esc(e.tipo)}${e.obs ? ' · ' + esc(e.obs) : ''}</div></div>
+      <span class="log-min">${fmtDur((e.min||0)*60)}</span>
+      <button class="log-del" data-id="${esc(e.id)}" aria-label="Apagar lançamento" title="Apagar lançamento">×</button>
+    </div>`).join('');
+}
+$('stAddBtn').onclick = async ()=>{
+  const min = parseInt($('stMin').value, 10);
+  if(!min || min < 1 || min > 720){ alert('Informe os minutos estudados (de 1 a 720).'); return; }
+  const date = $('stDate').value || dayKey();
+  if(date > dayKey()){ alert('A data não pode ser no futuro.'); return; }
+  history.studyLog.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    date,
+    cat: $('stCat').value,
+    tipo: $('stTipo').value,
+    min,
+    obs: $('stObs').value.trim().slice(0,120)
+  });
+  await saveHistory();
+  $('stMin').value = '';
+  $('stObs').value = '';
+  $('swHint').textContent = `Lançado: ${fmtDur(min*60)} em ${$('stCat').value}.`;
+  renderStudyPanel();
+};
+$('studyLogList').addEventListener('click', async (e)=>{
+  const btn = e.target.closest('.log-del');
+  if(!btn) return;
+  if(!confirm('Apagar este lançamento de estudo?')) return;
+  history.studyLog = history.studyLog.filter(x=>String(x.id) !== btn.dataset.id);
+  await saveHistory();
+  renderStudyPanel();
+});
+$('studyToggleBtn').onclick = async ()=>{
+  await leaveQuiz();
+  renderStudyPanel();
+  showView('study');
+};
+$('closeStudyBtn').onclick = async ()=>{
+  showView('setup');
+  await checkForSavedSession();
+};
+
+// ---------- Backup ----------
+$('exportBtn').onclick = ()=>{
   const blob = new Blob([JSON.stringify(history, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2145,11 +2864,11 @@ document.getElementById('exportBtn').onclick = ()=>{
   URL.revokeObjectURL(url);
 };
 
-document.getElementById('importBtn').onclick = ()=>{
-  document.getElementById('importFile').click();
+$('importBtn').onclick = ()=>{
+  $('importFile').click();
 };
 
-document.getElementById('importFile').onchange = (e)=>{
+$('importFile').onchange = (e)=>{
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -2160,38 +2879,39 @@ document.getElementById('importFile').onchange = (e)=>{
         alert('Esse arquivo não parece ser um backup válido deste simulado.');
         return;
       }
-      history = imported;
-      if(!history.byBanca) history.byBanca = {};
-      if(!history.sessions) history.sessions = [];
+      history = normalizeHistory(imported);
       await saveHistory();
       renderDashboard();
       renderBreakers();
       updateOverallStat();
+      updateErrPill();
       alert('Backup importado com sucesso! Seu progresso foi restaurado.');
     }catch(err){
       alert('Não foi possível ler esse arquivo. Verifique se é um backup válido (.json) exportado deste mesmo simulado.');
     }
-    document.getElementById('importFile').value = '';
+    $('importFile').value = '';
   };
   reader.readAsText(file);
 };
 
-document.getElementById('backToMenuBtn').onclick = async ()=>{
-  clearInterval(timerInterval);
-  await saveSessionState();
-  document.getElementById('quizCard').classList.remove('active');
-  document.getElementById('setupPanel').style.display = 'block';
+$('backToMenuBtn').onclick = async ()=>{
+  await leaveQuiz();
+  showView('setup');
+  renderBreakers();
   await checkForSavedSession();
 };
 
 // init
 (async ()=>{
-  const note = document.getElementById('storageModeNote');
+  const note = $('storageModeNote');
   note.textContent = hasClaudeStorage
     ? 'Progresso salvo na sua conta Claude.'
     : 'Progresso salvo neste navegador/aparelho (localStorage) — não muda de app nem limpa os dados do navegador, ou perde o histórico.';
   await loadHistory();
   renderBreakers();
+  initStudyForm();
+  updateErrPill();
+  await swLoad();
   await checkForSavedSession();
 })();
 </script>
