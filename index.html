@@ -265,7 +265,7 @@
   .opt.correct .letter{color:var(--teal);}
   .opt.wrong{border-color:var(--red);background:#2a1216;}
   .opt.wrong .letter{color:var(--red);}
-  .opt.locked{cursor:default;}
+  .opt.locked{cursor:default;pointer-events:none;}
 
   .feedback{margin-top:16px;padding:14px;border-radius:8px;border:1px solid var(--wire);background:var(--panel-2);display:none;}
   .feedback.show{display:block;}
@@ -463,7 +463,7 @@ const BANK = [
   {cat:"Circuitos Elétricos", banca:"Cesgranrio", type:"mc",
    q:"Um motor monofásico opera com fator de potência 0,8 indutivo, potência ativa de 4 kW e tensão de 220 V. A corrente aproximada consumida é:",
    opts:["18,2 A","22,7 A","14,5 A","36,4 A","9,1 A"],
-   correct:0, exp:"I = P / (V × cos φ) = 4000 / (220 × 0,8) = 4000/176 ≈ 22,7 A. (Corrigindo: 4000/176 = 22,73 A — opção correta é a de 22,7 A.)"},
+   correct:1, exp:"I = P / (V × cos φ) = 4000 / (220 × 0,8) = 4000/176 ≈ 22,7 A."},
   {cat:"NR-10 / Segurança", banca:"Cespe", type:"tf",
    q:"De acordo com a NR-10, todo serviço em instalações elétricas desenergizadas deve seguir uma sequência que inclui, entre outras etapas, o seccionamento, o impedimento de reenergização, a constatação da ausência de tensão e o aterramento temporário com equipotencialização.",
    correct:true, exp:"Essa é exatamente a sequência de etapas prevista na NR-10 para desenergização segura antes de intervenção em instalações elétricas."},
@@ -1910,6 +1910,7 @@ function renderQuestion(){
 
 function answer(given, correct, q){
   const opts = document.querySelectorAll('#qOptions .opt');
+  if(opts[0] && opts[0].classList.contains('locked')) return; // já respondida — ignora clique repetido
   opts.forEach(o=>o.classList.add('locked'));
 
   let isRight;
