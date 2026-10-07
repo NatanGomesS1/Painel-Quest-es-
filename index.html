@@ -99,7 +99,7 @@
   .breaker .name{font-weight:600;}
   .breaker .stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
 
-  .banca-row{display:flex;gap:8px;margin-top:12px;}
+  .banca-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
   .banca-pill{
     font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:20px;
     border:1px solid var(--wire);cursor:pointer;color:var(--muted);
@@ -400,6 +400,17 @@
   .log-del{background:transparent;border:1px solid var(--wire);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;}
   .log-del:hover{border-color:var(--red);color:var(--red);}
 
+
+  /* ---------- Sincronização entre aparelhos ---------- */
+  .sync-intro{font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5;}
+  .sync-repo{font-size:13px;margin-bottom:12px;overflow-wrap:anywhere;}
+  .sync-repo b{color:var(--teal);font-family:'JetBrains Mono',monospace;font-weight:700;}
+  .sync-choice{margin-top:14px;padding:12px;border:1px solid var(--amber);border-radius:8px;background:rgba(245,166,35,.06);}
+  .sync-choice p{margin:0 0 10px;font-size:12.5px;line-height:1.5;}
+  .sync-choice .backup-row{margin-top:0;}
+  a.discard-btn{display:inline-block;text-decoration:none;}
+  #syncStatus{display:none;margin-top:12px;}
+
   footer{text-align:center;color:var(--muted);font-size:11px;margin-top:24px;font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
@@ -420,6 +431,7 @@
   <div class="top-actions">
     <button class="dash-toggle-btn" id="studyToggleBtn">⏱ Estudo teórico</button>
     <button class="dash-toggle-btn" id="dashToggleBtn">📊 Ver dashboard completo</button>
+    <button class="dash-toggle-btn" id="syncTopBtn">☁ Sincronizar aparelhos</button>
   </div>
 
   <div class="dashboard" id="dashboardPanel">
@@ -454,6 +466,42 @@
       <div class="title">Últimas sessões</div>
       <div id="dashSessionLog"></div>
       <span class="reset-link" id="resetHistory">Zerar todo o histórico</span>
+    </div>
+    <div class="breaker-panel" id="syncPanel">
+      <div class="title">Sincronização entre aparelhos</div>
+      <div class="sync-intro">Guarda seu progresso em um repositório privado seu no GitHub, para o celular e o notebook mostrarem os mesmos dados. A chave de acesso fica salva só neste navegador e não entra no backup.</div>
+      <div id="syncOff">
+        <div class="study-form">
+          <div class="field">
+            <label for="syncRepo">Repositório privado (usuário/nome)</label>
+            <input type="text" id="syncRepo" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="usuario/simulado-progresso">
+          </div>
+          <div class="field">
+            <label for="syncToken">Chave de acesso (token)</label>
+            <input type="password" id="syncToken" autocomplete="off" placeholder="github_pat_...">
+          </div>
+        </div>
+        <div class="backup-row" style="margin-top:12px;">
+          <button class="resume-btn" id="syncConnectBtn">Conectar este aparelho</button>
+          <a class="discard-btn" target="_blank" rel="noopener" href="https://github.com/settings/personal-access-tokens/new?name=Simulado+progresso&amp;description=Sincroniza+o+progresso+do+simulado&amp;expires_in=90&amp;contents=write">Criar chave no GitHub</a>
+        </div>
+      </div>
+      <div id="syncOn" style="display:none;">
+        <div class="sync-repo">Conectado a <b id="syncRepoName"></b></div>
+        <div class="backup-row">
+          <button class="resume-btn" id="syncNowBtn">Sincronizar agora</button>
+          <button class="discard-btn" id="syncDisconnectBtn">Desconectar este aparelho</button>
+        </div>
+        <div class="sync-choice" id="syncChoice" style="display:none;">
+          <p>Já existe progresso na nuvem e também neste aparelho. Se este aparelho tem respostas que nunca foram enviadas, junte os dois. Se ele tem os mesmos dados que já estão na nuvem (por exemplo, vieram de um backup importado), fique só com a nuvem para não contar em dobro.</p>
+          <div class="backup-row">
+            <button class="resume-btn" data-choice="join">Juntar os dois</button>
+            <button class="discard-btn" data-choice="cloud">Ficar só com a nuvem</button>
+            <button class="discard-btn" data-choice="local">Ficar só com este aparelho</button>
+          </div>
+        </div>
+      </div>
+      <div class="storage-note" id="syncStatus"></div>
     </div>
     <div class="breaker-panel">
       <div class="title">Backup do progresso</div>
@@ -1846,6 +1894,9 @@ let pendingResume = null;
 const HKEY = "eletrica-quiz-history";
 const SKEY = "eletrica-quiz-inprogress";
 const WKEY = "eletrica-quiz-stopwatch";
+const YKEY = "eletrica-quiz-sync";       // repositório e chave de acesso (só neste navegador)
+const BKEY = "eletrica-quiz-sync-base";  // como estava a nuvem na última sincronização
+const SYNC_FILE = "progresso-eletrica.json";
 
 const EXAM_DATE = "2026-12-06";   // data da prova (AAAA-MM-DD)
 const IDLE_CAP_SEC = 300;         // teto de tempo contado por questão / por explicação
@@ -1947,6 +1998,7 @@ async function loadHistory(){
 }
 async function saveHistory(){
   await storageSet(HKEY, JSON.stringify(history));
+  syncTouch();
 }
 
 async function saveSessionState(){
@@ -1990,6 +2042,7 @@ async function leaveQuiz(){
   stopTimer();
   await saveHistory();
   await saveSessionState();
+  syncSoon();
 }
 
 // ---------- Tempo por questão ----------
@@ -2065,20 +2118,20 @@ function updateErrorBook(q, isRight){
     e.streak = 0;
     e.lastWrong = today;
     e.lastRight = null;
-    return {state:'added', e};
+    return {state:'added', e, id};
   }
   if(!e) return null;
   if(e.streak >= 1 && e.lastRight && daysBetween(e.lastRight, today) < ERR_GAP_DAYS){
-    return {state:'early', e};
+    return {state:'early', e, id};
   }
   e.streak++;
   e.lastRight = today;
   if(e.streak >= ERR_STREAK_OUT){
     delete history.errors[id];
     history.mastered = (history.mastered || 0) + 1;
-    return {state:'mastered', e};
+    return {state:'mastered', e, id};
   }
-  return {state:'progress', e};
+  return {state:'progress', e, id};
 }
 function updateErrPill(){
   const el = $('errPillCount');
@@ -2110,7 +2163,7 @@ function renderErrBox(info){
   } else {
     note.style.display = 'block';
     note.value = e.note || '';
-    note.oninput = ()=>{ e.note = note.value.slice(0, 400); };
+    note.oninput = ()=>{ const cur = history.errors[info.id]; if(cur) cur.note = note.value.slice(0, 400); };
     note.onchange = ()=>{ saveHistory(); };
   }
   box.classList.add('show');
@@ -2393,6 +2446,7 @@ function finishSession(){
   });
   history.sessions = history.sessions.slice(0, 15);
   saveHistory();
+  syncSoon();
 
   showView('summary');
   $('finalScore').textContent = `${session.correct}/${session.questions.length}`;
@@ -2434,9 +2488,10 @@ function updateOverallStat(){
 }
 
 $('resetHistory').onclick = async ()=>{
-  if(!confirm('Zerar todo o histórico? Isso apaga desempenho, sessões, tempo de estudo, lançamentos de teoria e o caderno de erros.')) return;
+  if(!confirm('Zerar todo o histórico? Isso apaga desempenho, sessões, tempo de estudo, lançamentos de teoria e o caderno de erros.' + (syncCfg ? ' Como a sincronização está ligada, isso vale para todos os aparelhos.' : ''))) return;
   history = emptyHistory();
   await saveHistory();
+  syncSoon();
   updateOverallStat();
   renderBreakers();
   updateErrPill();
@@ -2827,6 +2882,7 @@ $('stAddBtn').onclick = async ()=>{
     obs: $('stObs').value.trim().slice(0,120)
   });
   await saveHistory();
+  syncSoon();
   $('stMin').value = '';
   $('stObs').value = '';
   $('swHint').textContent = `Lançado: ${fmtDur(min*60)} em ${$('stCat').value}.`;
@@ -2838,6 +2894,7 @@ $('studyLogList').addEventListener('click', async (e)=>{
   if(!confirm('Apagar este lançamento de estudo?')) return;
   history.studyLog = history.studyLog.filter(x=>String(x.id) !== btn.dataset.id);
   await saveHistory();
+  syncSoon();
   renderStudyPanel();
 });
 $('studyToggleBtn').onclick = async ()=>{
@@ -2849,6 +2906,380 @@ $('closeStudyBtn').onclick = async ()=>{
   showView('setup');
   await checkForSavedSession();
 };
+
+// ---------- Sincronização entre aparelhos (repositório privado no GitHub) ----------
+// O progresso fica em um arquivo JSON dentro de um repositório privado do próprio usuário.
+// Cada aparelho guarda a "base" (como estava a nuvem na última sincronização) e, ao
+// sincronizar, soma à nuvem só o que mudou neste aparelho desde então. Assim dá para
+// estudar nos dois aparelhos, até sem internet, sem um apagar o que o outro fez.
+let syncCfg = null;       // {repo:'usuario/nome', token, last}
+let syncBase = null;      // {repo, data}
+let syncBusy = false, syncAgain = false, syncTimer = null, syncLastTry = 0, syncHalt = false;
+let syncState = 'off';    // off | ok | pending | busy | offline | error | choice
+let storageNoteDefault = '';
+
+const clone = o => JSON.parse(JSON.stringify(o));
+const sameRepo = (a,b) => String(a||'').toLowerCase() === String(b||'').toLowerCase();
+function hasSyncBase(){ return !!(syncCfg && syncBase && sameRepo(syncBase.repo, syncCfg.repo)); }
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for(let i=0;i<bytes.length;i+=0x8000){ bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000)); }
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(String(b64).replace(/\s/g,''));
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+// ----- junção de dados: R = nuvem, L = este aparelho, B = base da última sincronização -----
+function numMerge(r,l,b){ return Math.max(0, (r||0) + ((l||0) - (b||0))); }
+function mergeCounters(R,L,B,fields){
+  const out = {};
+  const keys = new Set([...Object.keys(R), ...Object.keys(L), ...Object.keys(B)]);
+  keys.forEach(k=>{
+    const r = R[k] || {}, l = L[k] || {}, b = B[k] || {};
+    const o = {};
+    let any = false;
+    fields.forEach(f=>{ o[f] = numMerge(r[f], l[f], b[f]); if(o[f] > 0) any = true; });
+    if(any) out[k] = o;
+  });
+  return out;
+}
+function mergeList(R,L,B,keyFn){
+  const bK = new Set(B.map(keyFn)), lK = new Set(L.map(keyFn)), seen = new Set(), out = [];
+  R.forEach(x=>{
+    const k = keyFn(x);
+    if(seen.has(k)) return;
+    if(bK.has(k) && !lK.has(k)) return;   // apagado neste aparelho
+    seen.add(k); out.push(x);
+  });
+  L.forEach(x=>{
+    const k = keyFn(x);
+    if(seen.has(k)) return;
+    if(bK.has(k)) return;                 // apagado no outro aparelho
+    seen.add(k); out.push(x);
+  });
+  return out;
+}
+function mergeErrors(R,L,B){
+  const out = {};
+  const same = (a,b) => JSON.stringify(a||null) === JSON.stringify(b||null);
+  const lastAct = e => [e.lastWrong||'', e.lastRight||''].sort().pop();
+  const keys = new Set([...Object.keys(R), ...Object.keys(L), ...Object.keys(B)]);
+  keys.forEach(id=>{
+    const r = R[id], l = L[id], b = B[id];
+    const lChanged = !same(l,b), rChanged = !same(r,b);
+    let v;
+    if(!lChanged) v = r;
+    else if(!rChanged) v = l;
+    else if(!l || !r) v = l || r;          // um lado tirou do caderno e o outro mexeu: mantém
+    else {
+      const st = e => e ? JSON.stringify([e.streak||0, e.lastWrong||null, e.lastRight||null]) : null;
+      const lSt = st(l) !== st(b), rSt = st(r) !== st(b);
+      let src;
+      if(lSt && !rSt) src = l;
+      else if(rSt && !lSt) src = r;
+      else {
+        const la = lastAct(l), ra = lastAct(r);
+        // mais recente vence; no mesmo dia, fica o que mantém a questão no caderno
+        src = la > ra ? l : (ra > la ? r : ((l.streak||0) <= (r.streak||0) ? l : r));
+      }
+      v = Object.assign({}, r, {streak: src.streak||0, lastWrong: src.lastWrong||null, lastRight: src.lastRight||null});
+      v.n = Math.max(1, numMerge(r.n, l.n, b ? b.n : 0));
+      v.first = [l.first, r.first].filter(Boolean).sort()[0] || v.first;
+      const lNoteChanged = (l.note||'') !== ((b && b.note) || '');
+      v.note = lNoteChanged ? (l.note||'') : (r.note||'');
+    }
+    if(v) out[id] = v;
+  });
+  return out;
+}
+function mergeHistory(R,L,B){
+  R = normalizeHistory(clone(R || null));
+  L = normalizeHistory(clone(L || null));
+  B = normalizeHistory(clone(B || null));
+  const sessions = mergeList(R.sessions, L.sessions, B.sessions, s=>[s.date, s.mode, s.correct, s.total].join('|'))
+    .sort((a,b)=> a.date < b.date ? 1 : (a.date > b.date ? -1 : 0))
+    .slice(0, 15);
+  return {
+    byCat: mergeCounters(R.byCat, L.byCat, B.byCat, ['c','t']),
+    byBanca: mergeCounters(R.byBanca, L.byBanca, B.byBanca, ['c','t']),
+    sessions,
+    totalCorrect: numMerge(R.totalCorrect, L.totalCorrect, B.totalCorrect),
+    totalAnswered: numMerge(R.totalAnswered, L.totalAnswered, B.totalAnswered),
+    time: mergeCounters(R.time, L.time, B.time, ['q','rev']),
+    days: mergeCounters(R.days, L.days, B.days, ['sim','n','c']),
+    studyLog: mergeList(R.studyLog, L.studyLog, B.studyLog, e=>String(e.id)),
+    errors: mergeErrors(R.errors, L.errors, B.errors),
+    mastered: numMerge(R.mastered, L.mastered, B.mastered)
+  };
+}
+const canonHistory = h => mergeHistory(h, null, null);
+function historyHasData(h){
+  return !!(h && (h.totalAnswered > 0 || (h.studyLog && h.studyLog.length)
+    || Object.keys(h.errors || {}).length || Object.keys(h.time || {}).length));
+}
+function syncDirty(){
+  if(!syncCfg) return false;
+  if(!hasSyncBase()) return true;
+  return JSON.stringify(canonHistory(history)) !== JSON.stringify(syncBase.data);
+}
+
+// ----- chamadas ao GitHub -----
+class SyncError extends Error{
+  constructor(kind, msg){ super(msg); this.kind = kind; }
+}
+function ghBase(){
+  const p = syncCfg.repo.split('/');
+  return `https://api.github.com/repos/${encodeURIComponent(p[0])}/${encodeURIComponent(p[1])}`;
+}
+function ghHeaders(withBody){
+  const h = {'Accept':'application/vnd.github+json', 'Authorization':'Bearer ' + syncCfg.token};
+  if(withBody) h['Content-Type'] = 'application/json';
+  return h;
+}
+async function ghFetch(url, opts){
+  try{ return await fetch(url, opts); }
+  catch(e){ throw new SyncError('offline', 'Sem conexão com o GitHub.'); }
+}
+function ghFail(res){
+  if(res.status === 401) return new SyncError('auth', 'A chave de acesso é inválida ou venceu. Gere outra no GitHub, desconecte e conecte de novo.');
+  if(res.status === 403) return new SyncError('auth', 'O GitHub recusou o acesso. Confira se a chave tem a permissão "Contents: Read and write" neste repositório.');
+  if(res.status === 404) return new SyncError('auth', 'Repositório não encontrado. Confira o nome e se a chave dá acesso a ele.');
+  return new SyncError('error', `O GitHub respondeu com erro ${res.status}. Tente de novo em instantes.`);
+}
+async function ghRepoCheck(){
+  const res = await ghFetch(ghBase(), {headers: ghHeaders(false), cache:'no-store'});
+  if(!res.ok) throw ghFail(res);
+  const j = await res.json();
+  if(j && j.private === false){
+    throw new SyncError('auth', 'Esse repositório é público: qualquer pessoa veria seu progresso. Crie um repositório privado só para isso.');
+  }
+}
+async function ghGet(){
+  const res = await ghFetch(`${ghBase()}/contents/${SYNC_FILE}`, {headers: ghHeaders(false), cache:'no-store'});
+  if(res.status === 404){
+    await ghRepoCheck();              // repositório existe e é acessível: só falta o arquivo
+    return {data:null, sha:null};
+  }
+  if(!res.ok) throw ghFail(res);
+  const j = await res.json();
+  try{
+    const data = JSON.parse(b64decode(j.content || ''));
+    if(!data || typeof data !== 'object') throw new Error('formato');
+    return {data, sha: j.sha};
+  }catch(e){
+    throw new SyncError('error', `Não consegui ler o arquivo ${SYNC_FILE} do repositório. Apague esse arquivo no GitHub e sincronize de novo: este aparelho envia uma cópia nova.`);
+  }
+}
+async function ghPut(data, sha){
+  const body = {message:'Progresso do simulado', content: b64encode(JSON.stringify(data))};
+  if(sha) body.sha = sha;
+  const res = await ghFetch(`${ghBase()}/contents/${SYNC_FILE}`, {method:'PUT', headers: ghHeaders(true), body: JSON.stringify(body)});
+  if(res.status === 409 || res.status === 422) return {conflict:true};
+  if(!res.ok) throw ghFail(res);
+  return {conflict:false};
+}
+
+// ----- estado na tela -----
+function updateStorageNote(){
+  $('storageModeNote').textContent = syncCfg
+    ? `Progresso salvo neste aparelho e sincronizado com o repositório privado ${syncCfg.repo} no GitHub.`
+    : storageNoteDefault;
+}
+function setSyncState(state, msg){
+  syncState = state;
+  const top = $('syncTopBtn');
+  const labels = {
+    off:'☁ Sincronizar aparelhos', busy:'☁ Sincronizando…', ok:'☁ Sincronizado', pending:'☁ Envio pendente',
+    offline:'☁ Sem conexão', error:'☁ Erro ao sincronizar', choice:'☁ Falta uma escolha'
+  };
+  top.textContent = labels[state] || labels.off;
+  top.classList.toggle('live', ['pending','offline','error','choice'].includes(state));
+
+  $('syncOff').style.display = syncCfg ? 'none' : 'block';
+  $('syncOn').style.display = syncCfg ? 'block' : 'none';
+  $('syncChoice').style.display = (state === 'choice') ? 'block' : 'none';
+  if(syncCfg) $('syncRepoName').textContent = syncCfg.repo;
+
+  let text = msg || '';
+  if(!msg){
+    if(state === 'ok'){
+      const d = new Date(syncCfg.last || Date.now());
+      text = `Sincronizado em ${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}.`;
+    } else if(state === 'pending') text = 'Há mudanças neste aparelho ainda não enviadas. Elas sobem sozinhas em instantes.';
+    else if(state === 'busy') text = 'Sincronizando…';
+    else if(state === 'offline') text = 'Sem conexão com o GitHub. O progresso continua salvo neste aparelho e sobe na próxima sincronização.';
+    else if(state === 'choice') text = 'Escolha acima o que fazer com o progresso deste aparelho.';
+  }
+  const st = $('syncStatus');
+  st.textContent = text;
+  st.style.display = text ? 'block' : 'none';
+  updateStorageNote();
+}
+function refreshAfterSync(){
+  updateOverallStat();
+  updateErrPill();
+  renderBreakers();
+  if($('dashboardPanel').classList.contains('active')) renderDashboard();
+  if($('studyPanel').classList.contains('active')) renderStudyPanel();
+}
+
+// ----- ciclo de sincronização -----
+function scheduleSync(ms, replace){
+  if(!syncCfg || syncHalt) return;
+  if(syncTimer && !replace) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>{ syncTimer = null; syncNow(); }, ms);
+}
+function syncTouch(){            // chamado a cada gravação do histórico
+  if(!syncCfg) return;
+  if(syncState === 'ok') setSyncState('pending');
+  scheduleSync(30000, false);
+}
+function syncSoon(){ scheduleSync(1500, true); }
+
+async function syncNow(choice){
+  if(!syncCfg) return false;
+  if(syncBusy){ syncAgain = true; return false; }
+  syncBusy = true;
+  syncLastTry = Date.now();
+  clearTimeout(syncTimer); syncTimer = null;
+  setSyncState('busy');
+  let ok = false, needChoice = false;
+  try{
+    for(let attempt=0; attempt<3 && !ok && !needChoice; attempt++){
+      const L = clone(history);
+      const remote = await ghGet();
+      const hasBase = hasSyncBase();
+      let merged;
+      if(!remote.data) merged = canonHistory(L);                         // nuvem vazia: sobe o deste aparelho
+      else if(hasBase) merged = mergeHistory(remote.data, L, syncBase.data);
+      else if(!historyHasData(L) || choice === 'cloud') merged = canonHistory(remote.data);
+      else if(choice === 'join') merged = mergeHistory(remote.data, L, null);
+      else if(choice === 'local') merged = canonHistory(L);
+      else { needChoice = true; break; }                                 // 1ª conexão com dados dos dois lados
+
+      const remoteNow = remote.data ? JSON.stringify(canonHistory(remote.data)) : null;
+      if(JSON.stringify(merged) !== remoteNow){
+        const r = await ghPut(merged, remote.sha);
+        if(r.conflict){                                                  // outro aparelho gravou no meio: refaz
+          await new Promise(res=>setTimeout(res, 400 * (attempt + 1)));
+          continue;
+        }
+      }
+      // deu certo: aplica aqui, preservando o que foi respondido durante a sincronização
+      const before = JSON.stringify(history);
+      history = mergeHistory(merged, history, L);
+      syncBase = {repo: syncCfg.repo, data: clone(merged)};
+      syncCfg.last = Date.now();
+      await storageSet(HKEY, JSON.stringify(history));
+      await storageSet(BKEY, JSON.stringify(syncBase));
+      await storageSet(YKEY, JSON.stringify(syncCfg));
+      if(JSON.stringify(history) !== before) refreshAfterSync();
+      ok = true;
+    }
+    if(needChoice){
+      syncAgain = false;
+      setSyncState('choice');
+    } else if(!ok){
+      throw new SyncError('error', 'Outro aparelho estava gravando ao mesmo tempo. Tente de novo em instantes.');
+    } else {
+      setSyncState(syncDirty() ? 'pending' : 'ok');
+    }
+  }catch(e){
+    const kind = e && e.kind;
+    if(kind === 'offline'){
+      setSyncState('offline');
+    } else {
+      if(kind === 'auth') syncHalt = true;     // não insiste até o usuário corrigir
+      setSyncState('error', (e && e.message) || 'Não foi possível sincronizar.');
+    }
+  }finally{
+    syncBusy = false;
+    if(syncState === 'offline') scheduleSync(60000, true);
+    else if(syncAgain || (ok && syncDirty())){ syncAgain = false; scheduleSync(5000, true); }
+  }
+  return ok;
+}
+
+document.addEventListener('visibilitychange', ()=>{
+  if(!syncCfg || syncHalt || syncState === 'choice') return;
+  if(document.hidden){
+    if(syncDirty()) syncNow();                          // saiu da página: tenta enviar o que falta
+  } else if(Date.now() - syncLastTry > 60000){
+    syncNow();                                          // voltou: busca o que o outro aparelho fez
+  }
+});
+
+// ----- botões -----
+$('syncConnectBtn').onclick = async ()=>{
+  const repo = $('syncRepo').value.trim()
+    .replace(/^https?:\/\/github\.com\//i,'').replace(/\.git$/i,'').replace(/\/+$/,'');
+  const token = $('syncToken').value.trim();
+  if(!/^[^\/\s]+\/[^\/\s]+$/.test(repo)){ alert('Informe o repositório no formato usuario/nome.'); return; }
+  if(!token){ alert('Cole a chave de acesso gerada no GitHub.'); return; }
+  syncCfg = {repo, token, last:0};
+  syncHalt = false;
+  setSyncState('busy');
+  try{
+    await ghRepoCheck();
+  }catch(e){
+    syncCfg = null;
+    setSyncState('off', e.message);
+    return;
+  }
+  $('syncToken').value = '';
+  await storageSet(YKEY, JSON.stringify(syncCfg));
+  await syncNow();
+};
+$('syncNowBtn').onclick = ()=>{ syncHalt = false; syncNow(); };
+$('syncDisconnectBtn').onclick = async ()=>{
+  if(!confirm('Desconectar este aparelho? O progresso continua salvo aqui e na nuvem, mas este aparelho para de sincronizar.')) return;
+  clearTimeout(syncTimer); syncTimer = null;
+  syncCfg = null;
+  syncHalt = false;
+  await storageDelete(YKEY);
+  setSyncState('off');
+};
+document.querySelectorAll('#syncChoice [data-choice]').forEach(btn=>{
+  btn.onclick = ()=>{
+    const c = btn.dataset.choice;
+    if(c === 'cloud' && !confirm('Usar só o progresso da nuvem? O que está salvo neste aparelho será descartado.')) return;
+    if(c === 'local' && !confirm('Usar só o progresso deste aparelho? O que está na nuvem será substituído.')) return;
+    syncNow(c);
+  };
+});
+$('syncTopBtn').onclick = async ()=>{
+  if(syncCfg && syncState !== 'choice' && syncState !== 'error'){ syncNow(); return; }
+  await leaveQuiz();
+  renderDashboard();
+  showView('dash');
+  const p = $('syncPanel');
+  if(p.scrollIntoView) p.scrollIntoView({block:'start'});
+};
+
+async function syncInit(){
+  storageNoteDefault = $('storageModeNote').textContent;
+  try{
+    const rawC = await storageGet(YKEY);
+    const c = rawC ? JSON.parse(rawC) : null;
+    if(c && c.repo && c.token) syncCfg = c;
+  }catch(e){}
+  try{
+    const rawB = await storageGet(BKEY);
+    const b = rawB ? JSON.parse(rawB) : null;
+    if(b && b.repo && b.data) syncBase = b;
+  }catch(e){}
+  const host = location.hostname || '';
+  const owner = /\.github\.io$/i.test(host) ? host.split('.')[0] : '';
+  $('syncRepo').value = syncCfg ? syncCfg.repo : (owner ? owner + '/simulado-progresso' : '');
+  setSyncState(syncCfg ? (syncDirty() ? 'pending' : 'ok') : 'off');
+  if(syncCfg) syncNow();        // sem esperar: a página abre na hora e atualiza quando a nuvem responder
+}
 
 // ---------- Backup ----------
 $('exportBtn').onclick = ()=>{
@@ -2881,6 +3312,7 @@ $('importFile').onchange = (e)=>{
       }
       history = normalizeHistory(imported);
       await saveHistory();
+      syncSoon();
       renderDashboard();
       renderBreakers();
       updateOverallStat();
@@ -2913,6 +3345,7 @@ $('backToMenuBtn').onclick = async ()=>{
   updateErrPill();
   await swLoad();
   await checkForSavedSession();
+  await syncInit();
 })();
 </script>
 </body>
