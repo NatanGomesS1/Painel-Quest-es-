@@ -357,6 +357,9 @@ details.card[open] > summary { margin-bottom: 12px; }
 
 /* V2.3.2 consolidação */
 .prio-score{cursor:pointer}.fila-l .acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}@media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* V2.3.3 · dados integrados */
+.integracao-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}.metricas-v233{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.metricas-v233>div{padding:10px;border:1px solid var(--soft);border-radius:10px}.metricas-v233 small{display:block;text-transform:capitalize;color:var(--muted);font-size:11px}.metricas-v233 b{display:block;margin-top:4px;font-size:18px}.faixa-ok{border-color:#b9e8cf;background:#effbf5}@media(max-width:800px){.integracao-grid,.metricas-v233{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -2604,13 +2607,41 @@ function renderPlanoV23(el){
 }
 
 
+// V2.3.3 · Integração Apps Script → JSON → Sistema NTN / Looker Studio
+const AJ_INTEGRACAO_ID='integracao_resultados_v1';
+function integracaoRow(){let r=ajustes.find(x=>x.id===AJ_INTEGRACAO_ID);if(!r){r={id:AJ_INTEGRACAO_ID,dados:{schemaVersion:1,registros:[]}};ajustes.push(r)};r.dados=r.dados||{};r.dados.registros=Array.isArray(r.dados.registros)?r.dados.registros:[];return r;}
+function registrosIntegracao(cliente){return integracaoRow().dados.registros.filter(r=>!cliente||r.cliente===cliente).sort((a,b)=>String(b.competencia||'').localeCompare(String(a.competencia||'')));}
+function numeroBR(v){const n=+v;return Number.isFinite(n)?n:null;}
+function normalizarResultadoImportado(o){
+ if(!o||typeof o!=='object')throw new Error('JSON inválido.');
+ const cliente=String(o.cliente||fichaNome||'').trim(), competencia=String(o.competencia||o.mes||'').slice(0,7);
+ if(!cliente)throw new Error('Informe o campo cliente.'); if(!/^\d{4}-\d{2}$/.test(competencia))throw new Error('Use competencia no formato AAAA-MM.');
+ const copia=JSON.parse(JSON.stringify(o)); copia.cliente=cliente;copia.competencia=competencia;copia.schemaVersion=1;copia.importadoEm=new Date().toISOString();return copia;
+}
+async function salvarResultadoIntegrado(obj){const r=integracaoRow(), reg=normalizarResultadoImportado(obj), i=r.dados.registros.findIndex(x=>x.cliente===reg.cliente&&x.competencia===reg.competencia);if(i>=0)r.dados.registros[i]=reg;else r.dados.registros.push(reg);await persist('ajustes',r);return reg;}
+async function importarJSONResultadoV233(){
+ const txt=prompt('Cole o JSON gerado pelo Apps Script para '+fichaNome+'.\n\nCampos mínimos: cliente e competencia (AAAA-MM).'); if(txt===null)return;
+ try{const obj=JSON.parse(txt),reg=await salvarResultadoIntegrado(obj);toast('Dados de '+reg.competencia+' importados.');renderFicha();}catch(e){alert('Não foi possível importar:\n'+e.message);}
+}
+function importarArquivoResultadoV233(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=()=>{const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{const obj=JSON.parse(rd.result),reg=await salvarResultadoIntegrado(obj);toast('Dados de '+reg.competencia+' importados.');renderFicha();}catch(e){alert('Não foi possível importar:\n'+e.message)}};rd.readAsText(f,'utf-8')};inp.click();}
+function baixarModeloIntegracaoV233(){const o={schemaVersion:1,cliente:fichaNome,competencia:refAtual(),google_ads:{impressoes:0,cliques:0,ctr:0,custo:0,conversoes:0,cpl:0},gbp:{visualizacoes:0,ligacoes:0,cliques_site:0,rotas:0},seo:{cliques:0,impressoes:0,ctr:0,posicao_media:0},site:{sessoes:0,conversoes:0,taxa_conversao:0},resumo:{destaques:[],problemas:[],oportunidades:[]}};baixar('modelo_integracao_'+slug(fichaNome)+'_'+refAtual()+'.json',JSON.stringify(o,null,2),'application/json');}
+function achatar(obj,prefix='',out={}){Object.entries(obj||{}).forEach(([k,v])=>{const nk=prefix?prefix+'_'+k:k;if(v!==null&&typeof v==='object'&&!Array.isArray(v))achatar(v,nk,out);else out[nk]=Array.isArray(v)?v.join(' | '):v});return out;}
+function exportarLookerV233(){const regs=registrosIntegracao();if(!regs.length){alert('Ainda não há dados integrados.');return;}const rows=regs.map(r=>achatar(r)), cols=[...new Set(rows.flatMap(r=>Object.keys(r)))];const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';const csv='\ufeff'+[cols.map(q).join(';'),...rows.map(r=>cols.map(c=>q(r[c])).join(';'))].join('\n');baixar('ntn_resultados_looker.csv',csv,'text/csv;charset=utf-8');}
+async function excluirResultadoV233(comp){if(!confirm('Excluir os dados importados de '+comp+' para '+fichaNome+'?'))return;const r=integracaoRow();r.dados.registros=r.dados.registros.filter(x=>!(x.cliente===fichaNome&&x.competencia===comp));await persist('ajustes',r);renderFicha();}
+function metricaCardsV233(reg){if(!reg)return '';const grupos=[['Google Ads',reg.google_ads],['Perfil da Empresa',reg.gbp],['SEO',reg.seo],['Site',reg.site]].filter(x=>x[1]&&typeof x[1]==='object');return grupos.map(([nome,g])=>`<div class="card"><div class="eyebrow">${esc(nome)}</div><div class="metricas-v233">${Object.entries(g).filter(([,v])=>v!==null&&v!==''&&typeof v!=='object').slice(0,8).map(([k,v])=>`<div><small>${esc(k.replaceAll('_',' '))}</small><b>${esc(String(v))}</b></div>`).join('')}</div></div>`).join('');}
 function renderResultadosV232(el,c){
  const ref=refAtual(), hs=historico.filter(h=>h.cliente===fichaNome&&String(h.data).slice(0,7)===ref), mins=hs.reduce((z,h)=>z+(+h.minutos||0),0);
  const concl=gesItens.filter(a=>a.cliente===fichaNome&&opStatus(a)==='concluida'&&String(a.fechadoEm||a.data).slice(0,7)===ref);
  const rk=ranking.filter(r=>r.cliente===fichaNome).sort((a,b)=>String(b.data||b.ref||'').localeCompare(String(a.data||a.ref||''))).slice(0,5);
  const posts=postagens.filter(p=>p.cliente===fichaNome&&String(p.data||'').slice(0,7)===ref).length;
- el.innerHTML=`<div class="faixa"><span class="eyebrow">Resultados · ${refLabel(ref)}</span><span style="flex:1">Visão consolidada do que foi executado e medido para este cliente.</span></div><div class="kpis"><div class="kpi"><small>Tarefas concluídas</small><b>${concl.length}</b></div><div class="kpi"><small>Tempo registrado</small><b>${fmtMin(mins)}</b></div><div class="kpi"><small>Postagens</small><b>${posts}</b></div><div class="kpi"><small>Medições ranking</small><b>${rk.length}</b></div></div><div class="cols"><div class="card g2"><h2>Entregas concluídas</h2>${concl.length?concl.slice(-12).reverse().map(a=>`<div class="fila-l"><div class="quem"><b>${esc(a.texto)}</b><span class="sub">${esc(SERV_ROT[svcCanon(a.servico)]||'Geral')} · ${a.minutosReal?fmtMin(a.minutosReal):'sem tempo'}</span></div></div>`).join(''):vazioG('Nenhuma tarefa concluída neste mês.')}</div><div class="card g2"><h2>Indicadores disponíveis</h2><div class="sub">Ranking, postagens, tempo e conclusões são reunidos aqui. Métricas de Ads/GBP entram quando forem registradas no sistema.</div>${rk.map(r=>`<div class="fila-l"><div class="quem"><b>${esc(r.palavra||r.termo||'Ranking')}</b><span class="sub">${esc(String(r.posicao||r.valor||''))}</span></div></div>`).join('')}</div></div>`;
+ const regs=registrosIntegracao(fichaNome), reg=regs.find(x=>x.competencia===ref)||regs[0]||null;
+ const resumo=reg&&reg.resumo||{};
+ el.innerHTML=`<div class="faixa"><span class="eyebrow">Resultados · ${refLabel(ref)}</span><span style="flex:1">Dados operacionais do sistema + dados estruturados do Apps Script.</span><button class="btn btn-sm" onclick="importarJSONResultadoV233()">Colar JSON</button><button class="btn btn-sm" onclick="importarArquivoResultadoV233()">Importar arquivo</button><button class="btn btn-sm" onclick="baixarModeloIntegracaoV233()">Modelo JSON</button><button class="btn btn-sm" onclick="exportarLookerV233()">CSV Looker</button></div>
+ <div class="kpis"><div class="kpi"><small>Tarefas concluídas</small><b>${concl.length}</b></div><div class="kpi"><small>Tempo registrado</small><b>${fmtMin(mins)}</b></div><div class="kpi"><small>Postagens</small><b>${posts}</b></div><div class="kpi"><small>Dados externos</small><b>${reg?esc(reg.competencia):'—'}</b></div></div>
+ ${reg?`<div class="faixa faixa-ok"><span class="eyebrow">Base integrada</span><span style="flex:1">${esc(reg.cliente)} · competência ${esc(reg.competencia)} · importado ${reg.importadoEm?new Date(reg.importadoEm).toLocaleString('pt-BR'):'—'}</span><button class="btn btn-sm" onclick="excluirResultadoV233('${esc(reg.competencia)}')">Excluir competência</button></div><div class="integracao-grid">${metricaCardsV233(reg)}</div>${(resumo.destaques||[]).length||(resumo.problemas||[]).length||(resumo.oportunidades||[]).length?`<div class="cols"><div class="card g1"><h2>Destaques</h2>${(resumo.destaques||[]).map(x=>`<div class="fila-l">${esc(x)}</div>`).join('')||vazioG('Sem destaques.')}</div><div class="card g1"><h2>Pontos de atenção</h2>${(resumo.problemas||[]).map(x=>`<div class="fila-l">${esc(x)}</div>`).join('')||vazioG('Sem problemas.')}</div><div class="card g1"><h2>Oportunidades</h2>${(resumo.oportunidades||[]).map(x=>`<div class="fila-l">${esc(x)}</div>`).join('')||vazioG('Sem oportunidades.')}</div></div>`:''}`:`<div class="aviso av-info"><span><b>Integração preparada.</b> Importe o JSON produzido pelo Apps Script para esta competência. O sistema guarda por cliente + mês e pode exportar uma base plana para o Looker Studio.</span></div>`}
+ <div class="cols"><div class="card g2"><h2>Entregas concluídas</h2>${concl.length?concl.slice(-12).reverse().map(a=>`<div class="fila-l"><div class="quem"><b>${esc(a.texto)}</b><span class="sub">${esc(SERV_ROT[svcCanon(a.servico)]||'Geral')} · ${a.minutosReal?fmtMin(a.minutosReal):'sem tempo'}</span></div></div>`).join(''):vazioG('Nenhuma tarefa concluída neste mês.')}</div><div class="card g2"><h2>Histórico de competências importadas</h2>${regs.length?regs.slice(0,12).map(r=>`<div class="fila-l"><div class="quem"><b>${esc(r.competencia)}</b><span class="sub">Apps Script · ${r.importadoEm?new Date(r.importadoEm).toLocaleDateString('pt-BR'):'importado'}</span></div></div>`).join(''):vazioG('Nenhum JSON importado ainda.')}</div></div>`;
 }
+
 function renderHistoricoFichaV232(el){
  const hs=historico.filter(h=>h.cliente===fichaNome).sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,100);
  el.innerHTML=`<div class="faixa"><span class="eyebrow">Histórico do cliente</span><span style="flex:1">Passado factual: tarefas concluídas e registros do diário de bordo.</span></div><div class="card">${hs.length?hs.map(h=>`<div class="fila-l"><div class="quem"><b>${fmtDate(String(h.data).slice(0,10))} · ${esc(h.texto)}</b><span class="sub">${h.etapa&&ETAPA_ROT[h.etapa]?esc(ETAPA_ROT[h.etapa]):h.auto?'Automático':'Manual'}${+h.minutos?' · '+fmtMin(h.minutos):''}</span></div></div>`).join(''):vazioG('Nenhum histórico deste cliente.')}</div>`;
@@ -2731,7 +2762,7 @@ function renderDash() {
   const titulo = pendMes.length ? `${mes} tem ${plural(pendMes.length, 'mensalidade', 'mensalidades')} para confirmar`
     : antigos.length ? `Faltam ${plural(antigos.length, 'confirmação', 'confirmações')} de meses anteriores` : `${mes} está conferido`;
   const dataExt = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  setTopo('Início · ' + dataExt, TEM_ACOES ? 'Seu trabalho prioritário agora' : titulo, '');
+  setTopo('Início · ' + dataExt, TEM_ACOES ? 'O que fazer agora' : titulo, '<span class="pill p-green">V2.3.3</span>');
   document.getElementById('dash-foco').innerHTML = TEM_ACOES ? focoV21HTML() : '<div class="card"><h2>Central de Trabalho ainda não disponível</h2></div>';
   document.getElementById('dash-proximas').innerHTML = TEM_ACOES ? proximasV231HTML() : '';
   document.getElementById('dash-alertas').innerHTML = TEM_ACOES ? alertasCriticosV231HTML() : '';
