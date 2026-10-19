@@ -358,7 +358,7 @@ details.card[open] > summary { margin-bottom: 12px; }
 /* V2.3.2 consolidação */
 .prio-score{cursor:pointer}.fila-l .acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}@media(max-width:800px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-/* V2.3.3 · dados integrados */
+/* V2.3.4 · dados integrados */
 .integracao-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}.metricas-v233{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.metricas-v233>div{padding:10px;border:1px solid var(--soft);border-radius:10px}.metricas-v233 small{display:block;text-transform:capitalize;color:var(--muted);font-size:11px}.metricas-v233 b{display:block;margin-top:4px;font-size:18px}.faixa-ok{border-color:#b9e8cf;background:#effbf5}@media(max-width:800px){.integracao-grid,.metricas-v233{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -418,6 +418,7 @@ details.card[open] > summary { margin-bottom: 12px; }
     <button data-tela="ranking" onclick="show('ranking')">Ranking Google</button>
     <button data-tela="avulsos" onclick="show('avulsos')">Serviços avulsos</button>
     <button data-tela="historico" onclick="show('historico')">Histórico</button>
+    <button data-tela="ferramentas" onclick="show('ferramentas')">Sites e Ferramentas</button>
     <div class="nav-sec">FECHAMENTO</div>
     <button data-tela="relatorio" onclick="show('relatorio')">Relatórios</button>
     <div class="nav-foot">
@@ -438,6 +439,10 @@ details.card[open] > summary { margin-bottom: 12px; }
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="lerImport(event)">
     <div id="conn-error"></div>
     <div id="save-error"></div>
+
+    <section id="ferramentas" class="section">
+      <div id="ferramentas-conteudo"></div>
+    </section>
 
     <section id="dash" class="section active">
       <div id="dash-foco"></div>
@@ -1698,6 +1703,7 @@ function prioridadeDetalhe(a){
   const penal=Math.max(0,(esf-1)*2); if(penal){pts-=penal;itens.push(['Esforço',-penal]);}
   if(a.bloqueada||opStatus(a)==='aguardando'){pts-=20;itens.push(['Bloqueio/aguardando',-20]);}
   if(a.origem==='diagnostico'&&!a.evidencia){pts-=15;itens.push(['Evidência insuficiente',-15]);}
+  const ba=bonusAtrasoV234(a); if(ba){pts+=ba;itens.push(['Atraso da obrigação',ba]);}
   return {score:Math.max(0,Math.min(100,Math.round(pts))),itens};
 }
 function prioridadeAcao(a){ return prioridadeDetalhe(a).score; }
@@ -1739,26 +1745,53 @@ function ultimaAtencaoV22(nome){
 function diasSemAtencaoV22(nome){ const d=ultimaAtencaoV22(nome); return d?Math.max(0,diasEntre(d,hojeISO())):999; }
 function bonusAtencaoV22(a){ const c=clientes.find(x=>x.nome===a.cliente); if(!c||c.status!=='Ativo')return 0; const d=diasSemAtencaoV22(a.cliente); return d>=21?15:d>=14?10:d>=7?5:0; }
 function etapaHistoricoV22(a){ if(a.etapaTempo)return a.etapaTempo; if(a.servico==='ads')return 'ajustes_ads'; if(a.servico==='gbp')return 'avaliacoes'; if(a.servico==='site')return 'site_ajustes'; return 'outro'; }
+function rotinaAbertaV234(nome,rid){ return gesItens.find(a=>a.cliente===nome&&a.origem==='rotina'&&a.rotinaId===rid&&gesAberto(a)); }
+function concluidasRotinaV234(nome,rid){ return gesItens.filter(a=>a.cliente===nome&&a.origem==='rotina'&&a.rotinaId===rid&&a.status==='fechado'&&opStatus(a)!=='cancelada').sort((a,b)=>String(b.fechadoEm||b.data||'').localeCompare(String(a.fechadoEm||a.data||''))); }
+function addMesesISO(data,n=1){ const d=new Date((data||hojeISO())+'T12:00:00'); const dia=d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+n); d.setDate(Math.min(dia,new Date(d.getFullYear(),d.getMonth()+1,0).getDate())); return hojeISO(d); }
+function proximaRotinaV234(r,ultima){
+  if(!ultima) return prazoRotinaV22(r);
+  const base=String(ultima.fechadoEm||ultima.data||hojeISO()).slice(0,10);
+  return r.cadencia==='semana'?addDias(base,7):addMesesISO(base,1);
+}
+function atrasoRotinaV234(a){ const p=a.prazo||a.quando; return p?Math.max(0,-diasEntre(hojeISO(),p)):0; }
+function situacaoRotinaV234(a){ if(opStatus(a)==='aguardando'||a.bloqueada)return 'aguardando'; const d=atrasoRotinaV234(a); if(d>0)return 'atrasada'; return 'devida'; }
+function bonusAtrasoV234(a){ if(a.origem!=='rotina')return 0; const d=atrasoRotinaV234(a); return d>30?20:d>=15?15:d>=8?10:d>=4?6:d>=1?3:0; }
+async function consolidarRotinasAntigasV234(){
+  const grupos={}; gesItens.filter(a=>gesAberto(a)&&a.origem==='rotina'&&a.rotinaId).forEach(a=>{const k=a.cliente+'|'+a.rotinaId;(grupos[k]||(grupos[k]=[])).push(a)});
+  const mud=[];
+  Object.values(grupos).forEach(xs=>{ if(xs.length<2)return; xs.sort((a,b)=>String(b.prazo||b.quando||b.data||'').localeCompare(String(a.prazo||a.quando||a.data||''))); xs.slice(1).forEach(a=>{a.status='fechado';a.statusOperacional='cancelada';a.fechadoEm=hojeISO();a.motivoCancelamento='Consolidada pela V2.3.4: rotina recorrente substituída pela pendência atual.';mud.push(a);}); });
+  if(mud.length) await persistMuitos('acoes',mud); return mud.length;
+}
 async function gerarObrigacoesV22(silencioso){
-  if(!TEM_ACOES)return 0;
-  const novos=[];
+  if(!TEM_ACOES)return {criadas:0,consolidadas:0,verificadas:0};
+  const consolidadas=await consolidarRotinasAntigasV234(), novos=[]; let verificadas=0;
   clientes.filter(c=>c.status==='Ativo').forEach(c=>{
     const sv=clienteServicosCanon(c);
     ROTINAS_V22.filter(r=>sv.includes(r.servicoCliente)).forEach(r=>{
-      const cfg=(((c.extra||{}).rotinas||{})[r.id]||{}); if(cfg.ativo===false)return;
-      const id=idRotinaV22(c,r); if(gesItens.some(a=>a.id===id))return;
-      novos.push({id,cliente:c.nome,servico:r.servico,tipo:'plano',data:hojeISO(),quando:prazoRotinaV22(r),prazo:prazoRotinaV22(r),texto:r.texto,status:'aberto',statusOperacional:'a_fazer',impacto:r.impacto,urgencia:r.urgencia,confianca:r.confianca,esforco:r.esforco,estimativaMin:(cfg.estimativaMin||r.estimativaMin),origem:'rotina',rotinaId:r.id,periodoRotina:periodoRotinaV22(r),obrigacaoContratual:true,etapaTempo:r.etapa});
+      const cfg=(((c.extra||{}).rotinas||{})[r.id]||{}); if(cfg.ativo===false)return; verificadas++;
+      if(rotinaAbertaV234(c.nome,r.id))return;
+      const ultima=concluidasRotinaV234(c.nome,r.id)[0], prazo=proximaRotinaV234(r,ultima);
+      if(prazo>hojeISO())return;
+      novos.push({id:'rot-'+c.id+'-'+r.id+'-'+prazo+'-'+uid().slice(-5),cliente:c.nome,servico:r.servico,tipo:'plano',data:hojeISO(),quando:prazo,prazo,texto:r.texto,status:'aberto',statusOperacional:'a_fazer',impacto:r.impacto,urgencia:r.urgencia,confianca:r.confianca,esforco:r.esforco,estimativaMin:(cfg.estimativaMin||r.estimativaMin),origem:'rotina',rotinaId:r.id,obrigacaoContratual:true,etapaTempo:r.etapa,modeloRecorrencia:'substituivel'});
     });
     if(sv.some(x=>['gbp','ads','site','seo','social'].includes(x))){
-      const id='rot-'+c.id+'-relatorio-'+refAtual();
-      if(!gesItens.some(a=>a.id===id)) novos.push({id,cliente:c.nome,servico:'geral',tipo:'plano',data:hojeISO(),quando:refAtual()+'-'+pad2(Math.min(ultimoDia(refAtual()),25)),prazo:refAtual()+'-'+pad2(Math.min(ultimoDia(refAtual()),25)),texto:'Preparar fechamento e relatório mensal do cliente',status:'aberto',statusOperacional:'a_fazer',impacto:4,urgencia:3,confianca:3,esforco:2,estimativaMin:30,origem:'rotina',rotinaId:'relatorio',periodoRotina:refAtual(),obrigacaoContratual:true,etapaTempo:'relatorio'});
+      const rid='relatorio', periodo=refAtual(), id='rot-'+c.id+'-relatorio-'+periodo; verificadas++;
+      const existe=gesItens.some(a=>a.id===id|| (a.cliente===c.nome&&a.rotinaId===rid&&a.periodoRotina===periodo));
+      const prazo=periodo+'-'+pad2(Math.min(ultimoDia(periodo),25));
+      if(!existe && prazo<=hojeISO()) novos.push({id,cliente:c.nome,servico:'geral',tipo:'plano',data:hojeISO(),quando:prazo,prazo,texto:'Preparar fechamento e relatório mensal do cliente',status:'aberto',statusOperacional:'a_fazer',impacto:4,urgencia:3,confianca:3,esforco:2,estimativaMin:30,origem:'rotina',rotinaId:rid,periodoRotina:periodo,obrigacaoContratual:true,etapaTempo:'relatorio',modeloRecorrencia:'acumulativa'});
     }
   });
-  if(!novos.length)return 0;
-  gesItens.push(...novos); await persistMuitos('acoes',novos); if(!silencioso)toast(`${plural(novos.length,'obrigação criada','obrigações criadas')} para o período.`,3000); return novos.length;
+  if(novos.length){gesItens.push(...novos);await persistMuitos('acoes',novos);}
+  const res={criadas:novos.length,consolidadas,verificadas};
+  if(!silencioso) toast(novos.length||consolidadas?`Obrigações atualizadas: ${novos.length} devidas · ${consolidadas} duplicadas consolidadas.`:'Tudo atualizado. Nenhuma nova obrigação exige atenção.',4000);
+  return res;
 }
 function avisosAtencaoV22(){ return clientes.filter(c=>c.status==='Ativo').map(c=>({c,d:diasSemAtencaoV22(c.nome),ult:ultimaAtencaoV22(c.nome)})).filter(x=>x.d>=14).sort((a,b)=>b.d-a.d); }
-function painelRotinasV22(){ const a=avisosAtencaoV22(); const rot=gesItens.filter(x=>gesAberto(x)&&x.origem==='rotina'); return `<div class="card"><div class="card-h"><h2>Obrigações automáticas</h2><span class="sub">${rot.length} abertas</span></div><div class="sub">Geradas a partir dos serviços contratados. Semanais e mensais entram na Central sem duplicar o mesmo período.</div><div class="acoes no-print" style="margin-top:10px"><button class="btn" onclick="gerarObrigacoesV22().then(()=>renderAtual())">Verificar obrigações agora</button></div>${a.slice(0,5).map(x=>`<div class="fila-l"><div class="quem"><b>${esc(x.c.nome)}</b><span class="sub">${x.d===999?'sem atividade registrada':x.d+' dias sem atividade concluída'}</span></div><span class="pill ${x.d>=21?'p-red':'p-amb'}">Atenção</span></div>`).join('')}</div>`; }
+function painelRotinasV22(){
+  const a=avisosAtencaoV22(), rot=gesItens.filter(x=>gesAberto(x)&&x.origem==='rotina'), atr=rot.filter(x=>situacaoRotinaV234(x)==='atrasada'), ag=rot.filter(x=>situacaoRotinaV234(x)==='aguardando'), dev=rot.filter(x=>situacaoRotinaV234(x)==='devida');
+  return `<div class="card"><div class="card-h"><div><h2>Controle de obrigações recorrentes</h2><div class="sub">Uma rotina substituível permanece como uma única pendência e ganha atraso/prioridade; entregas mensais continuam por competência.</div></div><span class="pill ${atr.length?'p-red':'p-green'}">${atr.length+dev.length} precisam de atenção</span></div><div class="kpis" style="margin-top:12px"><div class="kpi"><b>${atr.length}</b><span>Atrasadas</span></div><div class="kpi"><b>${dev.length}</b><span>Devidas</span></div><div class="kpi"><b>${ag.length}</b><span>Aguardando</span></div><div class="kpi"><b>${rot.length}</b><span>Pendências recorrentes</span></div></div><div class="acoes no-print" style="margin-top:10px"><button class="btn" onclick="atualizarObrigacoesV234()">Atualizar obrigações</button></div>${a.slice(0,5).map(x=>`<div class="fila-l"><div class="quem"><b>${esc(x.c.nome)}</b><span class="sub">${x.d===999?'sem atividade registrada':x.d+' dias sem atividade concluída'}</span></div><span class="pill ${x.d>=21?'p-red':'p-amb'}">Atenção</span></div>`).join('')}</div>`;
+}
+async function atualizarObrigacoesV234(){ const r=await gerarObrigacoesV22(false); renderAtual(); }
 
 async function comecarV21(id){ const a=gesItens.find(x=>x.id===id); if(!a)return; const atual=gesItens.find(x=>x.id!==id&&gesAberto(x)&&opStatus(x)==='em_execucao'); if(atual){ const diff=prioridadeAcao(a)-prioridadeAcao(atual); if(diff<15 && a.tipo!=='suspensao'){ toast(`Finalize ou pause ${atual.cliente} primeiro. A nova tarefa não supera a atual em 15 pontos.`,4000); return; } if(!confirm(`Há uma tarefa em execução: ${atual.cliente} — ${curto(atual.texto,60)}.\n\nPausar e assumir esta prioridade?`))return; atual.statusOperacional='a_fazer'; await persist('acoes',atual); } normalizarAcaoV2(a); a.statusOperacional='em_execucao'; a.iniciadoEm=new Date().toISOString(); await gravarAcao(a); }
 async function pausarV21(id){ const a=gesItens.find(x=>x.id===id); if(!a)return; normalizarAcaoV2(a); if(a.iniciadoEm)a.minutosAcumulados+=(Math.max(0,Math.round((Date.now()-new Date(a.iniciadoEm).getTime())/60000))); a.statusOperacional='a_fazer'; a.iniciadoEm=null; await gravarAcao(a); }
@@ -2607,7 +2640,7 @@ function renderPlanoV23(el){
 }
 
 
-// V2.3.3 · Integração Apps Script → JSON → Sistema NTN / Looker Studio
+// V2.3.4 · Integração Apps Script → JSON → Sistema NTN / Looker Studio
 const AJ_INTEGRACAO_ID='integracao_resultados_v1';
 function integracaoRow(){let r=ajustes.find(x=>x.id===AJ_INTEGRACAO_ID);if(!r){r={id:AJ_INTEGRACAO_ID,dados:{schemaVersion:1,registros:[]}};ajustes.push(r)};r.dados=r.dados||{};r.dados.registros=Array.isArray(r.dados.registros)?r.dados.registros:[];return r;}
 function registrosIntegracao(cliente){return integracaoRow().dados.registros.filter(r=>!cliente||r.cliente===cliente).sort((a,b)=>String(b.competencia||'').localeCompare(String(a.competencia||'')));}
@@ -2670,11 +2703,26 @@ async function marcarOnb(id, on) {
   if (mud.onbFim) toast('Onboarding completo!');
 }
 
+// V2.3.4 — biblioteca de Sites e Ferramentas
+function ferramentasRowV234(){ return ajustes.find(a=>a.id==='ferramentas'); }
+function ferramentasV234(){ const r=ferramentasRowV234(); return r&&r.dados&&Array.isArray(r.dados.itens)?r.dados.itens:[]; }
+async function salvarFerramentasV234(itens){ let r=ferramentasRowV234(); if(!r){r={id:'ferramentas',dados:{itens:[]}};ajustes.push(r);} r.dados={...(r.dados||{}),itens}; return persist('ajustes',r); }
+function hostV234(url){ try{return new URL(url).hostname.replace(/^www\./,'')}catch(e){return url||''} }
+function renderFerramentas(){
+  setTopo('Biblioteca interna','Sites e Ferramentas','<button class="btn btn-pri" onclick="novaFerramentaV234()">Adicionar ferramenta</button>');
+  const el=document.getElementById('ferramentas-conteudo'), itens=ferramentasV234(), cats=[...new Set(itens.map(x=>x.categoria||'Outros'))].sort();
+  el.innerHTML=`<div class="faixa"><span class="eyebrow">Biblioteca da agência</span><span style="flex:1">Guarde links úteis, explique o que cada ferramenta faz e em que situação você costuma usá-la.</span><span class="pill p-green">${itens.length} cadastradas</span></div><div class="card"><div class="filtros"><input id="ferr-q" class="campo" placeholder="Buscar ferramenta, uso ou site" oninput="filtrarFerramentasV234()"><select id="ferr-cat" class="campo" onchange="filtrarFerramentasV234()"><option value="">Todas as categorias</option>${cats.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div><div id="ferr-lista" style="margin-top:12px"></div></div>`; filtrarFerramentasV234();
+}
+function filtrarFerramentasV234(){ const el=document.getElementById('ferr-lista');if(!el)return;const q=(document.getElementById('ferr-q').value||'').toLowerCase(),cat=document.getElementById('ferr-cat').value;let xs=ferramentasV234().filter(x=>(!cat||(x.categoria||'Outros')===cat)&&(!q||[x.nome,x.url,x.descricao,x.uso,x.categoria].join(' ').toLowerCase().includes(q))); if(!xs.length){el.innerHTML=vazioG('Nenhuma ferramenta encontrada.');return;} const grupos={};xs.forEach(x=>(grupos[x.categoria||'Outros']||(grupos[x.categoria||'Outros']=[])).push(x));el.innerHTML=Object.keys(grupos).sort().map(c=>`<div style="margin-bottom:18px"><div class="eyebrow" style="margin-bottom:8px">${esc(c)}</div>${grupos[c].map(x=>`<div class="fila-l"><div class="quem"><b>${esc(x.nome)}</b><span class="sub">${esc(hostV234(x.url))}${x.descricao?' · '+esc(x.descricao):''}</span>${x.uso?`<span class="sub"><b>Uso:</b> ${esc(x.uso)}</span>`:''}</div><div class="acoes"><a class="btn btn-sm" href="${esc(x.url)}" target="_blank" rel="noopener">Abrir</a><button class="btn btn-sm" onclick="editarFerramentaV234('${esc(x.id)}')">Editar</button><button class="btn btn-sm" onclick="excluirFerramentaV234('${esc(x.id)}')">Excluir</button></div></div>`).join('')}</div>`).join(''); }
+async function novaFerramentaV234(){ return editarFerramentaV234(''); }
+async function excluirFerramentaV234(id){ const itens=ferramentasV234();const x=itens.find(a=>a.id===id);if(!x||!confirm(`Excluir ${x.nome} da biblioteca?`))return;await salvarFerramentasV234(itens.filter(a=>a.id!==id));renderFerramentas();toast('Ferramenta excluída.'); }
+async function editarFerramentaV234(id){ const itens=[...ferramentasV234()], atual=itens.find(x=>x.id===id)||{};const nome=prompt('Nome da ferramenta:',atual.nome||'');if(nome===null||!nome.trim())return;const url=prompt('Link (https://...):',atual.url||'https://');if(url===null)return;const categoria=prompt('Categoria/grupo:',atual.categoria||'Utilidades');if(categoria===null)return;const descricao=prompt('O que faz:',atual.descricao||'');if(descricao===null)return;const uso=prompt('Como / para que você usa:',atual.uso||'');if(uso===null)return;const obj={id:atual.id||uid(),nome:nome.trim(),url:url.trim(),categoria:(categoria||'Outros').trim(),descricao:descricao.trim(),uso:uso.trim(),atualizado:hojeISO()};const i=itens.findIndex(x=>x.id===obj.id);if(i>=0)itens[i]=obj;else itens.push(obj);await salvarFerramentasV234(itens);renderFerramentas();toast('Ferramenta salva.'); }
+
 // ═══════════════════════════════ UI HELPERS ══════════════════════════════════
 const RENDERS = {
   dash: () => renderDash(), clientes: () => renderClientes(), comercial: () => renderComercial(),
   mensalidades: () => renderMensalidades(), postagens: () => renderPostagens(), avulsos: () => renderAvulsos(),
-  historico: () => renderHistorico(), ranking: () => renderRanking(), relatorio: () => renderRelatorio(), gestao: () => renderGestao(), precos: () => renderPrecos(), ficha: () => renderFicha()
+  historico: () => renderHistorico(), ranking: () => renderRanking(), relatorio: () => renderRelatorio(), gestao: () => renderGestao(), precos: () => renderPrecos(), ficha: () => renderFicha(), ferramentas: () => renderFerramentas()
 };
 function telaAtual() { const s = document.querySelector('.section.active'); return s ? s.id : 'dash'; }
 function renderAtual() { const id = telaAtual(); if (RENDERS[id]) RENDERS[id](); atualizarContaNav(); atualizarContaGestao(); }
@@ -2762,7 +2810,7 @@ function renderDash() {
   const titulo = pendMes.length ? `${mes} tem ${plural(pendMes.length, 'mensalidade', 'mensalidades')} para confirmar`
     : antigos.length ? `Faltam ${plural(antigos.length, 'confirmação', 'confirmações')} de meses anteriores` : `${mes} está conferido`;
   const dataExt = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  setTopo('Início · ' + dataExt, TEM_ACOES ? 'O que fazer agora' : titulo, '<span class="pill p-green">V2.3.3</span>');
+  setTopo('Início · ' + dataExt, TEM_ACOES ? 'O que fazer agora' : titulo, '<span class="pill p-green">V2.3.4</span>');
   document.getElementById('dash-foco').innerHTML = TEM_ACOES ? focoV21HTML() : '<div class="card"><h2>Central de Trabalho ainda não disponível</h2></div>';
   document.getElementById('dash-proximas').innerHTML = TEM_ACOES ? proximasV231HTML() : '';
   document.getElementById('dash-alertas').innerHTML = TEM_ACOES ? alertasCriticosV231HTML() : '';
